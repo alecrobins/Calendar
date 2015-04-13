@@ -9,6 +9,7 @@ import javax.swing.UIManager;
 import hkust.cse.calendar.gui.LoginDialog;
 import hkust.cse.calendar.unit.ClockConstants;
 
+// This is a test from alec's computer . . .
 
 public class CalendarMain {
 	public static boolean logOut = false;
