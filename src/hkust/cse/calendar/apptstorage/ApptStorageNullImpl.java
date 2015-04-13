@@ -1,13 +1,8 @@
 package hkust.cse.calendar.apptstorage;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 import hkust.cse.calendar.unit.Appt;
-import hkust.cse.calendar.unit.Event;
-import hkust.cse.calendar.unit.Event.Frequency;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 
@@ -106,63 +101,27 @@ public class ApptStorageNullImpl extends ApptStorage {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public boolean IsApptValid(Appt appt, List<Appt> applicable) {
-		for (Appt value : applicable){ // need to specify for just a group of appts
-		int startH = value.TimeSpan().StartTime().getHours();
-		int endH = value.TimeSpan().EndTime().getHours();
-		int startM = value.TimeSpan().StartTime().getMinutes();
-		int endM = value.TimeSpan().EndTime().getMinutes();
-		int currStartH = appt.TimeSpan().StartTime().getHours();
-		int currEndH = appt.TimeSpan().StartTime().getHours();
-		int currStartM = appt.TimeSpan().StartTime().getMinutes();
-		int currEndM = appt.TimeSpan().StartTime().getMinutes();
-		
-		System.out.println("start hour for birthday: "+startH);
-		System.out.println("end hour: "+endH);
-		
-		System.out.println("start hour for yolo: "+currStartH);
-		System.out.println("end hour: "+currEndH);
-		
-		if (currStartH >= endH && currStartH < startH || currStartH >= startH && currEndH <= startH
-				|| currStartH < startH && currEndH > endH){
-			if (currStartM >= endM && currStartM < startM || currStartM >= startM && currEndM <= startM
-					|| currStartM < startM && currEndM > endM){
-				return false;
+	public boolean isApptValid(Appt appt){ 
+		for (Appt value: this.mAppts.values()){
+			if (appt.TimeSpan().EndTime().getHours() < value.TimeSpan().StartTime().getHours()
+					|| appt.TimeSpan().StartTime().getHours() > value.TimeSpan().EndTime().getHours()){
+				return true;  //no overlap in hours
+			}
+			else if (appt.TimeSpan().EndTime().getHours() == value.TimeSpan().StartTime().getHours()){
+				if (appt.TimeSpan().EndTime().getMinutes() < value.TimeSpan().StartTime().getMinutes()){
+					return true;  //no overlap in mins
+				}
+			}
+			else if (appt.TimeSpan().StartTime().getHours() == value.TimeSpan().EndTime().getHours()){
+				if (appt.TimeSpan().StartTime().getMinutes() > value.TimeSpan().EndTime().getMinutes()){
+					return true;   //no overlap in mins
 				}
 			}
 		}
-
-		return true;
+		return false;
 	}
 	
-//	public boolean isApptValid(Appt appt, List<Appt> applicable){
-//		for (Appt value : applicable){ // need to specify for just a group of appts
-//			int startH = value.TimeSpan().StartTime().getHours();
-//			int endH = value.TimeSpan().EndTime().getHours();
-//			int startM = value.TimeSpan().StartTime().getMinutes();
-//			int endM = value.TimeSpan().EndTime().getMinutes();
-//			int currStartH = appt.TimeSpan().StartTime().getHours();
-//			int currEndH = appt.TimeSpan().StartTime().getHours();
-//			int currStartM = appt.TimeSpan().StartTime().getMinutes();
-//			int currEndM = appt.TimeSpan().StartTime().getMinutes();
-//			
-//			System.out.println("start hour for birthday: "+startH);
-//			System.out.println("end hour: "+endH);
-//			
-//			System.out.println("start hour for yolo: "+currStartH);
-//			System.out.println("end hour: "+currEndH);
-//			
-//			if (currStartH >= endH && currStartH < startH || currStartH >= startH && currEndH <= startH
-//					|| currStartH < startH && currEndH > endH){
-//				if (currStartM >= endM && currStartM < startM || currStartM >= startM && currEndM <= startM
-//						|| currStartM < startM && currEndM > endM){
-//					return false;
-//				}
-//				}
-//		}
-//
-//		return true;
-//	
-//	}
+
 }

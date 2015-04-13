@@ -5,12 +5,11 @@ import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 
 import java.util.HashMap;
-import java.util.List;
 
 
 public abstract class ApptStorage {
 
-	public HashMap mAppts;		//a hashmap to save every thing to it, write to memory by the memory based storage implementation	
+	public HashMap<Integer, Appt> mAppts;		//a hashmap to save every thing to it, write to memory by the memory based storage implementation	
 	public User defaultUser;	//a user object, now is single user mode without login
 	public int mAssignedApptID;	//a global appointment ID for each appointment record
 
@@ -34,9 +33,12 @@ public abstract class ApptStorage {
 	
 	public abstract void LoadApptFromXml();		//abstract method to load appointment from xml reocrd into hash map
 	
-	public abstract boolean IsApptValid(Appt appt, List<Appt> applicable);
+	public abstract boolean isApptValid(Appt appt);
+	
 	/*
 	 * Add other methods if necessary
 	 */
+
+
 
 }

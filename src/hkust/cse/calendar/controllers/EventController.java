@@ -3,12 +3,7 @@ package hkust.cse.calendar.controllers;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-
-import hkust.cse.calendar.apptstorage.ApptStorageControllerImpl;
-import hkust.cse.calendar.gui.AppList;
+import hkust.cse.calendar.apptstorage.ApptStorageNullImpl;
 import hkust.cse.calendar.gui.CalGrid;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Clock;
@@ -35,12 +30,10 @@ public class EventController {
 	// used to set reminders for events
 	private NotificationController nc;
 	private CalGrid cal;
-	private ApptStorageControllerImpl as;
 	
 	public EventController(NotificationController _nc, CalGrid _cal) {
 		nc = _nc;
 		cal = _cal;
-		as = cal.controller;
 	}
 	
 	// TODO: save the event to the db
@@ -132,55 +125,83 @@ public class EventController {
 	//
 	
 	// Returns true if there is overlap with other appts
-	private boolean isEventValid(Event e) {
-		List<Appt> applicable = new LinkedList<Appt>();
-		HashMap<Integer, Appt> values = as.mApptStorage.mAppts;
-		
-		switch(e.getEventFrequency()){
-		case ONETIME:
-			applicable.add(e);
-			return as.IsApptValid(e, applicable);
-			
-		case MONTHLY:  //compare weeks
-			for (Appt value : values.values()){
-				if ((startWeek(e) >= endWeek(value) && startWeek(e) < startWeek(value) || startWeek(e) >= startWeek(value) && endWeek(e) <= startWeek(value)
-						|| startWeek(e) < startWeek(value) && endWeek(e) > endWeek(value))
-				&& (startDay(e) >= endDay(value) && startDay(e) < startDay(value) || startDay(e) >= startDay(value) && endDay(e) <= startDay(value)
-						|| startDay(e) < startDay(value) && endDay(e) > endDay(value))){
-					applicable.add(value);
+	public boolean isEventValid(Event e, ApptStorageNullImpl as) {
+		for (Appt existing: as.mAppts.values()){
+			Event exist = (Event) existing;
+			switch(e.getEventFrequency()){
+			case ONETIME:
+				if (!isEventValid(e, exist, "absTime")){
+					return false;
+				}
+				break;
+			case MONTHLY:
+				if (!isEventValid(e, exist, "date")){
+					if (!isEventValid(e, exist, "time")){
+						return false;
+					}
+				}
+				break;
+			case WEEKLY:
+				if (!isEventValid(e, exist, "day")){
+					if (!isEventValid(e, exist, "time")){
+						return false;
+					}
+				}
+				break;
+			case DAILY:
+				if (!isEventValid(e, exist, "time")){
+					return false;
 				}
 			}
-			return as.IsApptValid(e, applicable);
-			
-		case WEEKLY:
-			for (Appt value : values.values()){
-				if (startDay(e) >= endDay(value) && startDay(e) < startDay(value) || startDay(e) >= startDay(value) && endDay(e) <= startDay(value)
-						|| startDay(e) < startDay(value) && endDay(e) > endDay(value)){
-					applicable.add(value);
-				}
-			}
-			return as.IsApptValid(e, applicable);
-		case DAILY:
-			for (Appt value : values.values()){
-				applicable.add(value);
-			}
-			return as.IsApptValid(e, applicable);
+			break;
 		}
 		return true;
 	}
 	
-	private int startWeek(Appt e){
-		return e.TimeSpan().StartTime().getDate() / 7 + 1;
+	@SuppressWarnings("deprecation")
+	public boolean isEventValid(Event given, Event existing, String compare){
+		switch(compare){
+		case "absTime":
+			if (given.TimeSpan().EndTime().getTime() < existing.TimeSpan().StartTime().getTime()
+					|| given.TimeSpan().StartTime().getTime() > existing.TimeSpan().EndTime().getTime()){
+				return true;  //no overlap in absolute time
+			}
+			break;
+		case "date":
+			if (given.TimeSpan().EndTime().getDate() < existing.TimeSpan().StartTime().getDate()
+					|| given.TimeSpan().StartTime().getDate() > existing.TimeSpan().EndTime().getDate()){
+				return true;  //no overlap in date
+			}
+			break;
+		case "day":
+			if (given.TimeSpan().EndTime().getDay() < existing.TimeSpan().StartTime().getDay()
+					|| given.TimeSpan().StartTime().getDay() > existing.TimeSpan().EndTime().getDay()){
+				return true;  //no overlap in day
+			}
+			break;
+		case "time":
+			if (given.TimeSpan().EndTime().getHours() < existing.TimeSpan().StartTime().getHours()
+					|| given.TimeSpan().StartTime().getHours() > existing.TimeSpan().EndTime().getHours()){
+				return true;  //no overlap in hours
+			}
+			
+			else if (given.TimeSpan().EndTime().getHours() == existing.TimeSpan().StartTime().getHours()){
+				if (given.TimeSpan().EndTime().getMinutes() < existing.TimeSpan().StartTime().getMinutes()){
+					return true;  //no overlap in mins
+				}
+			}
+			else if (given.TimeSpan().StartTime().getHours() == existing.TimeSpan().EndTime().getHours()){
+				if (given.TimeSpan().StartTime().getMinutes() > existing.TimeSpan().EndTime().getMinutes()){
+					return true;   //no overlap in mins
+				}
+			}
+			break;
+		default :
+			return false;
+		}
+		return false;
 	}
-	private int endWeek(Appt e){
-		return e.TimeSpan().EndTime().getDate() / 7 + 1;
-	}
-	private int startDay(Appt e){
-		return e.TimeSpan().StartTime().getDay();
-	}
-	private int endDay(Appt e){
-		return e.TimeSpan().EndTime().getDay();
-	}
+	
 
 	// Set a notification for a reminder
 	private void setReminder(Event e){
@@ -188,10 +209,10 @@ public class EventController {
 		nc.setNotification(reminder);
 	}
 	
-	private boolean checkEventOverlap(TimeSpan eventTime, Frequency _frequency) {
-		// TODO Auto-generated method stub
-		return true;
-	}
+//	private boolean checkEventOverlap(TimeSpan eventTime, Frequency _frequency) {
+//		// TODO Auto-generated method stub
+//		return true;
+//	}
 
 	private boolean checkStartTime(Timestamp startTime) {
 		// current date

@@ -1,6 +1,5 @@
 package hkust.cse.calendar.apptstorage;
 
-import java.util.List;
 
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.TimeSpan;
@@ -68,7 +67,7 @@ public class ApptStorageControllerImpl {
 	}
 	
 	// method used to see if appt is valid
-	public boolean IsApptValid(Appt appt, List<Appt> applicable){
-		return mApptStorage.IsApptValid(appt, applicable);
+	public boolean isApptValid(Appt appt){
+		return mApptStorage.isApptValid(appt);
 	}
 }
