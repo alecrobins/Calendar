@@ -236,14 +236,11 @@ private void commonConstructer(CalGrid cal){
 		hourGroup.add(finishBut);
 		
 		
-		
 		con.add("South",yearGroup);
 		con.add("North",hourGroup);
 		
 		//con.add("East",changeBut);
-		
-	
-		
+
 		pack();
 
 	}
@@ -340,11 +337,13 @@ private void commonConstructer(CalGrid cal){
 		Clock.getInstance().setDate(newdate);
 		
 		System.out.println(Clock.getInstance().newDate());
+
+		//		
+//		Clock.getInstance().newCalendar();
+//		Clock.getInstance().newGregorianCalendar();
+//		
 		
-		Clock.getInstance().newCalendar();
-		Clock.getInstance().newGregorianCalendar();
-		
-		
+		//TODO: update the calendar grid gui
 		
 			
 		}
