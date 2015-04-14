@@ -65,6 +65,12 @@ import javax.swing.text.BadLocationException;
 
 // TODO: need to create a gui so that you can change the ClockConstant variables
 
+//Hello this is a test
+
+//asdasdasdasd
+
+
+
 public class ManageTimeMachine extends JDialog implements ActionListener,
 ComponentListener {
 
