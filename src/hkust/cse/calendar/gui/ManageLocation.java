@@ -168,13 +168,25 @@ ComponentListener {
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		if(e.getSource() == addBut){
-			System.out.println("YEP made it");
-			System.out.println(locationT.getText());
-			ls.addLocation(locationT.getText());
+			if(ls.addLocation(locationT.getText())){
+				JOptionPane.showMessageDialog(null, "Location added successfully.");
+			} else{
+				JOptionPane.showMessageDialog(null, "The location is already existed.");
+			}
+			locationT.setText(null);
+			
+		} else if(e.getSource() == deleteBut){
+			if(ls.deleteLocation(locationT.getText())){
+				JOptionPane.showMessageDialog(null, "Location deleted successfully.");
+			} else {
+				JOptionPane.showMessageDialog(null, "The location is not in the list.");
+			}
+			locationT.setText(null);
 			
 		} else if(e.getSource() == finishBut){
 			setVisible(false);
 			dispose();
+			
 		}
 	}
 
