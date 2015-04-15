@@ -3,7 +3,6 @@ package hkust.cse.calendar.gui;
 import hkust.cse.calendar.Main.CalendarMain;
 import hkust.cse.calendar.apptstorage.ApptStorageControllerImpl;
 import hkust.cse.calendar.apptstorage.LocationStorage;
-import hkust.cse.calendar.controllers.NotificationController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Clock;
 import hkust.cse.calendar.unit.TimeSpan;
@@ -57,6 +56,7 @@ public class CalGrid extends JFrame implements ActionListener {
 	public ApptStorageControllerImpl controller;
 	public User mCurrUser;
 	private String mCurrTitle = "Desktop Calendar - No User - ";
+	public Clock mClock;
 	private GregorianCalendar today;
 	public int currentD;
 	public int currentM;
@@ -97,7 +97,7 @@ public class CalGrid extends JFrame implements ActionListener {
 			"President's Day (US)\n",
 			"",
 			"Ching Ming Festival\nGood Friday\nThe day following Good Friday\nEaster Monday\n",
-			"Labour Day\nThe Buddhaâ€™s Birthday\nTuen Ng Festival\n",
+			"Labour Day\nThe Buddhaþý™s Birthday\nTuen Ng Festival\n",
 			"",
 			"Hong Kong Special Administrative Region Establishment Day\n",
 			"Civic Holiday(CAN)\n",
@@ -106,13 +106,11 @@ public class CalGrid extends JFrame implements ActionListener {
 			"Veterans Day(US)\nThanksgiving Day(US)\n", "Christmas\n" };
 
 	private AppScheduler setAppDial;
-	public NotificationController nc;
 	public LocationStorage locationStorage;
 
 	public CalGrid(ApptStorageControllerImpl con) {
 		super();
 		
-		nc = new NotificationController();
 		locationStorage = new LocationStorage();
 		
 		addWindowListener(new WindowAdapter() {
@@ -134,11 +132,12 @@ public class CalGrid extends JFrame implements ActionListener {
 
 		setJMenuBar(createMenuBar());
 
-		today = Clock.getInstance().newGregorianCalendar();
-		currentY = today.get(GregorianCalendar.YEAR);
+		mClock = new Clock();
+		today = mClock.getUnchangedTime();
+		currentY = today.get(Calendar.YEAR);
 		currentD = today.get(today.DAY_OF_MONTH);
 		int temp = today.get(today.MONTH) + 1;
-		currentM = 12;
+		currentM = 12; 	
 
 		getDateArray(data);
 
@@ -198,7 +197,7 @@ public class CalGrid extends JFrame implements ActionListener {
 
 				if (tem.equals("") == false) {
 					try {
-						if (today.get(Clock.getInstance().newCalendar().YEAR) == currentY
+						if (today.get(Calendar.YEAR) == currentY
 								&& today.get(today.MONTH) + 1 == currentM
 								&& today.get(today.DAY_OF_MONTH) == Integer
 										.parseInt(tem)) {
@@ -326,7 +325,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		ActionListener listener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (e.getActionCommand().equals("Manual Scheduling")) {
-					AppScheduler a = new AppScheduler("New", CalGrid.this, nc, locationStorage);
+					AppScheduler a = new AppScheduler("New", CalGrid.this, locationStorage);
 					a.updateSetApp(hkust.cse.calendar.gui.Utility
 							.createDefaultAppt(currentY, currentM, currentD,
 									mCurrUser));
@@ -483,6 +482,29 @@ public class CalGrid extends JFrame implements ActionListener {
 			}
 		}
 	}
+	
+	// refresh time
+	public void refreshTime(){
+		today = mClock.getChangedTime();
+		currentY = today.get(GregorianCalendar.YEAR);
+		currentD = today.get(today.DAY_OF_MONTH);
+	}
+	
+	// refresh calendar after changing time in time machine
+	public void refreshCal(){
+		refreshTime();
+		currentM = mClock.getChangedTimeDate().getMonth();
+		year.setText(new Integer(currentY).toString());
+		CalGrid.this.setTitle("Desktop Calendar - No User - (" + currentY
+				+ "-" + currentM + "-" + currentD + ")");
+		getDateArray(data);
+		if (tableView != null) {
+			TableModel t = prepareTableModel();
+			tableView.setModel(t);
+			tableView.repaint();
+		}
+		UpdateCal();
+	}
 
 	// update the appointment list on gui
 	public void updateAppList() {
@@ -538,7 +560,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		end.setYear(currentY);
 		end.setMonth(currentM - 1);
 		GregorianCalendar g = new GregorianCalendar(currentY, currentM - 1, 1);
-		end.setDate(g.getActualMaximum(Clock.getInstance().newGregorianCalendar().DAY_OF_MONTH));
+		end.setDate(g.getActualMaximum(mClock.getChangedTime().DAY_OF_MONTH));
 		end.setHours(23);
 		TimeSpan period = new TimeSpan(start, end);
 		return controller.RetrieveAppts(mCurrUser, period);

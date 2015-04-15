@@ -2,7 +2,6 @@ package hkust.cse.calendar.gui;
 
 import hkust.cse.calendar.apptstorage.ApptStorageControllerImpl;
 import hkust.cse.calendar.apptstorage.LocationStorage;
-import hkust.cse.calendar.controllers.NotificationController;
 import hkust.cse.calendar.unit.Appt;
 
 import java.awt.BorderLayout;
@@ -107,7 +106,6 @@ public class AppList extends JPanel implements ActionListener {
 	private int releaseCol;
 	
 	private CalGrid parent;
-	private NotificationController parentNC;
 	private LocationStorage parentLS;
 	
 	private Color currColor = Color.green;
@@ -437,7 +435,7 @@ public class AppList extends JPanel implements ActionListener {
 		Appt apptTitle = getSelectedAppTitle();
 		if (apptTitle == null)
 			return;
-		AppScheduler setAppDial = new AppScheduler("Modify", parent, apptTitle.getID(), parentNC, parentLS);
+		AppScheduler setAppDial = new AppScheduler("Modify", parent, apptTitle.getID(), parentLS);
 
 //		parent.controller.mApptStorage.RemoveAppt(apptTitle);
 		
@@ -493,7 +491,7 @@ public class AppList extends JPanel implements ActionListener {
 			startTime = currentRow * 15 + 480;
 		else
 			startTime = (currentRow + 20) * 15 + 480;
-		AppScheduler a = new AppScheduler("New", parent, parentNC, parentLS);
+		AppScheduler a = new AppScheduler("New", parent, parentLS);
 		a.updateSetApp(hkust.cse.calendar.gui.Utility.createDefaultAppt(
 				parent.currentY, parent.currentM, parent.currentD,
 				parent.mCurrUser, startTime));
@@ -534,7 +532,6 @@ public class AppList extends JPanel implements ActionListener {
 	}
 	public void setParent(CalGrid grid) {
 		parent = grid;
-		parentNC = parent.nc;
 		parentLS = parent.locationStorage;
 	}
 

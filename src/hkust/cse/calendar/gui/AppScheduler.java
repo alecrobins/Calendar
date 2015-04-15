@@ -4,7 +4,6 @@ import hkust.cse.calendar.apptstorage.ApptStorageControllerImpl;
 import hkust.cse.calendar.apptstorage.LocationStorage;
 import hkust.cse.calendar.controllers.EventController;
 import hkust.cse.calendar.controllers.EventController.EventReturnMessage;
-import hkust.cse.calendar.controllers.NotificationController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Clock;
 import hkust.cse.calendar.unit.LocationList;
@@ -135,18 +134,16 @@ public class AppScheduler extends JDialog implements ActionListener,
 //	private JTextField waitingField;
 	private int selectedApptId = -1;
 	
-	private NotificationController nc;
 	private LocationStorage ls; 
 	
 
-	private void commonConstructor(String title, CalGrid cal, NotificationController _nc, LocationStorage _ls) {
+	private void commonConstructor(String title, CalGrid cal, LocationStorage _ls) {
 		
 		// set up the NoticationController & The LocationStorage
-		nc = _nc;
 		ls = _ls;
 		
 		// set up the event controller
-		eventController = new EventController(nc, cal); 
+		eventController = new EventController(cal); 
 		
 		parent = cal;
 		this.setAlwaysOnTop(true);
@@ -423,7 +420,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 
 	private JComboBox loadYear(String _type) {
 		JComboBox temp = new JComboBox();
-		Date now = Clock.getInstance().newDate();
+		Date now = parent.mClock.getChangedTimeDate();
 		
 		// make first null if reminder
 		if(_type == "rem")
@@ -486,13 +483,13 @@ public class AppScheduler extends JDialog implements ActionListener,
 		return temp;
 	}
 
-	AppScheduler(String title, CalGrid cal, int selectedApptId, NotificationController _nc, LocationStorage _ls) {
+	AppScheduler(String title, CalGrid cal, int selectedApptId, LocationStorage _ls) {
 		this.selectedApptId = selectedApptId;
-		commonConstructor(title, cal, _nc, _ls);
+		commonConstructor(title, cal, _ls);
 	}
 
-	AppScheduler(String title, CalGrid cal, NotificationController _nc, LocationStorage _ls) {
-		commonConstructor(title, cal, _nc, _ls);
+	AppScheduler(String title, CalGrid cal, LocationStorage _ls) {
+		commonConstructor(title, cal, _ls);
 	}
 	
 	public void actionPerformed(ActionEvent e) {
