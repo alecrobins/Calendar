@@ -16,7 +16,7 @@ public class LocationStorage {
 	}
 	
 	public void addLocation(String l){
-		System.out.println("ADDEING");
+		System.out.println("ADDING");
 		locations.add(l);
 	}
 	

@@ -191,6 +191,7 @@ public class CalGrid extends JFrame implements ActionListener {
 
 		TableModel dataModel = prepareTableModel();
 		
+		// create the month calendar view
 		tableView = new JTable(dataModel) {
 			public TableCellRenderer getCellRenderer(int row, int col) {
 				String tem = (String) data[row][col];

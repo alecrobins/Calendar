@@ -50,6 +50,8 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
+// Controll the location gui
+
 public class ManageLocation extends JDialog implements ActionListener,
 ComponentListener {
 
@@ -77,8 +79,6 @@ ComponentListener {
 		con = getContentPane();
 	
 		setTitle("Manage Location");
-		
-		
 		
 		JPanel panel = new JPanel();
 		panel.setLayout(new FlowLayout(FlowLayout.RIGHT));

@@ -14,7 +14,6 @@ import java.util.GregorianCalendar;
 // default to the regular system clock  time 
 
 public class Clock {
-
 	
 	public static Clock getInstance(){
 		return new Clock();

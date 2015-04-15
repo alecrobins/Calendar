@@ -63,28 +63,28 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.text.BadLocationException;
 
-// TODO: need to create a gui so that you can change the ClockConstant variables
+// Controlls the gui of the timeMachine
 
 public class ManageTimeMachine extends JDialog implements ActionListener,
 ComponentListener {
 
 	private CalGrid parent;
-	
+
 	private Object [][] data = new Object[20][1];
-	
+
 	private BasicArrowButton eButton;
 	private BasicArrowButton wButton;
-	
+
 	private BasicArrowButton ehourButton;
 	private BasicArrowButton whourButton;
-	
+
 	private BasicArrowButton eminuteButton;
 	private BasicArrowButton wminuteButton;
-	
+
 	private BasicArrowButton esecondButton;
 	private BasicArrowButton wsecondButton;
-	
-	
+
+
 	private JLabel labelhour;
 	private JLabel labelsecond;
 	private JLabel labelminute;
@@ -98,43 +98,43 @@ ComponentListener {
 	public int currentY;
 	public int currentM;
 	public int currentD;
-	
+
 	public int currentH;
 	public int currentMi;
 	public int currentS;
-	
+
 	public Date newDate;
-	
+
 	private JButton changeTimeBut;
 	private JButton finishBut;
-	
+
 	private final String[] months = { "January", "Feburary", "March", "April",
 			"May", "June", "July", "August", "September", "October",
 			"November", "December" };
-	
+
 	private final String[] names = { "Sunday", "Monday", "Tuesday",
 			"Wednesday", "Thursday", "Friday", "Saturday" };
-	
+
 	public static final int[] monthDays = { 31, 28, 31, 30, 31, 30, 31, 31, 30,
 		31, 30, 31 };
-	
+
 	private final String[] days = { "1", "2", "3", "4",
 			"5", "6", "7", "8", "9", "10",
 			"11", "12", "13","14","15","16","17","18","19","20","21","22","23","24",
 			"25","26","27","28","29","30","31" };
-	
-	private JTable tableView;
-	
 
-private void commonConstructer(CalGrid cal){
-		
+	private JTable tableView;
+
+
+	private void commonConstructer(CalGrid cal){
+
 		parent = cal;
-		
+
 		Container con;
 		con = getContentPane();
-	
+
 		setTitle("Manage TimeMachine");
-		
+
 		today = Clock.getInstance().newGregorianCalendar();
 		currentY = today.get(GregorianCalendar.YEAR);
 		currentD = today.get(today.DAY_OF_MONTH);
@@ -144,13 +144,13 @@ private void commonConstructer(CalGrid cal){
 		currentH=today.get(today.HOUR);
 		currentMi=today.get(today.MINUTE);
 		currentS=today.get(today.SECOND);
-		
+
 		changeTimeBut = new JButton("Change");
 		changeTimeBut.addActionListener(this);
-		
+
 		finishBut = new JButton("Finish");
 		finishBut.addActionListener(this);
-		
+
 
 		eButton = new BasicArrowButton(SwingConstants.EAST);
 		eButton.setEnabled(true);
@@ -160,45 +160,45 @@ private void commonConstructer(CalGrid cal){
 		wButton.addActionListener(this);
 
 		year = new JLabel(new Integer(currentY).toString());
-		
+
 		labelhour = new JLabel("hour");
 		labelminute = new JLabel(":");
 		labelsecond = new JLabel(":");
-		
+
 		hour = new JLabel(new Integer(currentH).toString());
 		minute = new JLabel(new Integer(currentMi).toString());
 		second = new JLabel(new Integer(currentS).toString());
-		
-		
-		
+
+
+
 		month = new JComboBox();
 		month.addActionListener(this);
 		month.setPreferredSize(new Dimension(200, 30));
 		for (int cnt = 0; cnt < 12; cnt++)
 			month.addItem(months[cnt]);
 		month.setSelectedIndex(temp - 1);
-		
+
 		day = new JComboBox();
 		day.addActionListener(this);
 		day.setPreferredSize(new Dimension(200, 30));
 		for (int cnt = 0; cnt < 31; cnt++)
 			day.addItem(days[cnt]);
 		day.setSelectedIndex(temp_1 - 1);
-		
+
 		ehourButton = new BasicArrowButton(SwingConstants.EAST);
 		ehourButton.setEnabled(true);
 		ehourButton.addActionListener(this);
 		whourButton = new BasicArrowButton(SwingConstants.WEST);
 		whourButton.setEnabled(true);
 		whourButton.addActionListener(this);
-		
+
 		eminuteButton = new BasicArrowButton(SwingConstants.EAST);
 		eminuteButton.setEnabled(true);
 		eminuteButton.addActionListener(this);
 		wminuteButton = new BasicArrowButton(SwingConstants.WEST);
 		wminuteButton.setEnabled(true);
 		wminuteButton.addActionListener(this);
-		
+
 		esecondButton = new BasicArrowButton(SwingConstants.EAST);
 		esecondButton.setEnabled(true);
 		esecondButton.addActionListener(this);
@@ -214,44 +214,44 @@ private void commonConstructer(CalGrid cal){
 		yearGroup.add(eButton);
 		yearGroup.add(month);
 		yearGroup.add(day);
-		
+
 		JPanel hourGroup = new JPanel();
 		hourGroup.setLayout(new FlowLayout());
 		hourGroup.setBorder(new Flush3DBorder());
 		hourGroup.add(whourButton);
 		hourGroup.add(hour);
 		hourGroup.add(ehourButton);
-		
+
 		hourGroup.add(labelminute);
 		hourGroup.add(wminuteButton);
 		hourGroup.add(minute);
 		hourGroup.add(eminuteButton);
-		
+
 		hourGroup.add(labelsecond);
 		hourGroup.add(wsecondButton);
 		hourGroup.add(second);
 		hourGroup.add(esecondButton);
-		
+
 		hourGroup.add(changeTimeBut);
 		hourGroup.add(finishBut);
-		
-		
+
+
 		con.add("South",yearGroup);
 		con.add("North",hourGroup);
-		
+
 		//con.add("East",changeBut);
 
 		pack();
 
 	}
-	
 
-   ManageTimeMachine(CalGrid cal) {
-	commonConstructer(cal);
+
+	ManageTimeMachine(CalGrid cal) {
+		commonConstructer(cal);
 	}
-	
-   
-   public TableModel prepareTableModel(){
+
+
+	public TableModel prepareTableModel(){
 		TableModel dataModel = new AbstractTableModel(){	
 
 			public int getColumnCount() {
@@ -261,15 +261,15 @@ private void commonConstructer(CalGrid cal){
 			public int getRowCount() {
 				return 6;
 			}
-			
+
 			public Object getValueAt(int row, int col) {
 				return data[row][col];
 			}
-			
+
 			public String getColumnName(int column) {
 				return names[column];
 			}
-			
+
 			public Class getColumnClass(int c) {
 				return getValueAt(0, c).getClass();
 			}
@@ -277,105 +277,105 @@ private void commonConstructer(CalGrid cal){
 			public boolean isCellEditable(int row, int col) {
 				return false;
 			}
-		
+
 			public void setValueAt(Object aValue, int row, int column) {
-			data[row][column] = aValue;
+				data[row][column] = aValue;
 			}
 		};
-		
+
 		return dataModel;
 	}
-	
-   
-   
-   
-   
-   
+
+
+
+
+
+
 	@Override
 	public void componentHidden(ComponentEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void componentMoved(ComponentEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void componentResized(ComponentEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void componentShown(ComponentEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		
+
 		if(e.getSource() == changeTimeBut){
-			
+
 			currentD=day.getSelectedIndex()+1;
 			currentM=month.getSelectedIndex();
-			
-		System.out.println(Clock.getInstance().newDate());
-			
-		Date newdate= new Date();
-		newdate.setDate(currentD);
-		newdate.setYear(currentY-1900);
-		newdate.setMonth(currentM);
-		newdate.setHours(currentH);
-		newdate.setMinutes(currentMi);
-		newdate.setSeconds(currentS);
-		
-		System.out.println(newdate);
-		Clock.getInstance().setDate(newdate);
-		
-		System.out.println(Clock.getInstance().newDate());
 
-		//		
-//		Clock.getInstance().newCalendar();
-//		Clock.getInstance().newGregorianCalendar();
-//		
-		
-		//TODO: update the calendar grid gui
-		
-			
+			System.out.println(Clock.getInstance().newDate());
+
+			Date newdate= new Date();
+			newdate.setDate(currentD);
+			newdate.setYear(currentY-1900);
+			newdate.setMonth(currentM);
+			newdate.setHours(currentH);
+			newdate.setMinutes(currentMi);
+			newdate.setSeconds(currentS);
+
+			System.out.println(newdate);
+			Clock.getInstance().setDate(newdate);
+
+			System.out.println(Clock.getInstance().newDate());
+
+			//		
+			//		Clock.getInstance().newCalendar();
+			//		Clock.getInstance().newGregorianCalendar();
+			//		
+
+			//TODO: update the calendar grid gui
+
+
 		}
-	 else if(e.getSource() == finishBut){
-		 
-	 parent.UpdateCal();
-		setVisible(false);
-		dispose();
-	}
-		
-		
-		
-		
-		
+		else if(e.getSource() == finishBut){
+
+			parent.UpdateCal();
+			setVisible(false);
+			dispose();
+		}
+
+
+
+
+
 		if (e.getSource() == eButton) {
 			if (year == null)
 				return;
 			currentY = currentY + 1;
 			year.setText(new Integer(currentY).toString());
-			
+
 		} else if (e.getSource() == wButton) {
 			if (year == null)
 				return;
 			currentY = currentY - 1;
 			year.setText(new Integer(currentY).toString());
-			
-	
+
+
 		} 
-		
-		
+
+
 		/*****************************************/
-		
+
 		if (e.getSource() == ehourButton) {
 			if (hour == null)
 				return;
@@ -383,7 +383,7 @@ private void commonConstructer(CalGrid cal){
 			if(currentH>24)
 				currentH=1;
 			hour.setText(new Integer(currentH).toString());
-			
+
 		} else if (e.getSource() == whourButton) {
 			if (hour == null)
 				return;
@@ -391,11 +391,11 @@ private void commonConstructer(CalGrid cal){
 			if(currentH<1)
 				currentH=24;
 			hour.setText(new Integer(currentH).toString());
-			
-	
+
+
 		} 
-		
-		
+
+
 		if (e.getSource() == eminuteButton) {
 			if (minute == null)
 				return;
@@ -403,7 +403,7 @@ private void commonConstructer(CalGrid cal){
 			if(currentMi>60)
 				currentMi=1;
 			minute.setText(new Integer(currentMi).toString());
-			
+
 		} else if (e.getSource() == wminuteButton) {
 			if (minute == null)
 				return;
@@ -411,10 +411,10 @@ private void commonConstructer(CalGrid cal){
 			if(currentMi<1)
 				currentMi=60;
 			minute.setText(new Integer(currentMi).toString());
-			
-	
+
+
 		}
-		
+
 		if (e.getSource() == esecondButton) {
 			if (second == null)
 				return;
@@ -422,7 +422,7 @@ private void commonConstructer(CalGrid cal){
 			if(currentS>60)
 				currentS=1;
 			second.setText(new Integer(currentS).toString());
-			
+
 		} else if (e.getSource() == wsecondButton) {
 			if (second == null)
 				return;
@@ -430,25 +430,17 @@ private void commonConstructer(CalGrid cal){
 			if(currentS<1)
 				currentS=60;
 			second.setText(new Integer(currentS).toString());
-			
-	
+
+
 		} 
-		
-		
-		
-		
-		
-		
-	}
-	
-
-		
 
 	}
-	
-	
-	
-	
-	
-	
+
+}
+
+
+
+
+
+
 
