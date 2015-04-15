@@ -28,11 +28,9 @@ public class EventController {
 	}
 	
 	// used to set reminders for events
-	private NotificationController nc;
 	private CalGrid cal;
 	
-	public EventController(NotificationController _nc, CalGrid _cal) {
-		nc = _nc;
+	public EventController(CalGrid _cal) {
 		cal = _cal;
 	}
 	
@@ -106,9 +104,7 @@ public class EventController {
 //		if(!isEventValid(newEvent))
 //			return EventReturnMessage.ERROR_EVENT_OVERLAP;
 		
-		//set the reminder notification
-		if(reminder != null)
-			setReminder(newEvent);
+
 		
 		// save the event in apptStorage
 		cal.controller.mApptStorage.SaveAppt(newEvent);
@@ -203,11 +199,7 @@ public class EventController {
 	}
 	
 
-	// Set a notification for a reminder
-	private void setReminder(Event e){
-		Notification reminder = new Notification(e.getTitle(), e.getInfo(), e.getEventReminder());
-		nc.setNotification(reminder);
-	}
+
 	
 //	private boolean checkEventOverlap(TimeSpan eventTime, Frequency _frequency) {
 //		// TODO Auto-generated method stub
@@ -216,7 +208,7 @@ public class EventController {
 
 	private boolean checkStartTime(Timestamp startTime) {
 		// current date
-		Date currentDate = Clock.getInstance().newDate();
+		Date currentDate = cal.mClock.getChangedTimeDate();
 		Timestamp currentTime = new Timestamp(currentDate.getTime());
 		return startTime.after(currentTime);
 	}

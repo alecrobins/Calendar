@@ -8,7 +8,6 @@ import hkust.cse.calendar.apptstorage.LocationStorage;
 import hkust.cse.calendar.gui.AppScheduler;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Clock;
-import hkust.cse.calendar.unit.ClockConstants;
 import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.LocationList;
 
@@ -135,7 +134,7 @@ private void commonConstructer(CalGrid cal){
 	
 		setTitle("Manage TimeMachine");
 		
-		today = Clock.getInstance().newGregorianCalendar();
+		today = parent.mClock.getChangedTime();
 		currentY = today.get(GregorianCalendar.YEAR);
 		currentD = today.get(today.DAY_OF_MONTH);
 		int temp = today.get(today.MONTH) + 1;
@@ -323,20 +322,9 @@ private void commonConstructer(CalGrid cal){
 			currentD=day.getSelectedIndex()+1;
 			currentM=month.getSelectedIndex();
 			
-		System.out.println(Clock.getInstance().newDate());
-			
-		Date newdate= new Date();
-		newdate.setDate(currentD);
-		newdate.setYear(currentY-1900);
-		newdate.setMonth(currentM);
-		newdate.setHours(currentH);
-		newdate.setMinutes(currentMi);
-		newdate.setSeconds(currentS);
+			parent.mClock.changeTimeTo(currentY, currentM, currentD, currentH, currentMi, currentS);
+
 		
-		System.out.println(newdate);
-		Clock.getInstance().setDate(newdate);
-		
-		System.out.println(Clock.getInstance().newDate());
 
 		//		
 //		Clock.getInstance().newCalendar();
@@ -344,7 +332,7 @@ private void commonConstructer(CalGrid cal){
 //		
 		
 		//TODO: update the calendar grid gui
-		
+			parent.refreshCal();
 			
 		}
 	 else if(e.getSource() == finishBut){

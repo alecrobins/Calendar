@@ -7,7 +7,6 @@ import java.util.Date;
 import javax.swing.UIManager;
 
 import hkust.cse.calendar.gui.LoginDialog;
-import hkust.cse.calendar.unit.ClockConstants;
 
 // This is a test from alec's computer . . .
 // This is now  test from github. . . .
@@ -19,9 +18,6 @@ public class CalendarMain {
 	public static boolean logOut = false;
 	
 	public static void main(String[] args) {
-		// set the globabl constants
-		ClockConstants.SET_DATE = new Date();
-		ClockConstants.TIME_CHANGE = 60*60*1000*24*999912;
 		
 		while(true){
 			logOut = false;
