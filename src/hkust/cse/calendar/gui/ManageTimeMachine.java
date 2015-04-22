@@ -322,7 +322,7 @@ private void commonConstructer(CalGrid cal){
 			currentD=day.getSelectedIndex()+1;
 			currentM=month.getSelectedIndex();
 			
-			parent.mClock.changeTimeTo(currentY, currentM, currentD, currentH, currentMi, currentS);
+			parent.mClock.changeTimeTo(currentY - 1900, currentM, currentD, currentH, currentMi, currentS);
 
 		
 

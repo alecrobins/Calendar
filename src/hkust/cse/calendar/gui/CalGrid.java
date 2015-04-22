@@ -492,7 +492,7 @@ public class CalGrid extends JFrame implements ActionListener {
 	// refresh calendar after changing time in time machine
 	public void refreshCal(){
 		refreshTime();
-		currentM = mClock.getChangedTimeDate().getMonth();
+		currentM = mClock.getChangedTimeDate().getMonth() + 1;
 		year.setText(new Integer(currentY).toString());
 		CalGrid.this.setTitle("Desktop Calendar - No User - (" + currentY
 				+ "-" + currentM + "-" + currentD + ")");
