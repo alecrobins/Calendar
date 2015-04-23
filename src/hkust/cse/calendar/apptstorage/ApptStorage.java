@@ -13,6 +13,10 @@ public abstract class ApptStorage {
 	public User defaultUser;	//a user object, now is single user mode without login
 	public int mAssignedApptID;	//a global appointment ID for each appointment record
 
+	public HashMap<Integer, Appt> getApptsMap(){
+		return mAppts;
+	}
+	
 	public ApptStorage() {	//default constructor
 		mAppts = new HashMap<Integer,Appt>();
 	}

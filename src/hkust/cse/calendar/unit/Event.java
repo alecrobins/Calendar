@@ -35,7 +35,7 @@ public class Event extends Appt {
 	}
 	
 	// Partial Constructor (the minimally required information)
-	public Event(TimeSpan _eventTime, TimeSpan _eventEndTime, Frequency _eventFrequency)
+	public Event(TimeSpan _eventTime, Timestamp _eventEndTime, Frequency _eventFrequency)
 	{
 		super();
 		eventTime = _eventTime;
