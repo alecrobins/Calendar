@@ -35,10 +35,11 @@ public class Event extends Appt {
 	}
 	
 	// Partial Constructor (the minimally required information)
-	public Event(TimeSpan _eventTime, Timestamp _eventEndTime, Frequency _eventFrequency)
+	public Event(TimeSpan _eventTime, Frequency _eventFrequency)
 	{
 		super();
 		eventTime = _eventTime;
+		mTimeSpan = _eventTime;
 		eventDescription = null;
 		eventLocation = null;
 		eventReminder = null;
@@ -102,6 +103,7 @@ public class Event extends Appt {
 	}
 	public void setEventTime(TimeSpan eventTime) {
 		this.eventTime = eventTime;
+		this.mTimeSpan = eventTime;
 	}
 
 	public String toString() {

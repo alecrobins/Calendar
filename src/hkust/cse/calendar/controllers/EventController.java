@@ -113,14 +113,13 @@ public class EventController {
 	public void saveEvent(Event e){
 		switch (e.getEventFrequency()){
 		case ONETIME:
-			if (!eventOverlap(e, cal.controller.mApptStorage.getApptsMap())){
 			cal.controller.mApptStorage.SaveAppt(e);
-			}
 			break;
 		case WEEKLY:
 			Event eNew = e;
 			for (int i = 0; i < 260; i++)   { //5 years in weeks
-				cal.controller.mApptStorage.SaveAppt(eNew);
+				Event eNew1 = new Event(eNew.getEventTime(), eNew.getEventFrequency()) ;
+				cal.controller.mApptStorage.SaveAppt(eNew1);
 				TimeSpan curr = eNew.getEventTime();
 				Timestamp start = new Timestamp(curr.StartTime().getTime()+604800000);
 				Timestamp fin = new Timestamp(curr.EndTime().getTime()+604800000);
@@ -130,7 +129,8 @@ public class EventController {
 		case MONTHLY:
 			Event eNew1 = e;
 			for (int i = 0; i < 65; i++){   //5 years in groups of 4 weeks
-				cal.controller.mApptStorage.SaveAppt(eNew1);
+				Event eNew2 = new Event(eNew1.getEventTime(), eNew1.getEventFrequency()) ;
+				cal.controller.mApptStorage.SaveAppt(eNew2);
 				TimeSpan curr = eNew1.getEventTime();
 				Timestamp start = new Timestamp(curr.StartTime().getTime()+604800000*4);
 				Timestamp fin = new Timestamp(curr.EndTime().getTime()+604800000*4);
@@ -140,11 +140,12 @@ public class EventController {
 		case DAILY:
 			Event eNew2 = e;
 			for (int i = 0; i < 1825; i++){
-				cal.controller.mApptStorage.SaveAppt(eNew2);
+				Event eNew3 = new Event(eNew2.getEventTime(), eNew2.getEventFrequency()) ;
+				cal.controller.mApptStorage.SaveAppt(eNew3);
 				TimeSpan curr = eNew2.getEventTime();
-				Timestamp start = new Timestamp(curr.StartTime().getTime()+86400000);
+				Timestamp start1 = new Timestamp(curr.StartTime().getTime()+86400000);
 				Timestamp fin = new Timestamp(curr.EndTime().getTime()+86400000);
-				eNew2.setEventTime(new TimeSpan(start, fin));
+				eNew2.setEventTime(new TimeSpan(start1, fin));
 			}
 			break;
 		}
@@ -154,11 +155,13 @@ public class EventController {
 	// Helper functions
 	//
 
+	
 
 	// Returns true if there is overlap with other appts
 	public boolean eventOverlap(Event e, HashMap<Integer, Appt> as) {
 		for (Appt existing: as.values()){
 			Event exist = (Event) existing;
+			if (existing.TimeSpan().EndTime().getTime() > e.TimeSpan().StartTime().getTime()){
 			switch(e.getEventFrequency()){
 			case ONETIME:
 				if (!isEventValid(e, exist, "absTime")){
@@ -185,6 +188,7 @@ public class EventController {
 				}
 			}
 			break;
+		}
 		}
 		return false;
 	}
