@@ -437,7 +437,7 @@ public class AppList extends JPanel implements ActionListener {
 			return;
 		AppScheduler setAppDial = new AppScheduler("Modify", parent, apptTitle.getID(), parentLS);
 
-//		parent.controller.mApptStorage.RemoveAppt(apptTitle);
+		delete();
 		
 		setAppDial.updateSetApp(apptTitle);
 		setAppDial.show();

@@ -36,6 +36,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
+import javax.swing.Timer;
 import javax.swing.border.BevelBorder;
 import javax.swing.plaf.basic.BasicArrowButton;
 import javax.swing.plaf.metal.MetalBorders.Flush3DBorder;
@@ -244,12 +245,27 @@ public class CalGrid extends JFrame implements ActionListener {
 		//mCurrUser = getCurrUser(); // totally meaningless code
 		Appmenu.setEnabled(true);
 		Clockmenu.setEnabled(true);
+		
+		// Refreshes calendar every 0.5 second, in order to trigger notification
+		ActionListener actionL = new ActionListener(){
+			public void actionPerformed(ActionEvent actionE){
+				triggerReminder();
+			}
+		};
+		Timer timer = new Timer(500, actionL );
+		timer.start();
 
 		UpdateCal();
 		pack();				// sized the window to a preferred size
 		setVisible(true);	//set the window to be visible
 	}
 
+	// A function to trigger reminder
+	private void triggerReminder(){
+		refreshTime();
+		System.out.println(this.today.get(this.today.SECOND));
+	}
+	
 	public TableModel prepareTableModel() {
 
 		TableModel dataModel = new AbstractTableModel() {
@@ -493,7 +509,8 @@ public class CalGrid extends JFrame implements ActionListener {
 	// refresh calendar after changing time in time machine
 	public void refreshCal(){
 		refreshTime();
-		currentM = mClock.getChangedTimeDate().getMonth();
+		currentM = mClock.getChangedTimeDate().getMonth() + 1;
+		month.setSelectedIndex(currentM - 1);
 		year.setText(new Integer(currentY).toString());
 		CalGrid.this.setTitle("Desktop Calendar - No User - (" + currentY
 				+ "-" + currentM + "-" + currentD + ")");

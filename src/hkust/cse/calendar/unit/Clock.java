@@ -30,6 +30,9 @@ public class Clock {
 		Date d = new Date();
 		d.setTime(d.getTime() + timeDiff);
 		GregorianCalendar c = new GregorianCalendar(d.getYear() + 1900, d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
+		System.out.println(d.getYear());
+		System.out.println(d.getMonth());
+		System.out.println(d.getDate());
 		return c;
 	}
 	
