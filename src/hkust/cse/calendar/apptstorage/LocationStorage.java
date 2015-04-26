@@ -22,11 +22,6 @@ public class LocationStorage {
 		return locations.add(locationName);
 	}
 	
-	public void addLocation(String l){
-		System.out.println("ADDING");
-		locations.add(l);
-	}
-	
 	public boolean deleteLocation(String locationName){
 		return locations.remove(locationName);
 	}

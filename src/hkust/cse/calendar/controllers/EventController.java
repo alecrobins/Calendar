@@ -78,6 +78,7 @@ public class EventController {
 		TimeSpan eventTime = new TimeSpan(startTime, endTime);
 		
 		Date reminder = null;
+		
 		// Create the reminder if reminder isn't null
 		if(_reminderYear != null && _reminderMonth != null && _reminderDay != null
 				&& _reminderTimeH != null && _reminderTimeM != null){
@@ -154,7 +155,6 @@ public class EventController {
 		return true;
 	}
 	
-	@SuppressWarnings("deprecation")
 	public boolean isEventValid(Event given, Event existing, String compare){
 //		switch(compare){
 //		case "absTime":
@@ -196,6 +196,7 @@ public class EventController {
 //			return false;
 //		}
 //		return false;
+		
 		return true;
 	}
 	
