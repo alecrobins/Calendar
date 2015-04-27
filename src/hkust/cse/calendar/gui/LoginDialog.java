@@ -98,14 +98,27 @@ public class LoginDialog extends JFrame implements ActionListener
 		{
 			// When the button is clicked, check the user name and password, and try to log the user in
 			
+			//String name= userName.getText().trim();   getting the username
+			//String pass= password.getPassword().toString();   getting the password
+			
 			//login();
+			//User user=new User(name,pass); connect this user to the calendar
+			
 			User user = new User( "noname", "nopass");
+			
+			
+			
 			CalGrid grid = new CalGrid(new ApptStorageControllerImpl(new ApptStorageNullImpl(user)));
 			setVisible( false );
 		}
 		else if(e.getSource() == signupButton)
 		{
 			// Create a new account
+			
+			RegistrationDialog reg=new RegistrationDialog();
+			setVisible(false);
+			
+			
 		}
 		else if(e.getSource() == closeButton)
 		{
