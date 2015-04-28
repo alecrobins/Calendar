@@ -501,13 +501,13 @@ public class CalGrid extends JFrame implements ActionListener {
 	// refresh time
 	public void refreshTime(){
 		today = mClock.getChangedTime();
-		currentY = today.get(GregorianCalendar.YEAR);
-		currentD = today.get(today.DAY_OF_MONTH);
 	}
 	
 	// refresh calendar after changing time in time machine
 	public void refreshCal(){
 		refreshTime();
+		currentY = today.get(GregorianCalendar.YEAR);
+		currentD = today.get(today.DAY_OF_MONTH);
 		currentM = mClock.getChangedTimeDate().getMonth() + 1;
 		month.setSelectedIndex(currentM - 1);
 		year.setText(new Integer(currentY).toString());
