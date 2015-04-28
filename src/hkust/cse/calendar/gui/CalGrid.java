@@ -262,7 +262,21 @@ public class CalGrid extends JFrame implements ActionListener {
 	// A function to trigger reminder
 	private void triggerReminder(){
 		refreshTime();
-		System.out.println(this.today.get(this.today.SECOND));
+		TimeSpan note = controller.getNotification();
+		if (note == null) return;
+		if (note.StartTime().compareTo(mClock.getChangedTimeDate()) <= 0) {
+
+			DetailsDialog info = new DetailsDialog(controller.getAppt(note.EndTime()), "Notification");
+			info.setVisible(true);
+			
+			controller.deleteNotification(note);
+			
+			if (controller.getNotification() != null) {
+				if (note.StartTime().compareTo(controller.getNotification().StartTime()) == 0) {
+					triggerReminder();
+				}
+			}
+		}
 	}
 	
 	public TableModel prepareTableModel() {

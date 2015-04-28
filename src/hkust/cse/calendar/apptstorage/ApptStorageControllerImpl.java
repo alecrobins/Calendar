@@ -1,6 +1,8 @@
 package hkust.cse.calendar.apptstorage;
 
 
+import java.sql.Timestamp;
+
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
@@ -39,6 +41,11 @@ public class ApptStorageControllerImpl {
 		return mApptStorage.RetrieveAppts(joinApptID);
 	}
 	
+	// Get appointment by its start time
+	public Appt getAppt(Timestamp t) {
+		return mApptStorage.getAppt(t);
+	}
+	
 	/* Manage the Appt in the storage
 	 * parameters: the Appt involved, the action to take on the Appt */
 	public void ManageAppt(Appt appt, int action) {
@@ -69,5 +76,30 @@ public class ApptStorageControllerImpl {
 	// method used to see if appt is valid
 	public boolean isApptValid(Appt appt){
 		return mApptStorage.isApptValid(appt);
+	}
+	
+	// method used to store notification time
+	public void addNotification(TimeSpan ts){
+		mApptStorage.addNotification(ts);
+	}
+	
+	// method used to delete notification time
+	public void deleteNotification(TimeSpan ts){
+		mApptStorage.deleteNotification(ts);
+	}
+	
+	// method used to get notification time
+	public TimeSpan getNotification(){
+		return mApptStorage.getNotification();
+	}
+	
+	// method used to check whether there is a notification
+	public boolean isNotificationEmpty() {
+		return mApptStorage.isNotificationEmpty();
+	}
+	
+	// method used to get an appointment by its id
+	public Appt getAppt(int id){
+		return mApptStorage.getAppt(id);
 	}
 }
