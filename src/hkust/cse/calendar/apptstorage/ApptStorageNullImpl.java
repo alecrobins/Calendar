@@ -1,6 +1,9 @@
 package hkust.cse.calendar.apptstorage;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.TimeSpan;
@@ -18,6 +21,11 @@ public class ApptStorageNullImpl extends ApptStorage {
 	
 	public ApptStorageNullImpl(){
 		super();
+	}
+	
+	@Override
+	public Appt getAppt(Timestamp t) {
+		return mAppts.get((int) t.getTime());
 	}
 	
 	@Override
@@ -121,6 +129,55 @@ public class ApptStorageNullImpl extends ApptStorage {
 			}
 		}
 		return false;
+	}
+	
+	
+	@Override
+	public void addNotification(TimeSpan ts) {
+		// TODO Auto-generated method stub
+		for(TimeSpan t : mNotifications){
+			if(t.equals(ts)){
+				return;
+			}
+		}
+		mNotifications.add(ts);
+		mergeNotification();
+	}
+
+	@Override
+	public void deleteNotification(TimeSpan ts) {
+		// TODO Auto-generated method stub
+		mNotifications.remove(ts);
+	}
+
+	@Override
+	public void mergeNotification() {
+		// TODO Auto-generated method stub
+		Collections.sort(mNotifications, new Comparator<TimeSpan>(){
+			public int compare(TimeSpan t1, TimeSpan t2){
+				return (int) ((t1.StartTime().getTime() - t2.StartTime().getTime())/60000);
+			}
+		});
+	}
+
+	@Override
+	public TimeSpan getNotification() {
+		// TODO Auto-generated method stub
+		if(isNotificationEmpty())return null;
+		return mNotifications.get(0);
+	}
+
+	@Override
+	public boolean isNotificationEmpty() {
+		// TODO Auto-generated method stub
+		if(mNotifications.size() == 0)return true;
+		return false;
+	}
+
+	@Override
+	public Appt getAppt(int id) {
+		// TODO Auto-generated method stub
+		return mAppts.get(id);
 	}
 	
 
