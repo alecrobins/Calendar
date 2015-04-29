@@ -195,45 +195,45 @@ public class EventController {
 	}
 	@SuppressWarnings("deprecation")
 	public boolean isEventValid(Event given, Event existing, String compare){
-switch(compare){
-		case "absTime":
-			if (given.TimeSpan().EndTime().getTime() < existing.TimeSpan().StartTime().getTime()
-					|| given.TimeSpan().StartTime().getTime() > existing.TimeSpan().EndTime().getTime()){
-				return true;  //no overlap in absolute time
-			}
-			break;
-		case "date":
-			if (given.TimeSpan().EndTime().getDate() < existing.TimeSpan().StartTime().getDate()
-					|| given.TimeSpan().StartTime().getDate() > existing.TimeSpan().EndTime().getDate()){
-				return true;  //no overlap in date
-			}
-			break;
-		case "day":
-			if (given.TimeSpan().EndTime().getDay() < existing.TimeSpan().StartTime().getDay()
-					|| given.TimeSpan().StartTime().getDay() > existing.TimeSpan().EndTime().getDay()){
-				return true;  //no overlap in day
-			}
-			break;
-		case "time":
-			if (given.TimeSpan().EndTime().getHours() < existing.TimeSpan().StartTime().getHours()
-					|| given.TimeSpan().StartTime().getHours() > existing.TimeSpan().EndTime().getHours()){
-				return true;  //no overlap in hours
-			}
-
-			else if (given.TimeSpan().EndTime().getHours() == existing.TimeSpan().StartTime().getHours()){
-				if (given.TimeSpan().EndTime().getMinutes() < existing.TimeSpan().StartTime().getMinutes()){
-					return true;  //no overlap in mins
-				}
-			}
-			else if (given.TimeSpan().StartTime().getHours() == existing.TimeSpan().EndTime().getHours()){
-				if (given.TimeSpan().StartTime().getMinutes() > existing.TimeSpan().EndTime().getMinutes()){
-					return true;   //no overlap in mins
-				}
-			}
-			break;
-		default :
-			return false;
-		}
+//switch(compare){
+//		case "absTime":
+//			if (given.TimeSpan().EndTime().getTime() < existing.TimeSpan().StartTime().getTime()
+//					|| given.TimeSpan().StartTime().getTime() > existing.TimeSpan().EndTime().getTime()){
+//				return true;  //no overlap in absolute time
+//			}
+//			break;
+//		case "date":
+//			if (given.TimeSpan().EndTime().getDate() < existing.TimeSpan().StartTime().getDate()
+//					|| given.TimeSpan().StartTime().getDate() > existing.TimeSpan().EndTime().getDate()){
+//				return true;  //no overlap in date
+//			}
+//			break;
+//		case "day":
+//			if (given.TimeSpan().EndTime().getDay() < existing.TimeSpan().StartTime().getDay()
+//					|| given.TimeSpan().StartTime().getDay() > existing.TimeSpan().EndTime().getDay()){
+//				return true;  //no overlap in day
+//			}
+//			break;
+//		case "time":
+//			if (given.TimeSpan().EndTime().getHours() < existing.TimeSpan().StartTime().getHours()
+//					|| given.TimeSpan().StartTime().getHours() > existing.TimeSpan().EndTime().getHours()){
+//				return true;  //no overlap in hours
+//			}
+//
+//			else if (given.TimeSpan().EndTime().getHours() == existing.TimeSpan().StartTime().getHours()){
+//				if (given.TimeSpan().EndTime().getMinutes() < existing.TimeSpan().StartTime().getMinutes()){
+//					return true;  //no overlap in mins
+//				}
+//			}
+//			else if (given.TimeSpan().StartTime().getHours() == existing.TimeSpan().EndTime().getHours()){
+//				if (given.TimeSpan().StartTime().getMinutes() > existing.TimeSpan().EndTime().getMinutes()){
+//					return true;   //no overlap in mins
+//				}
+//			}
+//			break;
+//		default :
+//			return false;
+//		}
 		return false;
 	}
 
