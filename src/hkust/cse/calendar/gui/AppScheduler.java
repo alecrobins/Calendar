@@ -647,7 +647,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 		System.out.println("Creating event . . . ");
 		
 		// CREATE THE EVENT
-		// returns an EventReturnMessage - determines if succesfull or details an error
+		// returns an EventReturnMessage - determines if successful or details an error
 		EventReturnMessage returnMessage = eventController.createEvent(
 				_year, _month, _day,
 				_sTimeH, _sTimeM, _eTimeH, _eTimeM,
