@@ -54,9 +54,18 @@ class AppCellRenderer extends DefaultTableCellRenderer {
 				setBackground(new Color(153, 204, 255));
 			else
 				setBackground(new Color(204, 204, 255));
+			if (row == 55555)    //codeword for multipleuserschedule!!
+				setBackground(Color.GREEN);
 			setForeground(Color.black);
 
 		}
+		if (row == 55555){   //codeword for multipleuserschedule!!
+			if (col != 0)
+				setHorizontalAlignment(SwingConstants.LEFT);
+			else
+				setHorizontalAlignment(SwingConstants.RIGHT);
+			}
+		else {
 		if (col == 2 || col == 5)
 			setFont(f1);
 		if (col != 0 && col != 3)
@@ -72,6 +81,7 @@ class AppCellRenderer extends DefaultTableCellRenderer {
 				setForeground(currColor);
 			}
 
+		}
 		}
 		setVerticalAlignment(SwingConstants.TOP);
 	}
@@ -115,7 +125,7 @@ public class AppList extends JPanel implements ActionListener {
 	public final static int NOT_COLORED = 0;
 	private int[][] cellCMD = new int[20][2];
 	private Color[][] cellColor = new Color[20][2];
-	public Appt selectedAppt=null;
+	public Appt selectedAppt = null;
 	private MouseEvent tempe;
 	public AppList() {
 		setLayout(new BorderLayout());
@@ -332,7 +342,7 @@ public class AppList extends JPanel implements ActionListener {
 
 	}
 
-	// colouring the appointment list
+	// coloring the appointment list
 	public void addAppt(Appt appt) {
 		System.out.println("reached");
 		Color color;
@@ -378,7 +388,6 @@ public class AppList extends JPanel implements ActionListener {
 				} else {
 					cellCMD[pos[0]][1] = COLORED;
 					cellColor[pos[0]][1] = color;
-					
 				}
 
 			}
@@ -507,6 +516,7 @@ public class AppList extends JPanel implements ActionListener {
 		if ((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
 			pop.show(e.getComponent(), e.getX(), e.getY());
 	}
+	
 	private void releaseResponse(MouseEvent e) {
 		
 		releaseRow = tableView.getSelectedRow();
@@ -514,6 +524,7 @@ public class AppList extends JPanel implements ActionListener {
 		if ((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
 			pop.show(e.getComponent(), e.getX(), e.getY());
 	}
+	
 	private void calculateDrag(MouseEvent e){
 		
 		if(releaseRow==pressRow){		
