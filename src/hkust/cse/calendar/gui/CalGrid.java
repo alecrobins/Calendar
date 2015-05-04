@@ -372,7 +372,7 @@ public class CalGrid extends JFrame implements ActionListener {
 					tableView.setModel(t);
 					tableView.repaint();
 				}else if (e.getActionCommand().equals("Change Time")) {
-					System.out.println("CHANG E TIME");
+					System.out.println("CHANGE TIME");
 					ManageTimeMachine t = new ManageTimeMachine(CalGrid.this);
 					t.setLocationRelativeTo(null);
 					t.show();
