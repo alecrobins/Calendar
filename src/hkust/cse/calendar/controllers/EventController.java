@@ -96,7 +96,8 @@ public class EventController {
 
 
 		// MAKE THE EVENT
-		Event newEvent = new Event(eventTime, _titleField, _titleField, location, reminder, _detailArea, frequency);
+		// delay the saving of the id to the creation
+		Event newEvent = new Event(eventTime, _titleField, _titleField, location.getLocationID(), reminder, _detailArea, frequency);
 
 		//TODO: need to check if an event is valid 
 		// Check for overlap

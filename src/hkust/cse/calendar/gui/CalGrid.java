@@ -98,7 +98,7 @@ public class CalGrid extends JFrame implements ActionListener {
 			"President's Day (US)\n",
 			"",
 			"Ching Ming Festival\nGood Friday\nThe day following Good Friday\nEaster Monday\n",
-			"Labour Day\nThe Buddhaþý™s Birthday\nTuen Ng Festival\n",
+			"Labour Day\nThe Buddhaï¿½ï¿½ï¿½s Birthday\nTuen Ng Festival\n",
 			"",
 			"Hong Kong Special Administrative Region Establishment Day\n",
 			"Civic Holiday(CAN)\n",
@@ -552,7 +552,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		System.out.println(today.getTime());*/
 		
 		if (mCurrUser != null) {
-			mCurrTitle = "Desktop Calendar - " + mCurrUser.ID() + " - ";
+			mCurrTitle = "Desktop Calendar - " + mCurrUser.getUsername() + " - ";
 			this.setTitle(mCurrTitle + "(" + currentY + "-" + currentM + "-"
 					+ currentD + ")");
 			Appt[] monthAppts = null;

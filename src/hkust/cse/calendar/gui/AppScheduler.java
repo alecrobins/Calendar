@@ -741,7 +741,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 	
 	public String getCurrentUser()		// get the id of the current user
 	{
-		return this.parent.mCurrUser.ID();
+		return this.parent.mCurrUser.getUsername();
 	}
 	
 	private void allDisableEdit(){
