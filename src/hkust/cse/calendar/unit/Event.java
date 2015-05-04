@@ -19,7 +19,7 @@ public class Event extends Appt {
 	private TimeSpan eventTime;
 	private String eventDescription;
 	private Location eventLocation;
-	private Date eventReminder;
+	private TimeSpan eventReminder;
 	private String additionalEventDescription;
 	private Frequency eventFrequency;
 	
@@ -49,7 +49,7 @@ public class Event extends Appt {
 	
 	// Complete Constructor
 	public Event(TimeSpan _eventTime, String _title, String _eventDescription, Location _eventLocation,
-			Date _eventReminder, String _additionalEventDescription, Frequency _eventFrequency)
+			TimeSpan _eventReminder, String _additionalEventDescription, Frequency _eventFrequency)
 	{
 		super();
 		eventTime = _eventTime;
@@ -72,7 +72,7 @@ public class Event extends Appt {
 	public Location getEventLocation() {
 		return eventLocation;
 	}
-	public Date getEventReminder() {
+	public TimeSpan getEventReminder() {
 		return eventReminder;
 	}
 	public String getAdditionalEventDescription() {
@@ -89,7 +89,7 @@ public class Event extends Appt {
 	public void setEventLocation(Location l) {
 		eventLocation = l;
 	}
-	public void setEventReminder(Date r) {
+	public void setEventReminder(TimeSpan r) {
 		eventReminder = r;
 	}
 	public void setAdditionalEventDescription(String s) {
@@ -121,6 +121,14 @@ public class Event extends Appt {
 		mInfo;
 		
 		return event;
+	}
+	
+	public TimeSpan getNotification() {
+		return eventReminder;
+	}
+	
+	public void setNotification(TimeSpan ts) {
+		eventReminder = ts;
 	}
 	
 

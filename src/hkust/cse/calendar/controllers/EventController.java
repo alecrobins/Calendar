@@ -46,7 +46,8 @@ public class EventController {
 			String _year, String _month, String _day,
 			String _sTimeH, String _sTimeM, String _eTimeH, String _eTimeM,
 			String _detailArea, String _titleField,
-			String _reminderYear, String _reminderMonth, String _reminderDay, String _reminderTimeH, String _reminderTimeM,
+			String _reminderTimeH, String _reminderTimeM,
+			String _reminderYear, String _reminderMonth, String _reminderDay,
 			String _frequency, String _location, CalGrid parentGrid){
 
 		// check if required fields were met
@@ -73,14 +74,16 @@ public class EventController {
 
 		TimeSpan eventTime = new TimeSpan(startTime, endTime);
 
-		Date reminder = null;
+		TimeSpan reminder = null;
 		// Create the reminder if reminder isn't null
 		if(_reminderYear != null && _reminderMonth != null && _reminderDay != null
 				&& _reminderTimeH != null && _reminderTimeM != null){
-			reminder = formatTime(_reminderYear, _reminderMonth, _reminderDay, _reminderTimeH, _reminderTimeM);
+			Date noteTime = formatTime(_reminderYear, _reminderMonth, _reminderDay, _reminderTimeH, _reminderTimeM);
+			System.out.println("Y:" + _reminderYear + " M:" +_reminderMonth + " D:" +_reminderDay + " H:" +_reminderTimeH + " Min:" +_reminderTimeM);
 			// check that reminder is before the start time
-			if(startTime.before(reminder))
+			if(startTime.before(noteTime))
 				return EventReturnMessage.ERROR_REMINDER;
+			reminder = new TimeSpan(new Timestamp(noteTime.getTime()), startTime);
 		}
 
 		// create the frequency
@@ -111,6 +114,10 @@ public class EventController {
 	}
 
 	public void saveEvent(Event e){
+		// Add notification in to notification array
+		cal.controller.addNotification(e.getNotification());
+		System.out.println("Notification added successfully");
+		
 		switch (e.getEventFrequency()){
 		case ONETIME:
 			cal.controller.mApptStorage.SaveAppt(e);

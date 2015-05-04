@@ -8,12 +8,6 @@ import javax.swing.UIManager;
 
 import hkust.cse.calendar.gui.LoginDialog;
 
-// This is a test from alec's computer . . .
-// This is now  test from github. . . .
-// Are you working??????
-
-// I am making a change
-
 public class CalendarMain {
 	public static boolean logOut = false;
 	
