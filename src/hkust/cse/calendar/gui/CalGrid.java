@@ -80,6 +80,8 @@ public class CalGrid extends JFrame implements ActionListener {
 			"November", "December" };
 	private JTable tableView;
 	private AppList applist;
+	private MultipleUserSchedule mus;
+	
 	public static final int[] monthDays = { 31, 28, 31, 30, 31, 30, 31, 31, 30,
 			31, 30, 31 };
 	private JTextPane note;
@@ -131,6 +133,9 @@ public class CalGrid extends JFrame implements ActionListener {
 		applist = new AppList();
 		applist.setParent(this);
 
+//		mus = new MultipleUserSchedule();
+//		mus.setParent(this);
+		
 		setJMenuBar(createMenuBar());
 
 		mClock = new Clock();

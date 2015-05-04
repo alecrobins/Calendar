@@ -1,5 +1,6 @@
 package hkust.cse.calendar.gui;
 
+import hkust.cse.calendar.apptstorage.LocationStorage;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.User;
 
@@ -50,6 +51,9 @@ public class MultipleUserSchedule {
 	Object[][] data;
 	String[] columnTitles;
 	JTable tableView;
+	
+	private CalGrid parent;
+	private LocationStorage parentLS;
 
 	//public static final int[] monthDays = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 	//january, march, may, jul, aug, october, dec --31
@@ -168,6 +172,14 @@ public class MultipleUserSchedule {
 				NewAppt();
 			}
 		});
+		
+		mi = (JMenuItem) pop.add(new JMenuItem("Pick Slot"));
+
+		mi.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {				
+				pickSlot();
+			}
+		});
 
 		mi = (JMenuItem) pop.add(new JMenuItem("Delete"));
 
@@ -196,7 +208,15 @@ public class MultipleUserSchedule {
 		});
 	}
 	
-	private void NewAppt() {   // need to implement these bad boyzz
+	public void setParent(CalGrid grid) {
+		parent = grid;
+		parentLS = parent.locationStorage;
+	}
+	
+	private void NewAppt() {   // only initiator can use this
+	}
+	private void pickSlot() {
+		GroupSlotPicker gsp = new GroupSlotPicker("New Slot", parent, parentLS);
 	}
 	private void delete() {
 	}
