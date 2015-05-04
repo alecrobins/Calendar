@@ -10,9 +10,13 @@ import hkust.cse.calendar.unit.Event.Frequency;
 import java.lang.reflect.Array;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.text.MessageFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,6 +25,9 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	private int interval = 60;
 	private User defaultUser = null;
 	
+	//TODO: eventually switch out dummyUser with the default User 
+	private User dummyUser = new User(1, "pizzapi", "1234", true);
+
 	public ApptStorageSQLImpl( User user )
 	{
 		defaultUser = user;
@@ -29,13 +36,17 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	public ApptStorageSQLImpl(){
 		super();
 	}
-	
 
 	@Override
 	public Appt getAppt(Timestamp t) {
-		
+				
+		long time = t.getTime();
 		Connection c = null;
 	    Statement stmt = null;
+	    
+	    // return the event
+	    Event event = null;
+	    
 	    try {
 	      Class.forName("org.sqlite.JDBC");
 	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
@@ -43,43 +54,121 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      System.out.println("Opened database successfully");
 	      
 	      stmt = c.createStatement();
-	      String sql = "UPDATE USER set USERNAME = 'pizzapi', EMAIL = 'pizza@pi.com' where ID=1;";
-	      stmt.executeUpdate(sql);
+	      String sql = 
+	    		  "select distinct e.id as 'id', e.startTime as 'startTime', e.endTime as 'endTime', " +
+	    		  "e.eventTitle as 'title', e.eventDescription as 'description', " +
+	    		  "e.frequency as 'frequency', e.eventReminderStart as 'reminderStart', " +
+	    		  "e.eventReminderEnd as 'reminderEnd', e.locationID as 'locationID', " +
+	    		  "e.isGroup as 'isGroup', e.isPublic as 'isPublic' " +
+	    		  "from event e, userEvent ue " +
+	    		  "where ue.userID = "+ dummyUser.getID() +
+	    		  " and e.id = ue.eventID and e.startTime = " +
+	    		  time + ";";
 	      
-	      sql = "INSERT INTO USER (ID,USERNAME,PASSWORD,FIRST_NAME,LAST_NAME,EMAIL,ISADMIN) " +
-                  "VALUES (null, 'thereal', 'passtheowrld', 'real', 'name', 'a@example.com', 'true' );"; 
-	      stmt.executeUpdate(sql);
+	      ResultSet rs = stmt.executeQuery( sql );
 	      
-	      c.commit();
-
-	      
-	      ResultSet rs = stmt.executeQuery( "SELECT * FROM USER;" );
+	      // go through results
 	      while ( rs.next() ) {
-	         int id = rs.getInt("id");
-	         String  username = rs.getString("username");
-	         String  email = rs.getString("email");
-	         System.out.println( "ID = " + id );
-	         System.out.println( "USERNAME = " + username );
-	         System.out.println( "EMAIL = " + email );
-	         System.out.println();
+	    	 event = formatEvent(rs);
+	         System.out.println(event.toString());
 	      }
+	      
 	      rs.close();
 	      stmt.close();
 	      c.close();
 		    
-	    } catch ( Exception e ) {
-	      System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+	    } catch ( Exception e1 ) {
+	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
 	      System.exit(0);
 	    }
-	    System.out.println("Opened database successfully");
-	    
-		return null;
+	    	    
+		return event;
 	}
 
+
+	public Location getLocation(int locationID) {
+		
+		Connection c = null;
+	    Statement stmt = null;
+	    
+	    // return the event
+	    Location location = null;
+	    
+	    try {
+	      Class.forName("org.sqlite.JDBC");
+	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	      c.setAutoCommit(false);
+	      System.out.println("Opened database successfully");
+	      
+	      stmt = c.createStatement();
+	      String sql = "select id, name, isGroupFacility from location where id = " + locationID;
+	      
+	      ResultSet rs = stmt.executeQuery( sql );
+	      
+	      // go through results
+	      while ( rs.next() ) {
+	    	  location = formatLocation(rs);
+	         System.out.println(location.toString());
+	      }
+	      
+	      rs.close();
+	      stmt.close();
+	      c.close();
+		    
+	    } catch ( Exception e1 ) {
+	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+	      System.exit(0);
+	    }
+	    	    
+		return location;
+	}
+	
 	@Override
 	public void SaveAppt(Appt appt) {
-		// TODO Auto-generated method stub
-		
+		SaveAppt((Event) appt);
+	}
+	
+	public void SaveAppt(Event _event) {
+		Connection c = null;
+	    Statement stmt = null;
+
+	    try {
+	      Class.forName("org.sqlite.JDBC");
+	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	      c.setAutoCommit(false);
+	      System.out.println("Opened database successfully");
+	      
+	      stmt = c.createStatement();
+	      PreparedStatement query;
+	      
+	      query = c.prepareStatement("insert into event (id, startTime, endTime, eventTitle, eventDescription, eventReminderStart, eventReminderEnd, frequency, locationID, isGroup, isPublic) " +
+		    		"values (null, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+	      
+	      // assign variables
+	      query.setTimestamp(1, _event.getEventTime().StartTime());
+	      query.setTimestamp(2, _event.getEventTime().EndTime());
+	      query.setString(3, _event.getTitle());
+	      query.setString(4, _event.getEventDescription());
+	      query.setTimestamp(5, _event.getEventReminder().StartTime());
+	      query.setTimestamp(6, _event.getEventReminder().EndTime());
+	      query.setInt(7, _event.getEventFrequency().getValue());
+	      query.setInt(8, _event.getEventLocationID());
+	      query.setBoolean(9, _event.getIsGroup());
+	      query.setBoolean(10, _event.getIsPublic());
+	      
+	      boolean done = query.execute();
+	      
+	      // commit
+	      c.commit();
+	      
+	      query.close();
+	      stmt.close();
+	      c.close();
+		    
+	    } catch ( Exception e1 ) {
+	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+	      System.exit(0);
+	    }
 	}
 
 	@Override
@@ -275,7 +364,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	}
 	
 	// create user
-	private User createUser(String id, String pass){
+	private User createUser(String username, String password, boolean isAdmin){
 		return null;
 	}
 	
@@ -283,5 +372,43 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	private boolean isUserValid(String username, String password){
 		return false;
 	}
+	
+	// helper functions
+	// =====================
+	private Event formatEvent(ResultSet rs) throws SQLException {
+		 // Gather data
+  	  
+   	 	int id = rs.getInt("id");
+        Timestamp startTime = new Timestamp(rs.getInt("startTime"));
+        Timestamp endTime = new Timestamp(rs.getInt("endTime") );
+        String eventTitle = rs.getString("title");
+        String  eventDescription = rs.getString("description");
+        int frequencyNum = rs.getInt("frequency");
+        Timestamp eventReminderStart = new Timestamp(rs.getInt("reminderStart"));
+        Timestamp eventReminderEnd = new Timestamp(rs.getInt("reminderEnd") );
+        int locationID = rs.getInt("locationID");
+        boolean isGroup = rs.getBoolean("isGroup");
+        boolean isPublic = rs.getBoolean("isPublic");
+        
+        // set the event
+        TimeSpan eventTime = new TimeSpan(startTime, endTime);
+        TimeSpan reminder = new TimeSpan(eventReminderStart, eventReminderEnd);
+        Frequency frequency = Frequency.values()[frequencyNum];
+        
+        System.out.println(id);
+        
+        Event newEvent = new Event(eventTime, eventTitle, eventDescription, locationID, reminder, "", frequency);
+        newEvent.setEventID(id);
+        return newEvent;
+	}
+	
+	private Location formatLocation(ResultSet rs) throws SQLException {
+		int id = rs.getInt("id");
+		String name = rs.getString("name");
+		boolean isGroup = rs.getBoolean("isGroupFacility");
+		return new Location(id, name, isGroup);
+	}
+
+
 
 }

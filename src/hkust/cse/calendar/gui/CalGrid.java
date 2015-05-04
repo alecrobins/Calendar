@@ -557,7 +557,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		System.out.println(today.getTime());*/
 		
 		if (mCurrUser != null) {
-			mCurrTitle = "Desktop Calendar - " + mCurrUser.ID() + " - ";
+			mCurrTitle = "Desktop Calendar - " + mCurrUser.getUsername() + " - ";
 			this.setTitle(mCurrTitle + "(" + currentY + "-" + currentM + "-"
 					+ currentD + ")");
 			Appt[] monthAppts = null;

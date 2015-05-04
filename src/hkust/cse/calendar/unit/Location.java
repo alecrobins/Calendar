@@ -8,9 +8,16 @@ public class Location{
 	// contains the index of the selected index
 	private String name;
 	private int locationID;
+	private boolean isGroupFacility;
 	
 	public Location(String _name) {
 		name = _name;
+	}
+	
+	public Location(int _id, String _name, boolean _isGroupFacility) {
+		name = _name;
+		locationID = _id;
+		isGroupFacility = _isGroupFacility;
 	}
 
 	public String getName() {

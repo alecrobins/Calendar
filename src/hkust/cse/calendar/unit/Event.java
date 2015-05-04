@@ -12,23 +12,42 @@ public class Event extends Appt {
 	// control the frequency of the event
 	//The event frequency can be one-time, daily, weekly, or monthly
 	public enum Frequency {
-		ONETIME, DAILY, WEEKLY, MONTHLY
+		ONETIME(0), DAILY(1), WEEKLY(2), MONTHLY(3);
+		 
+		private final int value;
+
+	    private Frequency(int value) {
+	        this.value = value;
+	    }
+
+	    public int getValue() {
+	        return value;
+	    }
 	}
 	
 	// Private data members
 	private TimeSpan eventTime;
 	private String eventDescription;
-	private Location eventLocation;
+//	private Location eventLocation;
+	private int eventLocationID;
 	private TimeSpan eventReminder;
 	private String additionalEventDescription;
 	private Frequency eventFrequency;
+	
+	// determines if this event is a group event
+	private boolean isGroup;
+	// determine if this event is public
+	private boolean isPublic;
+	
+	// the id of the event
+	private int id;
 	
 	// Constructors - set empty parameters
 	public Event() {
 		super();
 		eventTime = null;
 		eventDescription = null;
-		eventLocation = null;
+		eventLocationID = 0;
 		eventReminder = null;
 		additionalEventDescription = null;
 		eventFrequency = null;
@@ -41,20 +60,21 @@ public class Event extends Appt {
 		eventTime = _eventTime;
 		mTimeSpan = _eventTime;
 		eventDescription = null;
-		eventLocation = null;
+		eventLocationID = 0;
 		eventReminder = null;
 		additionalEventDescription = null;
 		eventFrequency = _eventFrequency;
 	}
 	
 	// Complete Constructor
-	public Event(TimeSpan _eventTime, String _title, String _eventDescription, Location _eventLocation,
+	public Event(TimeSpan _eventTime, String _title, String _eventDescription, int _eventLocationID,
 			TimeSpan _eventReminder, String _additionalEventDescription, Frequency _eventFrequency)
 	{
 		super();
 		eventTime = _eventTime;
 		eventDescription = _title;
-		eventLocation = _eventLocation;
+//		eventLocation = _eventLocation;
+		eventLocationID = _eventLocationID;
 		eventReminder = _eventReminder;
 		additionalEventDescription = _additionalEventDescription;
 		eventFrequency = _eventFrequency;
@@ -69,8 +89,8 @@ public class Event extends Appt {
 	public String getEventDescription() {
 		return eventDescription;
 	}
-	public Location getEventLocation() {
-		return eventLocation;
+	public int getEventLocationID() {
+		return eventLocationID;
 	}
 	public TimeSpan getEventReminder() {
 		return eventReminder;
@@ -81,13 +101,17 @@ public class Event extends Appt {
 	public Frequency getEventFrequency() {
 		return eventFrequency;
 	}
+	public int getEventID(){
+		return id;
+	}
+	
 	
 	// Setters
 	public void setEventDescription(String s) {
 		eventDescription = s; 
 	}
-	public void setEventLocation(Location l) {
-		eventLocation = l;
+	public void setEventLocation(int l) {
+		eventLocationID = l;
 	}
 	public void setEventReminder(TimeSpan r) {
 		eventReminder = r;
@@ -105,12 +129,17 @@ public class Event extends Appt {
 		this.eventTime = eventTime;
 		this.mTimeSpan = eventTime;
 	}
+	public void setEventID(int i){
+		id = i;
+	}
 
 	public String toString() {
 			
-		String event = eventTime.toString() + " " +
+		String event =
+		"ID: " + id + "  " +
+		eventTime.toString() + " " +
 		eventDescription + " " +
-		eventLocation+ " " +
+		eventLocationID+ " " +
 		eventReminder + " " +
 		additionalEventDescription + " " +
 		eventFrequency + " " +
@@ -129,6 +158,22 @@ public class Event extends Appt {
 	
 	public void setNotification(TimeSpan ts) {
 		eventReminder = ts;
+	}
+
+	public boolean getIsGroup() {
+		return isGroup;
+	}
+
+	public void setIsGroup(boolean isGroup) {
+		this.isGroup = isGroup;
+	}
+
+	public boolean getIsPublic() {
+		return isPublic;
+	}
+
+	public void setIsPublic(boolean isPublic) {
+		this.isPublic = isPublic;
 	}
 	
 
