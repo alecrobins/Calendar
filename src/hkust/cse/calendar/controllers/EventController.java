@@ -124,7 +124,7 @@ public class EventController {
 			break;
 		case WEEKLY:
 			Event eNew = e;
-			for (int i = 0; i < 52; i++)   { //5 years in weeks
+			for (int i = 0; i < 52; i++)   { //1 years in weeks
 				Event eNew1 = new Event(eNew.getEventTime(), eNew.getEventFrequency()) ;
 				cal.controller.mApptStorage.SaveAppt(eNew1);
 				TimeSpan curr = eNew.getEventTime();
@@ -135,7 +135,7 @@ public class EventController {
 			break;
 		case MONTHLY:
 			Event eNew1 = e;
-			for (int i = 0; i < 13; i++){   //5 years in groups of 4 weeks
+			for (int i = 0; i < 13; i++){   //1 years in groups of 4 weeks
 				Event eNew2 = new Event(eNew1.getEventTime(), eNew1.getEventFrequency()) ;
 				cal.controller.mApptStorage.SaveAppt(eNew2);
 				TimeSpan curr = eNew1.getEventTime();

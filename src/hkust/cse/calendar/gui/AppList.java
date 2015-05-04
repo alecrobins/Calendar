@@ -54,9 +54,18 @@ class AppCellRenderer extends DefaultTableCellRenderer {
 				setBackground(new Color(153, 204, 255));
 			else
 				setBackground(new Color(204, 204, 255));
+			if (row == 55555)    //codeword for multipleuserschedule!!
+				setBackground(Color.GREEN);
 			setForeground(Color.black);
 
 		}
+		if (row == 55555){   //codeword for multipleuserschedule!!
+			if (col != 0)
+				setHorizontalAlignment(SwingConstants.LEFT);
+			else
+				setHorizontalAlignment(SwingConstants.RIGHT);
+			}
+		else {
 		if (col == 2 || col == 5)
 			setFont(f1);
 		if (col != 0 && col != 3)
@@ -72,6 +81,7 @@ class AppCellRenderer extends DefaultTableCellRenderer {
 				setForeground(currColor);
 			}
 
+		}
 		}
 		setVerticalAlignment(SwingConstants.TOP);
 	}
