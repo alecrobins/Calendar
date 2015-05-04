@@ -26,10 +26,10 @@ public class test {
 		
 		
 		List<Appt> appList = new LinkedList<Appt>();
-		Timestamp a = new Timestamp(900000);
-		for (int m = 0; m < 2; m++){
+		Timestamp a = new Timestamp(0);
+		for (int m = 0; m < 5; m++){
 		Appt standard = new Appt();
-		Timestamp b = new Timestamp(a.getTime() + 900000*8);
+		Timestamp b = new Timestamp(a.getTime() + 900000*10);
 		TimeSpan d = new TimeSpan(a, b);
 		standard.setTimeSpan(d);
 		appList.add(standard);

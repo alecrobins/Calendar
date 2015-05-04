@@ -7,14 +7,24 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.border.TitledBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
@@ -22,8 +32,20 @@ import javax.swing.table.TableModel;
 public class MultipleUserSchedule {
 
 	//input:  week of:  mm/dd where the dd is the date of a given monday
-	int currMonth;
-	int currDate;
+	private MouseEvent tempe;
+	public int previousRow;
+	public int previousCol;
+	public int currentRow;
+	public int currentCol;
+	public int currentD;
+	public int currentM;
+	public int currentY;
+	private int pressRow;
+	private int pressCol;
+	private int releaseRow;
+	private int releaseCol;
+	boolean[] rowBool;
+	public JPopupMenu pop;
 	int numDays;
 	Object[][] data;
 	String[] columnTitles;
@@ -42,6 +64,7 @@ public class MultipleUserSchedule {
 
 	//dates = list of Timestamps of 8am's of each date
 	//15 minutes = 900,000 milliseconds
+	
 	public boolean[] isRowAvailable(HashMap<User, List<Appt>> userMap, List<Timestamp> dates){
 		boolean[] rowVal = new boolean[(1+dates.size())*40];
 		for (int i = 0; i < rowVal.length; i++){   //initialize to true
@@ -66,10 +89,15 @@ public class MultipleUserSchedule {
 				}
 			}
 		}
+		rowBool = rowVal;
 		return rowVal;
 	}
 	
 	public MultipleUserSchedule(HashMap<User, List<Appt>> userMap, List<Timestamp> dates){
+		previousRow = 0;
+		previousCol = 0;
+		currentRow = 0;
+		currentCol = 0;
 		numDays = dates.size();
 		final boolean[] rowVals = isRowAvailable(userMap, dates);
 		int startMonth = dates.get(0).getMonth();
@@ -94,17 +122,89 @@ public class MultipleUserSchedule {
 
 			}
 		};
+		tableView.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		tableView.setRowSelectionAllowed(false);
+		tableView.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				pressResponse(e);
+			}
+
+			public void mouseReleased(MouseEvent e) {
+				releaseResponse(e);
+				if(e.getButton()==1)
+				calculateDrag(e);
+			}
+		});
+		
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JScrollPane scrollPane = new JScrollPane(tableView);
 		scrollPane.getViewport().setViewPosition(new Point(0,0));
 		frame.add(scrollPane, BorderLayout.CENTER);
-		frame.setSize(100*(1+numDays), 680);
+		frame.setSize(100*(1+numDays), 700);
 		frame.setVisible(true);
+		
+		frame.setLayout(new BorderLayout());
+		currentRow = 0;
+		currentCol = 0;
+		
+		TitledBorder b = BorderFactory
+				.createTitledBorder("Group Availability");
+		b.setTitleColor(new Color(102, 0, 51));
+		Font f = new Font("Helvetica", Font.BOLD + Font.ITALIC, 11);
+		b.setTitleFont(f);
+		scrollPane.setBorder(b);
+		
+		Font f1 = new Font("Helvetica", Font.ITALIC, 11);
+		pop = new JPopupMenu();
+		pop.setFont(f1);
 
+		JMenuItem mi;
+		mi = (JMenuItem) pop.add(new JMenuItem("New"));
+
+		mi.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {				
+				NewAppt();
+			}
+		});
+
+		mi = (JMenuItem) pop.add(new JMenuItem("Delete"));
+
+		mi.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				delete();
+			}
+		});
+
+		mi = (JMenuItem) pop.add(new JMenuItem("Modify"));
+		mi.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				modify();
+			}
+		});
+		
+		pop.add(new JPopupMenu.Separator());
+		JMenuItem j = new JMenuItem("Details");
+		j.setFont(f);
+		pop.add(j);
+
+		j.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				getDetail();
+			}
+		});
 	}
-
+	
+	private void NewAppt() {   // need to implement these bad boyzz
+	}
+	private void delete() {
+	}
+	private void modify() {
+	}
+	private void getDetail() {
+	}
+	
 	public TableModel prepareTableModel() {
 
 		TableModel dataModel = new AbstractTableModel() {
@@ -139,6 +239,36 @@ public class MultipleUserSchedule {
 		};
 		return dataModel;
 	}
+	
+	private void pressResponse(MouseEvent e) {
+		tempe = e;
+		pressRow = tableView.getSelectedRow();
+		pressCol = tableView.getSelectedColumn();
+		if ((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
+			pop.show(e.getComponent(), e.getX(), e.getY());
+	}
+	private void releaseResponse(MouseEvent e) {
+		
+		releaseRow = tableView.getSelectedRow();
+		releaseCol = tableView.getSelectedColumn();
+		if ((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
+			pop.show(e.getComponent(), e.getX(), e.getY());
+	}
+	private void calculateDrag(MouseEvent e){
+		if(releaseRow==pressRow){		
+			currentRow = tableView.getSelectedRow()+tableView.getSelectedRowCount()-1;			
+		}else{
+			currentRow = releaseRow;
+			
+		}
+		
+		if(releaseCol==pressCol){			
+			currentCol = tableView.getSelectedColumn()+tableView.getSelectedColumnCount()-1;
+		}else{
+			currentCol = releaseCol;
+		}
+	}
+		
 
 	public void getDataArray(Object[][] data) {
 		int tam = 480;
@@ -159,56 +289,63 @@ public class MultipleUserSchedule {
 			}
 		}
 	}
+	
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == tableView) {
+			pop.show(tableView, currentRow * 20, currentRow * 20);
+
+		}
+	}
 
 	public void getColumnTitles(int month, int date){
-		currMonth = month+1;
-		currDate = date;
+		currentM = month+1;
+		currentD = date;
 		columnTitles = new String[numDays+1];
 		int[] monthNum = new int[7];
 		int[] dateNum = new int[7];
 
-		if (currMonth == 2){  //feb
+		if (currentM == 2){  //feb
 			for (int i = 0; i < 7; i++){
-				monthNum[i] = currMonth;
-				dateNum[i] = currDate;
-				if (currDate == 28){
-					currMonth++;
-					currDate = 0;
+				monthNum[i] = currentM;
+				dateNum[i] = currentD;
+				if (currentD == 28){
+					currentM++;
+					currentD = 0;
 				}
-				currDate++;
+				currentD++;
 			}
 		}
-		else if (currMonth == 4 || currMonth == 6 || currMonth == 9 || currMonth == 11){
+		else if (currentM == 4 || currentM == 6 || currentM == 9 || currentM == 11){
 			for (int j = 0; j < 7; j++){
-				monthNum[j] = currMonth;
-				dateNum[j] = currDate;
-				if (currDate == 30){
-					currMonth++;
-					currDate = 0;
+				monthNum[j] = currentM;
+				dateNum[j] = currentD;
+				if (currentD == 30){
+					currentM++;
+					currentD = 0;
 				}
-				currDate++;
+				currentD++;
 			}
 		}
-		else if (currMonth == 12){
+		else if (currentM == 12){
 			for (int k = 0; k < 7; k++){
-				monthNum[k] = currMonth;
-				dateNum[k] = currDate;
-				if (currDate == 31){
-					currMonth = 1;
-					currDate = 0;
+				monthNum[k] = currentM;
+				dateNum[k] = currentD;
+				if (currentD == 31){
+					currentM = 1;
+					currentD = 0;
 				}
-				currDate++;
+				currentD++;
 			}
 		}
 		else {
 			for (int l = 0; l < 7; l++){
-				monthNum[l] = currMonth;
-				dateNum[l] = currDate;
-				if (currDate == 31){
-					currMonth++;
-					currDate = 0;
+				monthNum[l] = currentM;
+				dateNum[l] = currentD;
+				if (currentD == 31){
+					currentM++;
+					currentD = 0;
 				}
-				currDate++;
+				currentD++;
 			}
 		}
 		columnTitles[0] = "Time";

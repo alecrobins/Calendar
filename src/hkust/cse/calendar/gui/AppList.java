@@ -125,7 +125,7 @@ public class AppList extends JPanel implements ActionListener {
 	public final static int NOT_COLORED = 0;
 	private int[][] cellCMD = new int[20][2];
 	private Color[][] cellColor = new Color[20][2];
-	public Appt selectedAppt=null;
+	public Appt selectedAppt = null;
 	private MouseEvent tempe;
 	public AppList() {
 		setLayout(new BorderLayout());
@@ -342,7 +342,7 @@ public class AppList extends JPanel implements ActionListener {
 
 	}
 
-	// colouring the appointment list
+	// coloring the appointment list
 	public void addAppt(Appt appt) {
 		System.out.println("reached");
 		Color color;
@@ -388,7 +388,6 @@ public class AppList extends JPanel implements ActionListener {
 				} else {
 					cellCMD[pos[0]][1] = COLORED;
 					cellColor[pos[0]][1] = color;
-					
 				}
 
 			}
@@ -517,6 +516,7 @@ public class AppList extends JPanel implements ActionListener {
 		if ((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
 			pop.show(e.getComponent(), e.getX(), e.getY());
 	}
+	
 	private void releaseResponse(MouseEvent e) {
 		
 		releaseRow = tableView.getSelectedRow();
@@ -524,6 +524,7 @@ public class AppList extends JPanel implements ActionListener {
 		if ((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
 			pop.show(e.getComponent(), e.getX(), e.getY());
 	}
+	
 	private void calculateDrag(MouseEvent e){
 		
 		if(releaseRow==pressRow){		
