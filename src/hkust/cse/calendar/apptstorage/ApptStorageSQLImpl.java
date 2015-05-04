@@ -204,7 +204,12 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	}
 	
 	// return the user calendars for all listed users
-	public HashMap<User,Appt> getUsersAppts(List<User> users){
+	public HashMap<User,List<Appt>> getUsersAppts(List<User> users){
+		return null;
+	}
+	
+	// return the user calendars for all listed users within a period
+	public HashMap<User,List<Appt>> getUsersAppts(List<User> users, Timestamp start, Timestamp end){
 		return null;
 	}
 	
