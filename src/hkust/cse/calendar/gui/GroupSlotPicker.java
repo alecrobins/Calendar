@@ -742,7 +742,7 @@ public class GroupSlotPicker extends JDialog implements ActionListener,
 	
 	public String getCurrentUser()		// get the id of the current user
 	{
-		return this.parent.mCurrUser.ID();
+		return ""+this.parent.mCurrUser.getID();
 	}
 	
 	private void allDisableEdit(){

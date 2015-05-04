@@ -154,6 +154,14 @@ public class AppScheduler extends JDialog implements ActionListener,
 		Container contentPane;
 		contentPane = getContentPane();
 		
+		if (this.getTitle().equals("New Group Event")){
+			JPanel pUsers = new JPanel();
+			Border dateBorder = new TitledBorder(null, "USERS");
+			pUsers.setBorder(dateBorder);
+			JLabel num = new JLabel("Number of Members: ");
+			//load users
+			//add num panels to select each user to invite
+		}
 		// Date Panel
 		JPanel pDate = new JPanel();
 		Border dateBorder = new TitledBorder(null, "DATE");

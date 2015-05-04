@@ -217,6 +217,8 @@ public class MultipleUserSchedule {
 	}
 	private void pickSlot() {
 		GroupSlotPicker gsp = new GroupSlotPicker("New Slot", parent, parentLS);
+		//right now it doesn't work yet since the CalGrid hasn't been instantiated first
+		//we need a function in CalGrid that says "hey --- want a group event???"
 	}
 	private void delete() {
 	}
