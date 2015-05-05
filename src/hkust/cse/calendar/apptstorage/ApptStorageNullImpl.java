@@ -49,9 +49,10 @@ public class ApptStorageNullImpl extends ApptStorage {
 	}
 	
 	@Override
-	public void SaveAppt(Appt appt) {
+	public int SaveAppt(Appt appt) {
 		appt.generateID();
 		this.mAppts.put(appt.getID(), appt);
+		return appt.getID();
 	}
 
 	@Override
