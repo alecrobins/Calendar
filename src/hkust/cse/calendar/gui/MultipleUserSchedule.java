@@ -1,6 +1,7 @@
 package hkust.cse.calendar.gui;
 
 import hkust.cse.calendar.apptstorage.LocationStorage;
+import hkust.cse.calendar.controllers.GroupController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.User;
 
@@ -54,6 +55,8 @@ public class MultipleUserSchedule {
 	
 	private CalGrid parent;
 	private LocationStorage parentLS;
+	
+	private GroupController gc;
 
 	//public static final int[] monthDays = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 	//january, march, may, jul, aug, october, dec --31
@@ -97,12 +100,15 @@ public class MultipleUserSchedule {
 		return rowVal;
 	}
 	
-	public MultipleUserSchedule(HashMap<User, List<Appt>> userMap, List<Timestamp> dates){
+	public MultipleUserSchedule(CalGrid cal, HashMap<User, List<Appt>> userMap, List<Timestamp> dates){
+		parent = cal;
+		parentLS = cal.locationStorage;
+		gc = new GroupController(parent);
 		previousRow = 0;
 		previousCol = 0;
 		currentRow = 0;
 		currentCol = 0;
-		numDays = dates.size();
+	numDays = dates.size();
 		final boolean[] rowVals = isRowAvailable(userMap, dates);
 		int startMonth = dates.get(0).getMonth();
 		int startDate = dates.get(0).getDate();
@@ -147,6 +153,7 @@ public class MultipleUserSchedule {
 		scrollPane.getViewport().setViewPosition(new Point(0,0));
 		frame.add(scrollPane, BorderLayout.CENTER);
 		frame.setSize(100*(1+numDays), 700);
+		frame.pack();
 		frame.setVisible(true);
 		
 		frame.setLayout(new BorderLayout());

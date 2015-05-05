@@ -45,7 +45,7 @@ public class test {
 		dates.add(new Timestamp(86400000));
 		
 
-		MultipleUserSchedule ms = new MultipleUserSchedule(userMap, dates);
+		
 		
 		
 	}

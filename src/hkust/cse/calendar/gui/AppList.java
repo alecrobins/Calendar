@@ -152,11 +152,11 @@ public class AppList extends JPanel implements ActionListener {
 			}
 		});
 
-		mi = (JMenuItem) pop.add(new JMenuItem("New Group Event"));
+		mi = (JMenuItem) pop.add(new JMenuItem("Show Group Availability"));
 
 		mi.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {				
-				NewGroupAppt();
+				showGroupSched();
 			}
 		});
 		
@@ -517,7 +517,7 @@ public class AppList extends JPanel implements ActionListener {
 		
 	}
 	
-	private void NewGroupAppt() {
+	private void showGroupSched() {
 		
 		if (parent.mCurrUser == null)
 			return;
@@ -530,9 +530,10 @@ public class AppList extends JPanel implements ActionListener {
 		
 		if (currentCol < 3)
 			startTime = currentRow * 15 + 480;
-		else
+		else 
 			startTime = (currentRow + 20) * 15 + 480;
-		AppScheduler a = new AppScheduler("New Group Event", parent, parentLS);
+		//call AppScheduler window which prompts for users and dates
+		GroupAppPrompt a = new GroupAppPrompt(parent, parentLS);
 		a.updateSetApp(hkust.cse.calendar.gui.Utility.createDefaultAppt(
 				parent.currentY, parent.currentM, parent.currentD,
 				parent.mCurrUser, startTime));

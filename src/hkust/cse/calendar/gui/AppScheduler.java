@@ -675,7 +675,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 			
 		}
 		else{
-			returnMessage = eventController.createEvent(
+	returnMessage = eventController.createEvent(
 				_year, _month, _day,
 				_sTimeH, _sTimeM, _eTimeH, _eTimeM,
 				_detailArea, _titleField,
