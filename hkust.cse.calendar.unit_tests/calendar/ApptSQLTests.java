@@ -274,5 +274,12 @@ public class ApptSQLTests {
 		
 		// WORKS !
 	}
+	
+	@Test
+	public void testUserLogin() {
+		assertTrue(db.logInUser("alecrobins", "1"));
+		assertFalse(db.logInUser("alecrobins", "12"));
+		assertFalse(db.logInUser("notauser", "aa"));
+	}
 
 }

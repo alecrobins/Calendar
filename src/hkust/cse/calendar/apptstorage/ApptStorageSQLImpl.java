@@ -727,8 +727,43 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	
 	// checks the username / password of a user
 	// returns true if the user log in is correct
-	private boolean logInUser(String username, String password){
-		return false;
+	public boolean logInUser(String username, String password){
+
+		Connection c = null;
+	    Statement stmt = null;
+	    boolean success = false;
+	    
+	    try {
+	      Class.forName("org.sqlite.JDBC");
+	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	      c.setAutoCommit(false);
+	      System.out.println("Opened database successfully");
+	      
+	      stmt = c.createStatement();
+	      PreparedStatement query;
+	      
+	      query = c.prepareStatement("select password from user where username = ?;");
+	      query.setString(1, username);
+	      
+	      ResultSet rs = query.executeQuery();
+	      rs.next();
+	      
+	      String userPassword = rs.getString("password");
+	      
+	      // check that the password matches
+	      if( !(userPassword == null || userPassword == "") && userPassword == password )
+	    	  	success = true;
+	      
+	      query.close();
+	      stmt.close();
+	      c.close();
+		    
+	    } catch ( Exception e1 ) {
+	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+	      System.exit(0);
+	    }
+	    
+		return success;
 	}
 	
 	//check to see if every user validated the group event
