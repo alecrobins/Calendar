@@ -154,10 +154,11 @@ public class AppScheduler extends JDialog implements ActionListener,
 		Container contentPane;
 		contentPane = getContentPane();
 		
+		JPanel pUsers = new JPanel();
+		
 		if (this.getTitle().equals("New Group Event")){
-			JPanel pUsers = new JPanel();
-			Border dateBorder = new TitledBorder(null, "USERS");
-			pUsers.setBorder(dateBorder);
+			Border userBorder = new TitledBorder(null, "USERS");
+			pUsers.setBorder(userBorder);
 			JLabel num = new JLabel("Number of Members: ");
 			//load users
 			//add num panels to select each user to invite
@@ -282,11 +283,21 @@ public class AppScheduler extends JDialog implements ActionListener,
 		top.setBorder(new BevelBorder(BevelBorder.RAISED));
 		
 		JPanel innerTop = new JPanel();
+		
+		if (this.getTitle().equals("New Group Event")){
+			innerTop.setLayout(new BorderLayout());
+			innerTop.setBorder(new BevelBorder(BevelBorder.RAISED));
+			innerTop.add(pDate, BorderLayout.CENTER);
+			innerTop.add(pTime, BorderLayout.SOUTH);
+			innerTop.add(pUsers, BorderLayout.NORTH);
+		}
+		else{
 		innerTop.setLayout(new BorderLayout());
 		innerTop.setBorder(new BevelBorder(BevelBorder.RAISED));
 		innerTop.add(pDate, BorderLayout.NORTH);
 		innerTop.add(pTime, BorderLayout.CENTER);
 		innerTop.add(pExtra, BorderLayout.SOUTH);
+		}
 		
 		top.add("North", innerTop);
 		top.add("Center", pReminder);
@@ -657,12 +668,20 @@ public class AppScheduler extends JDialog implements ActionListener,
 		
 		// CREATE THE EVENT
 		// returns an EventReturnMessage - determines if successful or details an error
-		EventReturnMessage returnMessage = eventController.createEvent(
+		
+		EventReturnMessage returnMessage = EventReturnMessage.ERROR;
+		
+		if (this.getTitle().equals("New Group Event")){
+			
+		}
+		else{
+			returnMessage = eventController.createEvent(
 				_year, _month, _day,
 				_sTimeH, _sTimeM, _eTimeH, _eTimeM,
 				_detailArea, _titleField,
 				_timeReminderH, _timeReminderM, _yearReminder, _monthReminder, _dayReminder,
 				_frequency, _location, parent);
+		}
 		//
 		//SUCCESS, ERROR_TIME_FORMAT, ERROR_PAST_DATE, ERROR_UNFILLED_REQUIRED_FIELDS,
 		//ERROR_REMINDER, ERROR_EVENT_OVERLAP, ERROR_SECOND_DATE_PAST, ERROR
