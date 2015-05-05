@@ -87,12 +87,12 @@ public class ApptStorageNullImpl extends ApptStorage {
 	@Override
 	public void RemoveAppt(Appt appt) {
 		//mAppts.put(appt.getID(), null);
-		Event event = (Event) appt;
+
 		int apptId = appt.getID();
 		// try to remove the appt from the db
 		try{
-			deleteNotification(event.getNotification());
-			if (event.getEventFrequency() != Event.Frequency.DAILY) deleteNotification(event.getNextNotification());
+			deleteNotification(appt.getNotification());
+			if (appt.getEventFrequency() != Appt.Frequency.DAILY) deleteNotification(appt.getNextNotification());
 			mAppts.remove(apptId);
 		}catch(Exception e){
 			System.out.println("ERROR");

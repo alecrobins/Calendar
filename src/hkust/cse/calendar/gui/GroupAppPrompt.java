@@ -9,7 +9,7 @@ import hkust.cse.calendar.controllers.GroupController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Clock;
 import hkust.cse.calendar.unit.LocationList;
-import hkust.cse.calendar.unit.Event.Frequency;
+import hkust.cse.calendar.unit.Appt.Frequency;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 

@@ -1,6 +1,5 @@
 package hkust.cse.calendar.unit;
 
-import hkust.cse.calendar.unit.Event.Frequency;
 
 import java.io.Serializable;
 import java.util.LinkedList;
