@@ -140,9 +140,11 @@ public class EventController {
 				Event eNew2 = new Event(eNew1.getEventTime(), eNew1.getEventFrequency()) ;
 				cal.controller.mApptStorage.SaveAppt(eNew2);
 				TimeSpan curr = eNew1.getEventTime();
-				Timestamp start = new Timestamp(curr.StartTime().getTime()+604800000*4);
-				Timestamp fin = new Timestamp(curr.EndTime().getTime()+604800000*4);
-				eNew1.setEventTime(new TimeSpan(start, fin));
+				curr.StartTime().setMonth(curr.StartTime().getMonth()+1);
+				curr.EndTime().setMonth(curr.EndTime().getMonth()+1);
+				Timestamp star = curr.StartTime();
+				Timestamp fi = curr.EndTime();
+				eNew1.setEventTime(new TimeSpan(star, fi));
 			}
 			break;
 		case DAILY:

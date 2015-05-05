@@ -24,24 +24,60 @@ import javax.swing.JLabel;
 
 public class GroupController {
 	private MultipleUserSchedule mus;
-	
+
 	private CalGrid cal;
 
 	public GroupController(CalGrid _cal) {
 		cal = _cal;
 	}
-	
-//	public HashMap<User, List<Appt>> getUserMap(){
-//		
-//	}
-	
-	public TimeSpan suggestedGroupEventTime(List<TimeSpan> list){
+
+	//	public HashMap<User, List<Appt>> getUserMap(){
+	//		
+	//	}
+
+	public TimeSpan suggestedGroupEventTime(List<TimeSpan> list){   //deviates from the plan a little
+		if (list.size()>0){
 		List<TimeSpan> suggested = new LinkedList<TimeSpan>();
-		for (TimeSpan t: list){
-			
+		HashMap<TimeSpan, Integer> map = new HashMap<TimeSpan, Integer>();
+		
+		for (TimeSpan l: list){
+			int numOverlaps = 0;
+			for (TimeSpan k: list){
+				if (!(l.StartTime().getTime() > k.EndTime().getTime() || l.EndTime().getTime() > k.StartTime().getTime())){
+					numOverlaps++;
+				}
+			}
+			map.put(l, numOverlaps);
 		}
+		int k = 0;
+		for (TimeSpan l: map.keySet()){
+			if (map.get(l) != null){
+				if (map.get(l) > k){
+					suggested.add(l);
+					k=map.get(l);
+				}
+				if (map.get(l) == k){
+					suggested.add(l);
+				}
+			}
+		}
+		//suggested now has the TimeSpans that overlap with the most people
+		TimeSpan earliest = list.get(0);
+		if (suggested.size() > 0){
+		long n = suggested.get(0).StartTime().getTime();
+		for (TimeSpan i: suggested){
+			if (i.StartTime().getTime() < n){
+				earliest = i;
+				n = i.StartTime().getTime();
+			}
+		}
+		return earliest;
+		}
+		else return null;
+		}
+		else return null;
 	}
-	
+
 	public EventReturnMessage createGroupEvent(
 			String _year, String _month, String _day,
 			String _sTimeH, String _sTimeM, String _eTimeH, String _eTimeM,
@@ -49,54 +85,54 @@ public class GroupController {
 			String _reminderTimeH, String _reminderTimeM,
 			String _reminderYear, String _reminderMonth, String _reminderDay,
 			String _frequency, String _location, CalGrid parentGrid, List<User> userList){
-		
-		
+
+
 		// check if required fields were met
-				if(_year == null || _month == null || _day == null || _sTimeH == null
-						|| _sTimeM == null || _eTimeH == null || _eTimeM ==null || _frequency == null)
-					return EventReturnMessage.ERROR_UNFILLED_REQUIRED_FIELDS;
+		if(_year == null || _month == null || _day == null || _sTimeH == null
+				|| _sTimeM == null || _eTimeH == null || _eTimeM ==null || _frequency == null)
+			return EventReturnMessage.ERROR_UNFILLED_REQUIRED_FIELDS;
 
-				// format the start / endtime
-				Date startTimeDate = formatTime(_year, _month, _day, _sTimeH, _sTimeM);
-				Timestamp startTime = new java.sql.Timestamp(startTimeDate.getTime());
+		// format the start / endtime
+		Date startTimeDate = formatTime(_year, _month, _day, _sTimeH, _sTimeM);
+		Timestamp startTime = new java.sql.Timestamp(startTimeDate.getTime());
 
-				// check if startTiem correct
-				if(!checkStartTime(startTime))
-					return EventReturnMessage.ERROR_PAST_DATE;
+		// check if startTiem correct
+		if(!checkStartTime(startTime))
+			return EventReturnMessage.ERROR_PAST_DATE;
 
-				// format the end time
-				Date endTimeDate = formatTime(_year, _month, _day, _eTimeH, _eTimeM);
-				Timestamp endTime = new java.sql.Timestamp(endTimeDate.getTime());
+		// format the end time
+		Date endTimeDate = formatTime(_year, _month, _day, _eTimeH, _eTimeM);
+		Timestamp endTime = new java.sql.Timestamp(endTimeDate.getTime());
 
 
-				// check for end time that is before start time
-				if(!endTime.after(startTime))
-					return EventReturnMessage.ERROR_SECOND_DATE_PAST;
+		// check for end time that is before start time
+		if(!endTime.after(startTime))
+			return EventReturnMessage.ERROR_SECOND_DATE_PAST;
 
-				TimeSpan eventTime = new TimeSpan(startTime, endTime);
+		TimeSpan eventTime = new TimeSpan(startTime, endTime);
 
-				TimeSpan reminder = null;
-				// Create the reminder if reminder isn't null
-				if(_reminderYear != null && _reminderMonth != null && _reminderDay != null
-						&& _reminderTimeH != null && _reminderTimeM != null){
-					Date noteTime = formatTime(_reminderYear, _reminderMonth, _reminderDay, _reminderTimeH, _reminderTimeM);
-					System.out.println("Y:" + _reminderYear + " M:" +_reminderMonth + " D:" +_reminderDay + " H:" +_reminderTimeH + " Min:" +_reminderTimeM);
-					// check that reminder is before the start time
-					if(startTime.before(noteTime))
-						return EventReturnMessage.ERROR_REMINDER;
-					reminder = new TimeSpan(new Timestamp(noteTime.getTime()), startTime);
-				}
+		TimeSpan reminder = null;
+		// Create the reminder if reminder isn't null
+		if(_reminderYear != null && _reminderMonth != null && _reminderDay != null
+				&& _reminderTimeH != null && _reminderTimeM != null){
+			Date noteTime = formatTime(_reminderYear, _reminderMonth, _reminderDay, _reminderTimeH, _reminderTimeM);
+			System.out.println("Y:" + _reminderYear + " M:" +_reminderMonth + " D:" +_reminderDay + " H:" +_reminderTimeH + " Min:" +_reminderTimeM);
+			// check that reminder is before the start time
+			if(startTime.before(noteTime))
+				return EventReturnMessage.ERROR_REMINDER;
+			reminder = new TimeSpan(new Timestamp(noteTime.getTime()), startTime);
+		}
 
-				// create the frequency
-				Frequency frequency = Frequency.valueOf(_frequency);
+		// create the frequency
+		Frequency frequency = Frequency.valueOf(_frequency);
 
-				Location location = null;
-				// create the location if not null
-				if(_location != null)
-					location = new Location(_location);
-				
-				
-				return EventReturnMessage.ERROR;
+		Location location = null;
+		// create the location if not null
+		if(_location != null)
+			location = new Location(_location);
+
+
+		return EventReturnMessage.ERROR;
 
 
 	}
@@ -108,20 +144,20 @@ public class GroupController {
 		}
 		return userMap;
 	}
-	
+
 	public void sendConfirmation(){
 	}
-	
+
 	public boolean isConfirmed(){
 		return false;
 	}
-	
+
 	public boolean isGroupEventValid(Event e){
 		return false;
 	}
-	
+
 	//helper methods from event controller (update these)
-	
+
 	private boolean checkStartTime(Timestamp startTime) {
 		// current date
 		Date currentDate = cal.mClock.getChangedTimeDate();
