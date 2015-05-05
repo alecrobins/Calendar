@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import hkust.cse.calendar.unit.Appt;
+import hkust.cse.calendar.unit.Event;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 
@@ -86,9 +87,12 @@ public class ApptStorageNullImpl extends ApptStorage {
 	@Override
 	public void RemoveAppt(Appt appt) {
 		//mAppts.put(appt.getID(), null);
+		Event event = (Event) appt;
 		int apptId = appt.getID();
 		// try to remove the appt from the db
 		try{
+			deleteNotification(event.getNotification());
+			if (event.getEventFrequency() != Event.Frequency.DAILY) deleteNotification(event.getNextNotification());
 			mAppts.remove(apptId);
 		}catch(Exception e){
 			System.out.println("ERROR");
@@ -131,15 +135,14 @@ public class ApptStorageNullImpl extends ApptStorage {
 		return false;
 	}
 	
-	
+	@Override
+	public boolean findNotification(TimeSpan ts){
+		return mNotifications.contains(ts);
+	}
 	@Override
 	public void addNotification(TimeSpan ts) {
 		// TODO Auto-generated method stub
-		for(TimeSpan t : mNotifications){
-			if(t.equals(ts)){
-				return;
-			}
-		}
+		if (findNotification(ts)) return;
 		mNotifications.add(ts);
 		mergeNotification();
 	}

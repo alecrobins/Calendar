@@ -78,6 +78,10 @@ public class ApptStorageControllerImpl {
 		return mApptStorage.isApptValid(appt);
 	}
 	
+	// method used to check the existence of a notification
+	public boolean findNotification(TimeSpan ts){
+		return mApptStorage.findNotification(ts);
+	}
 	// method used to store notification time
 	public void addNotification(TimeSpan ts){
 		mApptStorage.addNotification(ts);

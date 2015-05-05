@@ -1286,6 +1286,12 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		return new Location(id, name, isGroup);
 	}
 
+	@Override
+	public boolean findNotification(TimeSpan ts) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 
 
 }
