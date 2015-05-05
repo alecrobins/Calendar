@@ -2,11 +2,15 @@ package calendar;
 
 import static org.junit.Assert.*;
 
+import java.io.InvalidClassException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 import hkust.cse.calendar.apptstorage.ApptStorageSQLImpl;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Event;
+import hkust.cse.calendar.unit.GroupEvent;
 import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
@@ -53,24 +57,26 @@ public class ApptSQLTests {
 	@Test
 	public void testSaveAppt(){
 		
-		Timestamp t1 = new Timestamp(4400);
-		Timestamp t2 = new Timestamp(9600);
+		Timestamp t1 = new Timestamp(84400);
+		Timestamp t2 = new Timestamp(89600);
 		TimeSpan eventTime = new TimeSpan(t1, t2);
 		
-		Timestamp r1 = new Timestamp(1400);
-		Timestamp r2 = new Timestamp(3400);
+		Timestamp r1 = new Timestamp(81400);
+		Timestamp r2 = new Timestamp(83400);
 		TimeSpan eventReminder = new TimeSpan(r1, r2);
 		
-		String title = "NEW TITLE";
-		String description = "hello this is a description test";
+		String title = "New Private Event";
+		String description = " Private vetn 1 description test adf adf adf ";
 		String addDescription = "additional goes here . . ";
-		int eventLocationID = 1; 
-		Frequency f = Frequency.WEEKLY;
+		int eventLocationID = 2; 
+		Frequency f = Frequency.ONETIME;
 		
 		Event testEvent = new Event(eventTime, title, description, eventLocationID,
 				eventReminder, addDescription, f);
 		
-		// db.SaveAppt(testEvent);
+		testEvent.setIsPublic(true);
+		
+//		 db.SaveAppt(testEvent);
 		
 		// WORKS !
 		
@@ -82,8 +88,6 @@ public class ApptSQLTests {
 		Timestamp t1 = new Timestamp(0);
 		Timestamp t2 = new Timestamp(8600);
 		TimeSpan time = new TimeSpan(t1,t2);
-		
-		System.out.println("GO . . .");
 		
 		Event[] appts = (Event[]) db.RetrieveAppts(time);
 		
@@ -106,8 +110,6 @@ public class ApptSQLTests {
 		Timestamp t2 = new Timestamp(8600);
 		TimeSpan time = new TimeSpan(t1,t2);
 		
-		System.out.println("GO . . .");
-		
 		Event[] appts = (Event[]) db.RetrieveAppts(dummyUser, time);
 		
 		System.out.println("RETRIEVED");
@@ -119,6 +121,131 @@ public class ApptSQLTests {
 		}
 		
 		assertTrue(appts.length == 1);
+		
+	}
+	
+	@Test
+	public void testUpdateEvent() {
+		
+		Timestamp t1 = new Timestamp(14400);
+		Timestamp t2 = new Timestamp(19600);
+		TimeSpan eventTime = new TimeSpan(t1, t2);
+		
+		Timestamp r1 = new Timestamp(11400);
+		Timestamp r2 = new Timestamp(13400);
+		TimeSpan eventReminder = new TimeSpan(r1, r2);
+		
+		String title = "Brand NEW TITLE";
+		String description = "ello this is a description test";
+		String addDescription = "additional goes here . . ";
+		int eventLocationID = 1; 
+		Frequency f = Frequency.WEEKLY;
+		
+		Event testEvent = new Event(eventTime, title, description, eventLocationID,
+				eventReminder, addDescription, f);
+		
+		testEvent.setID(13);
+		
+//		db.UpdateAppt(testEvent);
+		
+		// WORKS ! 
+		
+	}
+	
+	@Test
+	public void testDeleteEvent() {
+		Timestamp t1 = new Timestamp(14400);
+		Timestamp t2 = new Timestamp(19600);
+		TimeSpan eventTime = new TimeSpan(t1, t2);
+		
+		Timestamp r1 = new Timestamp(11400);
+		Timestamp r2 = new Timestamp(13400);
+		TimeSpan eventReminder = new TimeSpan(r1, r2);
+		
+		String title = "Brand NEW TITLE";
+		String description = "ello this is a description test";
+		String addDescription = "additional goes here . . ";
+		int eventLocationID = 1; 
+		Frequency f = Frequency.WEEKLY;
+		
+		Event testEvent = new Event(eventTime, title, description, eventLocationID,
+				eventReminder, addDescription, f);
+		
+		testEvent.setID(13);
+		
+//		db.RemoveAppt(testEvent);
+		
+		// WORKS ! 
+	}
+	
+	@Test 
+	public void testGetEventWithID(){
+		
+		Event good = (Event) db.getAppt(14);
+		Event bad1 = (Event) db.getAppt(1);
+		Event bad2 = (Event) db.getAppt(2);
+		
+		System.out.println("TEST EVENT W/ ID");
+		good.toString();
+		
+		assertNull(bad1);
+		assertNull(bad2);
+	}
+	
+	@Test
+	public void testGetPublicEventsFromUser() {
+		
+		List<Appt> appts = db.getUserPublicEvents(dummyUser);
+		
+		System.out.println("RETRIEVED Public");
+		System.out.println(appts.size());
+		
+		for(int i = 0; i < appts.size(); ++i){
+			System.out.println("RETRIEVED");
+			System.out.println(appts.get(i).toString());
+		}
+		
+	}
+	
+	@Test
+	public void testCreateGroupEvent() {
+		Timestamp t1 = new Timestamp(184400);
+		Timestamp t2 = new Timestamp(189600);
+		TimeSpan eventTime = new TimeSpan(t1, t2);
+		
+		Timestamp r1 = new Timestamp(181400);
+		Timestamp r2 = new Timestamp(183400);
+		TimeSpan eventReminder = new TimeSpan(r1, r2);
+		
+		String title = "First Group Event";
+		String description = " Group event Description ";
+		String addDescription = "additional goes here . . ";
+		int eventLocationID = 2; 
+		Frequency f = Frequency.ONETIME;
+		
+		GroupEvent testGroupEvent = new GroupEvent(eventTime, title, description, eventLocationID,
+				eventReminder, addDescription, f);
+		
+		// set the group specific parameters
+		testGroupEvent.setIsPublic(true);
+		testGroupEvent.setIsGroup(true);
+		testGroupEvent.setConfirmed(false);
+		testGroupEvent.setApproved(false);
+		
+		List<Integer> testUsers = new ArrayList<Integer>();
+		testUsers.add(4);
+		testUsers.add(5);
+		testUsers.add(6);
+		
+//		// save the dummy group event
+//		try {
+//			db.createGroupEvent(testUsers, testGroupEvent);
+//			System.out.println("GROUP EVENT SAVED");
+//		} catch (InvalidClassException e) {
+//			e.printStackTrace();
+//		}
+		
+		// WORKED ! 
 		
 	}
 

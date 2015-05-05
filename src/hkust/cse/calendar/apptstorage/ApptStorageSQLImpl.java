@@ -2,11 +2,13 @@ package hkust.cse.calendar.apptstorage;
 
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Event;
+import hkust.cse.calendar.unit.GroupEvent;
 import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.unit.Event.Frequency;
 
+import java.io.InvalidClassException;
 import java.lang.reflect.Array;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -36,6 +38,11 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	
 	public ApptStorageSQLImpl(){
 		super();
+	}
+	
+	// Functions to set the default User
+	public void setDefaultUser(User u){
+		defaultUser = u;
 	}
 
 	@Override
@@ -129,9 +136,13 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		SaveAppt((Event) appt);
 	}
 	
-	public void SaveAppt(Event _event) {
+	// returns the appt id
+	public int SaveAppt(Event _event) {
 		Connection c = null;
 	    Statement stmt = null;
+	    
+	    // set teh eventID
+	    int eventID = -1;
 
 	    try {
 	      Class.forName("org.sqlite.JDBC");
@@ -143,7 +154,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      PreparedStatement query;
 	      
 	      query = c.prepareStatement("insert into event (id, startTime, endTime, eventTitle, eventDescription, eventReminderStart, eventReminderEnd, frequency, locationID, isGroup, isPublic) " +
-		    		"values (null, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+		    		"values (null, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
 	      
 	      // assign variables
 	      query.setTimestamp(1, _event.getEventTime().StartTime());
@@ -159,6 +170,18 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      
 	      boolean done = query.execute();
 	      
+		  // Get the generated key from the event creation
+	      ResultSet rs = stmt.getGeneratedKeys();
+		  rs.next();
+		  eventID = rs.getInt(1);
+		  
+		  // create a connection between the user and event
+		  query = c.prepareStatement("insert into userEvent (userID, eventID) values (?, ?)");
+		  query.setInt(1, dummyUser.getID());
+		  query.setInt(2, eventID);
+		  
+		  done = query.execute();
+    	   
 	      // commit
 	      c.commit();
 	      
@@ -170,6 +193,8 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
 	      System.exit(0);
 	    }
+	    
+	    return eventID;
 	}
 	
 	@Override
@@ -237,6 +262,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		return (Appt[]) events.toArray();
 	}
 
+	// N/A
 	@Override
 	public Appt RetrieveAppts(int joinApptID) {
 		// TODO Auto-generated method stub
@@ -245,34 +271,115 @@ public class ApptStorageSQLImpl extends ApptStorage {
 
 	@Override
 	public void UpdateAppt(Appt appt) {
-		// TODO Auto-generated method stub
-		
+		Connection c = null;
+	    Statement stmt = null;
+	    
+	    // cast the appt to an event
+	    Event _event = (Event) appt;
+	    
+	    try {
+	      Class.forName("org.sqlite.JDBC");
+	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	      c.setAutoCommit(false);
+	      System.out.println("Opened database successfully");
+	      
+	      stmt = c.createStatement();
+	      PreparedStatement query;
+	      
+	      query = c.prepareStatement("update event set startTime = ?, endTime = ?, eventTitle = ?, "+
+	    		  					 "eventDescription = ?, eventReminderStart = ?, eventReminderEnd = ?, " +
+	    		  					 "frequency = ?, locationID = ?, isGroup = ?, isPublic = ? " +
+	    		  					 "where id = ?");
+	      
+	      // assign variables
+	      query.setTimestamp(1, _event.getEventTime().StartTime());
+	      query.setTimestamp(2, _event.getEventTime().EndTime());
+	      query.setString(3, _event.getTitle());
+	      query.setString(4, _event.getEventDescription());
+	      query.setTimestamp(5, _event.getEventReminder().StartTime());
+	      query.setTimestamp(6, _event.getEventReminder().EndTime());
+	      query.setInt(7, _event.getEventFrequency().getValue());
+	      query.setInt(8, _event.getEventLocationID());
+	      query.setBoolean(9, _event.getIsGroup());
+	      query.setBoolean(10, _event.getIsPublic());
+	      query.setInt(11, _event.getID());
+	      
+	      boolean done = query.execute();
+	      
+	      // commit
+	      c.commit();
+	      
+	      query.close();
+	      stmt.close();
+	      c.close();
+		    
+	    } catch ( Exception e1 ) {
+	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+	      System.exit(0);
+	    }
 	}
 
 	@Override
 	public void RemoveAppt(Appt appt) {
-		// TODO Auto-generated method stub
-		
+		Connection c = null;
+	    Statement stmt = null;
+	    
+	    // cast the appt to an event
+	    Event _event = (Event) appt;
+	    
+	    try {
+	      Class.forName("org.sqlite.JDBC");
+	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	      c.setAutoCommit(false);
+	      System.out.println("Opened database successfully");
+	      
+	      stmt = c.createStatement();
+	      PreparedStatement query;
+	      
+	      query = c.prepareStatement("delete from event " +
+	    		  					 "where id = ?");
+	      
+	      // assign variables
+	      query.setInt(1, _event.getID());
+	      
+	      boolean done = query.execute();
+	      
+	      // commit
+	      c.commit();
+	      
+	      query.close();
+	      stmt.close();
+	      c.close();
+		    
+	    } catch ( Exception e1 ) {
+	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+	      System.exit(0);
+	    }
 	}
 
 	@Override
 	public User getDefaultUser() {
-		// TODO Auto-generated method stub
-		return null;
+		return defaultUser;
 	}
 
+	// N/A
 	@Override
 	public void LoadApptFromXml() {
 		// TODO Auto-generated method stub
 		
 	}
 
+	// N/A this is done in controller
 	@Override
 	public boolean isApptValid(Appt appt) {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
+	
+	// NOTIFICATIONS 
+	// ===================
+// NOTIFICATIONS 
+	
 	@Override
 	public void addNotification(TimeSpan ts) {
 		// TODO Auto-generated method stub
@@ -305,24 +412,322 @@ public class ApptStorageSQLImpl extends ApptStorage {
 
 	@Override
 	public Appt getAppt(int id) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		Connection c = null;
+	    Statement stmt = null;
+	    
+	    // return the event
+	    Event event = null;
+	    
+	    try {
+	      Class.forName("org.sqlite.JDBC");
+	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	      c.setAutoCommit(false);
+	      System.out.println("Opened database successfully");
+	      
+	      stmt = c.createStatement();
+	      String sql = 
+	    		  "select distinct e.id as 'id', e.startTime as 'startTime', e.endTime as 'endTime', " +
+	    		  "e.eventTitle as 'title', e.eventDescription as 'description', " +
+	    		  "e.frequency as 'frequency', e.eventReminderStart as 'reminderStart', " +
+	    		  "e.eventReminderEnd as 'reminderEnd', e.locationID as 'locationID', " +
+	    		  "e.isGroup as 'isGroup', e.isPublic as 'isPublic' " +
+	    		  "from event e, userEvent ue " +
+	    		  "where ue.userID = "+ dummyUser.getID() +
+	    		  " and e.id = ue.eventID and e.id = " +
+	    		  id + ";";
+	      
+	      ResultSet rs = stmt.executeQuery( sql );
+	      
+	      // go through results
+	      while ( rs.next() ) {
+	    	 event = formatEvent(rs);
+	         System.out.println(event.toString());
+	      }
+	      
+	      rs.close();
+	      stmt.close();
+	      c.close();
+		    
+	    } catch ( Exception e1 ) {
+	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+	      System.exit(0);
+	    }
+	    	    
+		return event;
 	}
 	
-	// get all the events for a user give teh userID
+	// get all the events for a user give the userID
 	public List<Appt> getUserPublicEvents(User u){
-		return null;
+		Connection c = null;
+	    Statement stmt = null;
+	    
+	    List<Appt> events = new ArrayList<Appt>();
+	    
+	    try {
+	      Class.forName("org.sqlite.JDBC");
+	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	      c.setAutoCommit(false);
+	      System.out.println("Opened database successfully");
+	      
+	      stmt = c.createStatement();
+	      PreparedStatement query;
+	      
+	      query = c.prepareStatement( 
+	    		  "select distinct e.id as 'id', e.startTime as 'startTime', e.endTime as 'endTime', " +
+	    		  "e.eventTitle as 'title', e.eventDescription as 'description', " +
+	    		  "e.frequency as 'frequency', e.eventReminderStart as 'reminderStart', " +
+	    		  "e.eventReminderEnd as 'reminderEnd', e.locationID as 'locationID', " +
+	    		  "e.isGroup as 'isGroup', e.isPublic as 'isPublic' " +
+	    		  "from event e, userEvent ue " +
+	    		  "where ue.userID = ? "+
+	    		  "and e.id = ue.eventID and e.isPublic = ?;");
+	      
+//	      ResultSet rs = stmt.executeQuery( sql );
+	      query.setInt(1, u.getID()); 
+	      query.setBoolean(2, true);
+	      
+	      ResultSet rs = query.executeQuery();
+	      
+	      // go through results
+	      while ( rs.next() ) {
+	    	  // return the event
+	  	     Event event = null;
+	    	 event = formatEvent(rs);
+	    	 // put onto events
+	    	 events.add(event);
+	         System.out.println(event.toString());
+	      }
+	      
+	      rs.close();
+	      stmt.close();
+	      c.close();
+		    
+	    } catch ( Exception e1 ) {
+	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+	      System.exit(0);
+	    }
+	    
+	    return events;
+	    
 	}
 	
-	// TODO: make a GroupEvent that implements event to include
-	// who is in the group
-	// get the group event informatin
-	public Appt getGroupEvent(int groupID){
-		return null;
+	// get all group event ids for the passed in user
+	public List<Integer> getGroupEventIDs(int userID){
+		Connection c = null;
+	    Statement stmt = null;
+	
+	    List<Integer> groupIDs = new ArrayList<Integer>();
+	    
+	    try {
+	      Class.forName("org.sqlite.JDBC");
+	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	      c.setAutoCommit(false);
+	      System.out.println("Opened database successfully");
+	      
+	      stmt = c.createStatement();
+	      PreparedStatement query;
+	      
+	      query = c.prepareStatement( "select eventID from groupUser where userID = ?");
+	      query.setInt(1, userID);
+	      
+	      ResultSet rs = query.executeQuery();
+	      
+	      // go through results
+	      while ( rs.next() ) {
+	    	 // put onto the event ids inot the list
+	    	 groupIDs.add(rs.getInt("eventID"));
+	      }
+	      
+	      rs.close();
+	      stmt.close();
+	      c.close();
+		    
+	    } catch ( Exception e1 ) {
+	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+	      System.exit(0);
+	    }
+	    
+	    return groupIDs;
 	}
+	
+	// get the group event information
+	public GroupEvent getGroupEvent(int groupID){
+		Connection c = null;
+	    Statement stmt = null;
+	    
+	    GroupEvent event = null;
+
+	    try {
+	      Class.forName("org.sqlite.JDBC");
+	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	      c.setAutoCommit(false);
+	      System.out.println("Opened database successfully");
+	      
+	      stmt = c.createStatement();
+	      PreparedStatement query;
+	      
+	      query = c.prepareStatement( 
+	    		  "select distinct e.id as 'id', e.startTime as 'startTime', e.endTime as 'endTime', " +
+	    		  "e.eventTitle as 'title', e.eventDescription as 'description', " +
+	    		  "e.frequency as 'frequency', e.eventReminderStart as 'reminderStart', " +
+	    		  "e.eventReminderEnd as 'reminderEnd', e.locationID as 'locationID', " +
+	    		  "e.isGroup as 'isGroup', e.isPublic as 'isPublic', " +
+	    		  "g.userInitiator as 'initiator', g.confirmed as 'confirmed' " +
+	    		  "from event e, groupEvent ge " +
+	    		  "where ge.eventID = e.id "+
+	    		  "and ge.eventID = ?;");
+	      
+//	      ResultSet rs = stmt.executeQuery( sql );
+	      query.setInt(1, groupID); 
+	      
+	      ResultSet rs = query.executeQuery();
+	      
+	      // go through results
+	      while ( rs.next() ) {
+	    	  // return the event
+	    	 event = formatGroupEvent(rs);
+	      }
+	      
+	      rs.close();
+	      stmt.close();
+	      c.close();
+		    
+	    } catch ( Exception e1 ) {
+	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+	      System.exit(0);
+	    }
+	    	    
+		return event;
+	}
+	
+	// gather all the group events for passed in user
+	public List<GroupEvent> getGroupEvents(int user){
+		List<GroupEvent> groupEvents = new ArrayList<GroupEvent>();
+		// get the group ids of events that are related to the user
+		List<Integer> groupIDs = getGroupEventIDs(user);
+		
+		// add all the events to teh list
+		for(int i = 0; i < groupIDs.size(); ++i){
+			int groupID = groupIDs.get(i);
+			GroupEvent groupEvent = getGroupEvent(groupID);
+			// push the group event into the group
+			groupEvents.add(groupEvent);
+		}
+		
+		return groupEvents;
+	}
+	
+	public List<Integer> getGroupUserIDs(int groupID){
+		Connection c = null;
+	    Statement stmt = null;
+	    
+	    List<Integer> userIDs = new ArrayList<Integer>();
+
+	    try {
+	      Class.forName("org.sqlite.JDBC");
+	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	      c.setAutoCommit(false);
+	      System.out.println("Opened database successfully");
+	      
+	      stmt = c.createStatement();
+	      PreparedStatement query;
+	      
+	      query = c.prepareStatement( 
+	    		  "select userID " +
+	    		  "from groupEvent ge " +
+	    		  "where ge.eventID = ? ");
+	      
+	      query.setInt(1, groupID); 
+	      
+	      ResultSet rs = query.executeQuery();
+	      
+	      // go through results
+	      while ( rs.next() ) {
+	    	  // add the user IDS to teh list
+	    	  userIDs.add(rs.getInt("userID"));
+	      }
+	      
+	      rs.close();
+	      stmt.close();
+	      c.close();
+		    
+	    } catch ( Exception e1 ) {
+	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+	      System.exit(0);
+	    }
+	    
+	    return userIDs;
+	};
 	
 	// create a group event with the given users and event
-	public boolean createGroupEvent(List<User> users, Appt event){
+	public void createGroupEvent(List<Integer> users, Appt event) throws InvalidClassException{
+		// assert that it is a group a event that is being created
+		if(!(event instanceof GroupEvent) || !((GroupEvent) event).getIsGroup())
+			throw new InvalidClassException("You can only save GroupEvents not Regular events");
+		
+		GroupEvent groupEvent = (GroupEvent) event;
+		
+		// save the event
+		int groupID = SaveAppt(groupEvent);
+		
+		Connection c = null;
+	    Statement stmt = null;
+
+	    try {
+	      Class.forName("org.sqlite.JDBC");
+	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	      c.setAutoCommit(false);
+	      System.out.println("Opened database successfully");
+	      
+	      stmt = c.createStatement();
+	      PreparedStatement query;
+	      
+	      query = c.prepareStatement("insert into groupEvent (eventID, userInitiator, confirmed) " +
+		    		"values (?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
+	      
+	      // assign variables
+	      // set the initiator to who ever the current user is
+	      // the group is initially set to false
+	      query.setInt(1, groupID);
+	      query.setInt(2, dummyUser.getID());
+	      query.setBoolean(3, groupEvent.isConfirmed());
+	      
+	      boolean done = query.execute();
+	      
+		  // create the connections for all the other users
+	      for(int i = 0; i < users.size(); ++i){
+	    	  query = c.prepareStatement("insert into groupUser (eventID, userID, approved) " +
+	    			  					 "values (?, ?, ?);");
+
+	    	  // set the groupID to the id of the event that was created
+	    	  query.setInt(1, groupID);
+			  // set the user id to the current index of users
+	    	  query.setInt(2, users.get(i));
+	    	  // default the approval to false -> not approved
+	    	  query.setBoolean(3, false);
+			  
+			  done = query.execute();
+	      }
+		  
+	      // commit
+	      c.commit();
+	      
+	      query.close();
+	      stmt.close();
+	      c.close();
+		    
+	    } catch ( Exception e1 ) {
+	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+	      System.exit(0);
+	    }
+		
+		// create the group event part
+	}
+	
+	// checks the username / password of a user
+	// returns true if the user log in is correct
+	private boolean logInUser(String username, String password){
 		return false;
 	}
 	
@@ -366,11 +771,6 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		return false; 
 	}
 	
-	//delete an event
-	public boolean deleteEvent(int eventID){
-		return false;
-	}
-	
 	// delete a group event
 	public boolean deleteGroupEvent (int groupID){
 		return false;
@@ -404,31 +804,16 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	public Location modifyLocation(Location location){
 		return null;
 	}
-		
-	// create an event given the information
-	private Event createEvent(TimeSpan _eventTime, String _title, String _eventDescription, Location _eventLocation,
-			TimeSpan _eventReminder, String _additionalEventDescription, Frequency _eventFrequency){
-		
-		return null;
-	}
 	
-	// create a location
-	private Location createLocation(String name){
-		return null;
-	}
-	
-	// create user
-	private User createUser(String username, String password, boolean isAdmin){
-		return null;
-	}
-	
-	// checks the username / password of a user
-	private boolean isUserValid(String username, String password){
-		return false;
-	}
+
 	
 	// helper functions
 	// =====================
+		// create user
+	private User formatUser(ResultSet rs) throws SQLException{
+		return null;
+	}
+	
 	private Event formatEvent(ResultSet rs) throws SQLException {
 		 // Gather data
   	  
@@ -454,6 +839,25 @@ public class ApptStorageSQLImpl extends ApptStorage {
         Event newEvent = new Event(eventTime, eventTitle, eventDescription, locationID, reminder, "", frequency);
         newEvent.setEventID(id);
         return newEvent;
+	}
+	
+	private GroupEvent formatGroupEvent(ResultSet rs) throws SQLException {
+		
+		int initiatorID = rs.getInt("initiator");
+		boolean confirmed = rs.getBoolean("confirmed");
+		
+		GroupEvent ge = (GroupEvent) formatEvent(rs);
+		
+		ge.setInitiatorID(initiatorID);
+		ge.setConfirmed(confirmed);
+		
+		// get the list of users of the group
+		List<Integer> userIDs = getGroupUserIDs(ge.getID());
+		// set the users
+		ge.setUsers(userIDs);
+		
+		return ge;
+		
 	}
 	
 	private Location formatLocation(ResultSet rs) throws SQLException {
