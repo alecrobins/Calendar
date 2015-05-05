@@ -573,7 +573,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    		  "e.frequency as 'frequency', e.eventReminderStart as 'reminderStart', " +
 	    		  "e.eventReminderEnd as 'reminderEnd', e.locationID as 'locationID', " +
 	    		  "e.isGroup as 'isGroup', e.isPublic as 'isPublic', " +
-	    		  "g.userInitiator as 'initiator', g.confirmed as 'confirmed' " +
+	    		  "ge.userInitiator as 'initiator', ge.confirmed as 'confirmed' " +
 	    		  "from event e, groupEvent ge " +
 	    		  "where ge.eventID = e.id "+
 	    		  "and ge.eventID = ?;");
@@ -607,7 +607,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		// get the group ids of events that are related to the user
 		List<Integer> groupIDs = getGroupEventIDs(user);
 		
-		// add all the events to teh list
+		// add all the events to the list
 		for(int i = 0; i < groupIDs.size(); ++i){
 			int groupID = groupIDs.get(i);
 			GroupEvent groupEvent = getGroupEvent(groupID);
@@ -635,7 +635,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      
 	      query = c.prepareStatement( 
 	    		  "select userID " +
-	    		  "from groupEvent ge " +
+	    		  "from groupUser ge " +
 	    		  "where ge.eventID = ? ");
 	      
 	      query.setInt(1, groupID); 
@@ -663,10 +663,10 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	// create a group event with the given users and event
 	public void createGroupEvent(List<Integer> users, Appt event) throws InvalidClassException{
 		// assert that it is a group a event that is being created
-		if(!(event instanceof GroupEvent) || !((GroupEvent) event).getIsGroup())
+		if(!(event instanceof GroupEvent))
 			throw new InvalidClassException("You can only save GroupEvents not Regular events");
 		
-		GroupEvent groupEvent = (GroupEvent) event;
+		GroupEvent groupEvent = new GroupEvent((Event) event );
 		
 		// save the event
 		int groupID = SaveAppt(groupEvent);
@@ -805,8 +805,6 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		return null;
 	}
 	
-
-	
 	// helper functions
 	// =====================
 		// create user
@@ -846,7 +844,8 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		int initiatorID = rs.getInt("initiator");
 		boolean confirmed = rs.getBoolean("confirmed");
 		
-		GroupEvent ge = (GroupEvent) formatEvent(rs);
+		Event returnedEvent = formatEvent(rs);
+		GroupEvent ge = new GroupEvent(returnedEvent);
 		
 		ge.setInitiatorID(initiatorID);
 		ge.setConfirmed(confirmed);

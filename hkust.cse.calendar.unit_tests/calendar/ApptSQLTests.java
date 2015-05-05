@@ -248,5 +248,31 @@ public class ApptSQLTests {
 		// WORKED ! 
 		
 	}
+	
+	@Test
+	public void testGetGroupEventsForUser() {
+		List<GroupEvent> groupEvents = db.getGroupEvents(6);
+		
+		for(int i = 0; i < groupEvents.size(); ++i){
+			System.out.println("GOT THE GROUP EVENT !!!");
+			System.out.println(groupEvents.get(i).toString());
+		}
+		
+		// WORKED !
+	}
+	
+	@Test
+	public void testGetGroupEvent() {
+		GroupEvent testEvent = db.getGroupEvent(25);
+		GroupEvent testBadEvent = db.getGroupEvent(1);
+		
+		System.out.println("RECIEVED GROUP ITEM 25");
+		testEvent.toString();
+		
+		assertTrue(testEvent.getEventID() == 25);
+		assertNull(testBadEvent);
+		
+		// WORKS !
+	}
 
 }

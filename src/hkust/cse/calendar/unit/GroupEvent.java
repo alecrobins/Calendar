@@ -30,6 +30,16 @@ public class GroupEvent extends Event {
 		setApproved(false);
 	}
 	
+	public GroupEvent(Event e){
+		super(e.getEventTime(), e.getTitle(), e.getEventDescription(), e.getEventLocationID(), e.getEventReminder(), 
+				e.getAdditionalEventDescription(), e.getEventFrequency());
+		this.id = e.id;
+		
+		setConfirmed(false);
+		setApproved(false);
+		
+	}
+	
 	// Complete Constructor
 	public GroupEvent(TimeSpan _eventTime, String _title, String _eventDescription, int _eventLocationID,
 			TimeSpan _eventReminder, String _additionalEventDescription, Frequency _eventFrequency)
