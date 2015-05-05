@@ -1,5 +1,6 @@
 package hkust.cse.calendar.controllers;
 
+import hkust.cse.calendar.apptstorage.ApptStorageSQLImpl;
 import hkust.cse.calendar.controllers.EventController.EventReturnMessage;
 import hkust.cse.calendar.gui.CalGrid;
 import hkust.cse.calendar.gui.MultipleUserSchedule;
@@ -16,6 +17,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+
 
 public class GroupController {
 	private MultipleUserSchedule mus;
@@ -26,13 +30,9 @@ public class GroupController {
 		cal = _cal;
 	}
 	
-	//need to use mus to pick
-	public GroupController(CalGrid grid, HashMap<User, List<Appt>> uMap, List<Timestamp> d){
-		mus = new MultipleUserSchedule(uMap, d);
-		mus.setParent(grid);
-	}
-	
-	
+//	public HashMap<User, List<Appt>> getUserMap(){
+//		
+//	}
 	
 	public EventReturnMessage createGroupEvent(
 			String _year, String _month, String _day,
@@ -41,6 +41,7 @@ public class GroupController {
 			String _reminderTimeH, String _reminderTimeM,
 			String _reminderYear, String _reminderMonth, String _reminderDay,
 			String _frequency, String _location, CalGrid parentGrid){
+		
 		
 		// check if required fields were met
 				if(_year == null || _month == null || _day == null || _sTimeH == null
@@ -90,6 +91,14 @@ public class GroupController {
 				return EventReturnMessage.ERROR;
 
 
+	}
+	public HashMap<User, List<Appt>> getUserMap(List<User> userList){
+		HashMap<User, List<Appt>> userMap = new HashMap<User, List<Appt>>();
+		for (User u: userList){
+			ApptStorageSQLImpl asql = new ApptStorageSQLImpl(u);
+			userMap.put(u, asql.getUserPublicEvents(u));
+		}
+		return userMap;
 	}
 	
 	public void sendConfirmation(){
