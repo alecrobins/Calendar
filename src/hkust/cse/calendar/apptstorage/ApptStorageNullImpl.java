@@ -4,6 +4,9 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Event;
@@ -18,6 +21,22 @@ public class ApptStorageNullImpl extends ApptStorage {
 	public ApptStorageNullImpl( User user )
 	{
 		defaultUser = user;
+	}
+	
+	public ApptStorageNullImpl(ApptStorageSQLImpl stor){
+		defaultUser = stor.getDefaultUser();
+		mAppts = new HashMap<Integer, Appt>();
+		mNotifications = new ArrayList<TimeSpan>();
+		pullFromDatabase(stor);
+		
+	}
+	
+	public void pullFromDatabase(ApptStorageSQLImpl stor){
+		List<Appt> defaultUserApptList = new LinkedList<Appt>();
+		defaultUserApptList = stor.getAllEvents(defaultUser.getID());
+		for (Appt a: defaultUserApptList){
+			mAppts.put(a.getID(), a);
+		}
 	}
 	
 	public ApptStorageNullImpl(){

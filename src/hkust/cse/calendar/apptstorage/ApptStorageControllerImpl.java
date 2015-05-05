@@ -30,6 +30,10 @@ public class ApptStorageControllerImpl {
 	public ApptStorageControllerImpl(ApptStorage storage) {
 		mApptStorage = storage;
 	}
+	
+	public ApptStorageControllerImpl(ApptStorageSQLImpl storage){
+		mApptStorage = new ApptStorageNullImpl(storage);
+	}
 
 	/* Retrieve the Appt's in the storage for a specific user within the specific time span */
 	public Appt[] RetrieveAppts(User entity, TimeSpan time) {
