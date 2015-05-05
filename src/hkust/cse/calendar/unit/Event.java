@@ -40,7 +40,7 @@ public class Event extends Appt {
 	private boolean isPublic;
 	
 	// the id of the event
-	private int id;
+	protected int id;
 	
 	// Constructors - set empty parameters
 	public Event() {
