@@ -48,7 +48,7 @@ import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
 
-public class AppScheduler extends JDialog implements ActionListener,
+public class GroupSlotPicker extends JDialog implements ActionListener,
 		ComponentListener {
 
 	// constant
@@ -154,14 +154,6 @@ public class AppScheduler extends JDialog implements ActionListener,
 		Container contentPane;
 		contentPane = getContentPane();
 		
-		if (this.getTitle().equals("New Group Event")){
-			JPanel pUsers = new JPanel();
-			Border dateBorder = new TitledBorder(null, "USERS");
-			pUsers.setBorder(dateBorder);
-			JLabel num = new JLabel("Number of Members: ");
-			//load users
-			//add num panels to select each user to invite
-		}
 		// Date Panel
 		JPanel pDate = new JPanel();
 		Border dateBorder = new TitledBorder(null, "DATE");
@@ -492,12 +484,12 @@ public class AppScheduler extends JDialog implements ActionListener,
 		return temp;
 	}
 
-	AppScheduler(String title, CalGrid cal, int selectedApptId, LocationStorage _ls) {
+	GroupSlotPicker(String title, CalGrid cal, int selectedApptId, LocationStorage _ls) {
 		this.selectedApptId = selectedApptId;
 		commonConstructor(title, cal, _ls);
 	}
 
-	AppScheduler(String title, CalGrid cal, LocationStorage _ls) {
+	GroupSlotPicker(String title, CalGrid cal, LocationStorage _ls) {
 		commonConstructor(title, cal, _ls);
 	}
 	
@@ -750,7 +742,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 	
 	public String getCurrentUser()		// get the id of the current user
 	{
-		return this.parent.mCurrUser.getUsername();
+		return ""+this.parent.mCurrUser.getID();
 	}
 	
 	private void allDisableEdit(){

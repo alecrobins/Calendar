@@ -5,14 +5,13 @@ package hkust.cse.calendar.Main;
 import java.util.Date;
 
 import javax.swing.UIManager;
-
 import hkust.cse.calendar.gui.LoginDialog;
 
 public class CalendarMain {
 	public static boolean logOut = false;
 	
 	public static void main(String[] args) {
-		
+
 		while(true){
 			logOut = false;
 			try{

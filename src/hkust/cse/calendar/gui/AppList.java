@@ -152,6 +152,14 @@ public class AppList extends JPanel implements ActionListener {
 			}
 		});
 
+		mi = (JMenuItem) pop.add(new JMenuItem("New Group Event"));
+
+		mi.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {				
+				NewGroupAppt();
+			}
+		});
+		
 		mi = (JMenuItem) pop.add(new JMenuItem("Delete"));
 
 		mi.addActionListener(new ActionListener() {
@@ -501,6 +509,30 @@ public class AppList extends JPanel implements ActionListener {
 		else
 			startTime = (currentRow + 20) * 15 + 480;
 		AppScheduler a = new AppScheduler("New", parent, parentLS);
+		a.updateSetApp(hkust.cse.calendar.gui.Utility.createDefaultAppt(
+				parent.currentY, parent.currentM, parent.currentD,
+				parent.mCurrUser, startTime));
+		a.setLocationRelativeTo(null);
+		a.show();
+		
+	}
+	
+	private void NewGroupAppt() {
+		
+		if (parent.mCurrUser == null)
+			return;
+		if (currentRow < 0 || currentRow > ROWNUM - 1) {
+			JOptionPane.showMessageDialog(parent, "Please Select Again !",
+					"Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		int startTime;
+		
+		if (currentCol < 3)
+			startTime = currentRow * 15 + 480;
+		else
+			startTime = (currentRow + 20) * 15 + 480;
+		AppScheduler a = new AppScheduler("New Group Event", parent, parentLS);
 		a.updateSetApp(hkust.cse.calendar.gui.Utility.createDefaultAppt(
 				parent.currentY, parent.currentM, parent.currentD,
 				parent.mCurrUser, startTime));
