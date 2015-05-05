@@ -93,7 +93,6 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		return event;
 	}
 
-
 	public Location getLocation(int locationID) {
 		
 		Connection c = null;
