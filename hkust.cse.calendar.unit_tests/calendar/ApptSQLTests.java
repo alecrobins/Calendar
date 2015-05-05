@@ -182,9 +182,9 @@ public class ApptSQLTests {
 	@Test 
 	public void testGetEventWithID(){
 		
-		Event good = (Event) db.getAppt(14);
-		Event bad1 = (Event) db.getAppt(1);
-		Event bad2 = (Event) db.getAppt(2);
+		Appt good = db.getAppt(14);
+		Appt bad1 = db.getAppt(1);
+		Appt bad2 = db.getAppt(2);
 		
 		System.out.println("TEST EVENT W/ ID");
 		good.toString();

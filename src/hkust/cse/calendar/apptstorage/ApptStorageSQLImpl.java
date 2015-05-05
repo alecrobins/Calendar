@@ -962,6 +962,47 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    return userID;
 	}
 	
+	public User getUser(String username){
+		Connection c = null;
+	    Statement stmt = null;
+	    
+	    User user = null;
+
+	    try {
+	      Class.forName("org.sqlite.JDBC");
+	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	      c.setAutoCommit(false);
+	      System.out.println("Opened database successfully");
+	      
+	      stmt = c.createStatement();
+	      PreparedStatement query;
+	      
+	      query = c.prepareStatement( 
+	    		  "select id, username, password, first_name, last_name, email, isAdmin " +
+	    		  "from user where username = ?");
+	      
+	      query.setString(1, username);
+	      
+	      ResultSet rs = query.executeQuery();
+	      
+	      // go through results
+	      while ( rs.next() ) {
+	    	  // add the user
+	    	  user = formatUser(rs);
+	      }
+	      
+	      rs.close();
+	      stmt.close();
+	      c.close();
+		    
+	    } catch ( Exception e1 ) {
+	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+	      System.exit(0);
+	    }
+	    
+	    return user;
+	}
+	
 	// delete the user with the given userID
 	public void deleteUser(int userID){
 		
@@ -1126,19 +1167,6 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		      System.exit(0);
 		    }	      
 	}
-	
-	// N/A -> needs to be done in the controller
-	// checks the validity of an event against the db
-	public boolean isEventValid(Appt event){
-		return false;
-	}
-	
-	// N/A -> need to be done in the controller
-	//checks the validity of the event against all users schedules
-	public boolean isGroupEventValid(List<User> users, int groupID){
-		return false;
-	}
-	
 	
 	// return the user calendars for all listed users
 	// NOTE: This will not include private events from other users
