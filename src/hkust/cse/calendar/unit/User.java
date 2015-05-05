@@ -12,7 +12,10 @@ public class User implements Serializable {
 	private int id;						// User id
 	private boolean isAdmin;
 	private String username;
-
+	private String firstname;
+	private String lastname;
+	private String email;
+	
 	// Getter of the user id
 	public int getID() {		
 		return id;
@@ -30,6 +33,16 @@ public class User implements Serializable {
 		password = _password;
 		id = _id; 
 		isAdmin = _isAdmin;
+	}
+	
+	// Constructor of class 'User' which set up the user id and password
+	public User(String _username, String _password, String _firstname, String _lastname, String _email, boolean _isAdmin) {
+		username = _username;
+		password = _password;
+		isAdmin = _isAdmin;
+		setFirstname(_firstname);
+		setLastname(_lastname);
+		setEmail(_email);
 	}
 
 	// Another getter of the user id
@@ -53,5 +66,33 @@ public class User implements Serializable {
 	// Setter of the user password
 	public void Password(String pass) {
 		password = pass;
+	}
+
+	public String getFirstname() {
+		return firstname;
+	}
+
+	public void setFirstname(String firstname) {
+		this.firstname = firstname;
+	}
+
+	public String getLastname() {
+		return lastname;
+	}
+
+	public void setLastname(String lastname) {
+		this.lastname = lastname;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	
+	public void setID(int _id){
+		this.id = _id;
 	}
 }
