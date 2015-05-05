@@ -29,7 +29,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	private User defaultUser = null;
 	
 	//TODO: eventually switch out dummyUser with the default User 
-	private User dummyUser = new User(1, "pizzapi", "1234", true);
+	private User dummyUser = new User(4, "alecrobins", "1", true);
 
 	public ApptStorageSQLImpl( User user )
 	{
@@ -378,7 +378,6 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	
 	// NOTIFICATIONS 
 	// ===================
-// NOTIFICATIONS 
 	
 	@Override
 	public void addNotification(TimeSpan ts) {
@@ -410,6 +409,17 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		return false;
 	}
 
+	// Get all the events for a user (this includes regular events & group events)
+	public List<Appt> getAllEvents(int userID){
+		List<GroupEvent> groupEvents = getGroupEvents(userID);
+		List<Appt> regularEvents = getAllRegularEvents(userID);
+		
+		// combine the lists
+		regularEvents.addAll(groupEvents);
+		
+		return regularEvents;
+	}
+	
 	@Override
 	public Appt getAppt(int id) {
 		
@@ -453,8 +463,59 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
 	      System.exit(0);
 	    }
-	    	    
 		return event;
+	}
+	
+	public List<Appt> getAllRegularEvents(int userID){
+		Connection c = null;
+	    Statement stmt = null;
+	    
+	    List<Appt> events = new ArrayList<Appt>();
+	    
+	    try {
+	      Class.forName("org.sqlite.JDBC");
+	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	      c.setAutoCommit(false);
+	      System.out.println("Opened database successfully");
+	      
+	      stmt = c.createStatement();
+	      PreparedStatement query;
+	      
+	      query = c.prepareStatement( 
+	    		  "select distinct e.id as 'id', e.startTime as 'startTime', e.endTime as 'endTime', " +
+	    		  "e.eventTitle as 'title', e.eventDescription as 'description', " +
+	    		  "e.frequency as 'frequency', e.eventReminderStart as 'reminderStart', " +
+	    		  "e.eventReminderEnd as 'reminderEnd', e.locationID as 'locationID', " +
+	    		  "e.isGroup as 'isGroup', e.isPublic as 'isPublic' " +
+	    		  "from event e, userEvent ue " +
+	    		  "where ue.userID = ? "+
+	    		  "and e.id = ue.eventID;");
+	      
+	      query.setInt(1, userID); 
+	      
+	      ResultSet rs = query.executeQuery();
+	      
+	      // go through results
+	      while ( rs.next() ) {
+	    	  // return the event
+	  	     Event event = null;
+	    	 event = formatEvent(rs);
+	    	 // put onto events
+	    	 events.add(event);
+	         System.out.println(event.toString());
+	      }
+	      
+	      rs.close();
+	      stmt.close();
+	      c.close();
+		    
+	    } catch ( Exception e1 ) {
+	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+	      System.exit(0);
+	    }
+	    
+	    return events;
+	    
 	}
 	
 	// get all the events for a user give the userID
@@ -551,7 +612,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    return groupIDs;
 	}
 	
-	// get the group event information
+	// get the group event information for the given user
 	public GroupEvent getGroupEvent(int groupID){
 		Connection c = null;
 	    Statement stmt = null;
@@ -732,7 +793,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		Connection c = null;
 	    Statement stmt = null;
 	    boolean success = false;
-	    
+	    String userPassword = "";
 	    try {
 	      Class.forName("org.sqlite.JDBC");
 	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
@@ -745,13 +806,16 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      query = c.prepareStatement("select password from user where username = ?;");
 	      query.setString(1, username);
 	      
-	      ResultSet rs = query.executeQuery();
-	      rs.next();
 	      
-	      String userPassword = rs.getString("password");
+	      ResultSet rs = query.executeQuery();
+	   // go through results
+	      while ( rs.next() ) {
+	    	  // add the user IDS to teh list
+	    	  userPassword = rs.getString("password");
+	      }
 	      
 	      // check that the password matches
-	      if( !(userPassword == null || userPassword == "") && userPassword == password )
+	      if( !(userPassword == null || userPassword == "") && userPassword.equals(password) )
 	    	  	success = true;
 	      
 	      query.close();
@@ -766,29 +830,339 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		return success;
 	}
 	
+	// return a list of all the user
+	public List<User> getListOfAllUsers() {
+		Connection c = null;
+	    Statement stmt = null;
+	    
+	    List<User> users = new ArrayList<User>();
+
+	    try {
+	      Class.forName("org.sqlite.JDBC");
+	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	      c.setAutoCommit(false);
+	      System.out.println("Opened database successfully");
+	      
+	      stmt = c.createStatement();
+	      PreparedStatement query;
+	      
+	      query = c.prepareStatement( 
+	    		  "select id, username, password, first_name, last_name, email, isAdmin " +
+	    		  "from user");
+	      
+	      ResultSet rs = query.executeQuery();
+	      
+	      // go through results
+	      while ( rs.next() ) {
+	    	  // add the user
+	    	  users.add(formatUser(rs));
+	      }
+	      
+	      rs.close();
+	      stmt.close();
+	      c.close();
+		    
+	    } catch ( Exception e1 ) {
+	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+	      System.exit(0);
+	    }
+	    
+	    return users;
+	}
+	
+	// this returns whether the user name is availiable
+	public boolean isUserNameAvailable(String username){
+		Connection c = null;
+	    Statement stmt = null;
+	    
+	    boolean available = true;
+
+	    try {
+	      Class.forName("org.sqlite.JDBC");
+	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	      c.setAutoCommit(false);
+	      System.out.println("Opened database successfully");
+	      
+	      stmt = c.createStatement();
+	      PreparedStatement query;
+	      
+	      query = c.prepareStatement( 
+	    		  "select username " +
+	    		  "from user where username = ?");
+	      query.setString(1, username);
+	      
+	      ResultSet rs = query.executeQuery();
+	      
+	      // go through results
+	      while ( rs.next() ) {
+	    	  // add the user
+	    	  String returnedName = rs.getString("username");
+	    	  if(username != null || username != "")
+	    		  available = false;
+	      }
+	      
+	      rs.close();
+	      stmt.close();
+	      c.close();
+		    
+	    } catch ( Exception e1 ) {
+	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+	      System.exit(0);
+	    }
+	    
+	    return available;
+	}
+	
+	// save a user
+	// This function will return the userID
+	public int createUser(User u){
+		Connection c = null;
+	    Statement stmt = null;
+	    
+	    // set teh eventID
+	    int userID = -1;
+
+	    try {
+	      Class.forName("org.sqlite.JDBC");
+	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	      c.setAutoCommit(false);
+	      System.out.println("Opened database successfully");
+	      
+	      stmt = c.createStatement();
+	      PreparedStatement query;
+	      
+	      query = c.prepareStatement("insert into user (id, username, password, first_name, last_name, email, isAdmin) " +
+		    		"values (null, ?, ?, ?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
+	      
+	      // assign variables
+	      query.setString(1, u.getUsername());
+	      query.setString(2, u.Password());
+	      query.setString(3, u.getFirstname());
+	      query.setString(4, u.getLastname());
+	      query.setString(5, u.getEmail());
+	      query.setBoolean(6, u.isAdmin());
+	      
+	      boolean done = query.execute();
+	      
+		  // Get the generated key from the event creation
+	      ResultSet rs = stmt.getGeneratedKeys();
+		  rs.next();
+		  userID = rs.getInt(1);
+		 
+		  done = query.execute();
+    	   
+	      // commit
+	      c.commit();
+	      
+	      query.close();
+	      stmt.close();
+	      c.close();
+		    
+	    } catch ( Exception e1 ) {
+	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+	      System.exit(0);
+	    }
+	    
+	    return userID;
+	}
+	
+	// delete the user with the given userID
+	public void deleteUser(int userID){
+		
+		Connection c = null;
+	    Statement stmt = null;
+
+	    try {
+	      Class.forName("org.sqlite.JDBC");
+	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	      c.setAutoCommit(false);
+	      System.out.println("Opened database successfully");
+	      
+	      stmt = c.createStatement();
+	      PreparedStatement query;
+	      
+	      query = c.prepareStatement("delete from user " +
+		    		"where id = ?");
+	      
+	      query.setInt(1, userID);
+	      
+	      boolean done = query.execute();
+   	   
+	      // commit
+	      c.commit();
+	      
+	      query.close();
+	      stmt.close();
+	      c.close();
+		    
+	    } catch ( Exception e1 ) {
+	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+	      System.exit(0);
+	    }
+	    
+		
+	}
+	
 	//check to see if every user validated the group event
+	// NOTE IF the group is validated then group will be noted as validated in teh DB
 	public boolean isGroupEventValidated(int groupID){
-		return false;
+
+		List<Integer> users = getGroupUserIDs(groupID);
+		boolean confirmed = true;
+		
+		Connection c = null;
+	    Statement stmt = null;
+	    
+		for(int i = 0; i < users.size(); ++i){
+			
+			try {
+			      Class.forName("org.sqlite.JDBC");
+			      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+			      c.setAutoCommit(false);
+			      System.out.println("Opened database successfully");
+			      
+			      stmt = c.createStatement();
+			      PreparedStatement query;
+			      
+			      query = c.prepareStatement("select approved from groupUser where userID = ? and eventID = ?;");
+			      query.setInt(1, users.get(i));
+			      query.setInt(2, groupID);
+			      
+			      
+			      ResultSet rs = query.executeQuery();
+			      // go through results
+			      while ( rs.next() ) {
+			    	  // add the user IDS to teh list
+			    	  boolean isApproved = rs.getBoolean("approved");
+			    	  // if the user(i) did not approve then confirmed is false
+			    	  // then break out of loop.
+			    	  if(!isApproved){
+			    		  confirmed = false;
+			    		  break;
+			    	  }
+			      }
+			      
+			      query.close();
+			      stmt.close();
+			      c.close();
+				    
+			    } catch ( Exception e1 ) {
+			      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+			      System.exit(0);
+			    }
+			      
+		}
+		// If the user exits the loop w/o changing the cofirmed value then the event is confirmed
+		
+		if(confirmed)
+			confirmGroupEvent(groupID);
+		
+		return confirmed;
 	}
 	
-	// validate the group event for the given user
-	public boolean validateGroupEvent(int groupID){
-		return false;
+	// confirm the given group event
+	public void confirmGroupEvent(int groupID){
+		Connection c = null;
+	    Statement stmt = null;
+		
+		try {
+		      Class.forName("org.sqlite.JDBC");
+		      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+		      c.setAutoCommit(false);
+		      System.out.println("Opened database successfully");
+		      
+		      stmt = c.createStatement();
+		      PreparedStatement query;
+		      
+		      query = c.prepareStatement("update groupEvent set confirmed = ? "+
+		    		  					 "where eventID = ?");
+		      // approve the appropiate event
+		      query.setBoolean(1, true);
+		      query.setInt(2, groupID);
+		      
+		      boolean done = query.execute();
+		      
+		      // commit
+		      c.commit();
+		      
+		      query.close();
+		      stmt.close();
+		      c.close();
+			    
+		    } catch ( Exception e1 ) {
+		      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+		      System.exit(0);
+		    }
 	}
 	
+	// validate the group event for the passed in user
+	public void approveGroupEvent(int groupID, int userID){
+		Connection c = null;
+	    Statement stmt = null;
+		
+		try {
+		      Class.forName("org.sqlite.JDBC");
+		      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+		      c.setAutoCommit(false);
+		      System.out.println("Opened database successfully");
+		      
+		      stmt = c.createStatement();
+		      PreparedStatement query;
+		      
+		      query = c.prepareStatement("update groupUser set approved = ? "+
+		    		  					 "where eventID = ? and userID = ?");
+		      // approve the appropiate event
+		      query.setBoolean(1, true);
+		      query.setInt(2, groupID);
+		      query.setInt(3, userID);
+		      
+		      boolean done = query.execute();
+		      
+		      // commit
+		      c.commit();
+		      
+		      query.close();
+		      stmt.close();
+		      c.close();
+			    
+		    } catch ( Exception e1 ) {
+		      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+		      System.exit(0);
+		    }	      
+	}
+	
+	// N/A -> needs to be done in the controller
 	// checks the validity of an event against the db
 	public boolean isEventValid(Appt event){
 		return false;
 	}
 	
+	// N/A -> need to be done in the controller
 	//checks the validity of the event against all users schedules
 	public boolean isGroupEventValid(List<User> users, int groupID){
 		return false;
 	}
 	
+	
 	// return the user calendars for all listed users
-	public HashMap<User,List<Appt>> getUsersAppts(List<User> users){
-		return null;
+	// NOTE: This will not include private events from other users
+	// (userId) -> List<Appt>
+	public HashMap<Integer,List<Appt>> getUsersAppts(){
+		// get all the events for all the users
+		return getUsersAppts(getListOfAllUsers());
+	}
+	
+	public HashMap<Integer,List<Appt>> getUsersAppts(List<User> _users){
+		HashMap<Integer, List<Appt>> userToEvents = new HashMap<Integer, List<Appt>>();
+		List<User> users = _users;
+		
+		// iterate through all the users and gather all their events
+		for(int i = 0; i < users.size(); ++i){
+			int userID = users.get(i).getID();
+			userToEvents.put(userID, getAllRegularEvents(userID));
+		}
+			
+		return userToEvents;
 	}
 	
 	// return the user calendars for all listed users within a period
@@ -811,40 +1185,51 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		return false;
 	}
 	
-	// delete a user (need to check if the current user is an admin)
-	public boolean deleteUser(User user){
-		return false;
-	}
-	
 	// modify the user settings by replacing the user stored
 	// return newly created user
-	public User modifyUser(User newUser){
-		return null;
+	public void modifyUser(User newUser){
 	}
 	
 	// modify other user setting as an admin
 	// return newly created user
-	public User modifyOtherUser(User newUser){
-		return null;
+	public void modifyOtherUser(User newUser){
 	}
 	
 	// create a new location
-	// return the new location
-	public Location createLocation(Location location){
-		return null;
+	// return the new location's id
+	public int createLocation(Location location){
+		return -1;
 	}
 	
 	// modify the locatoin (only can be done by the admin)
 	// return the newly modified location
-	public Location modifyLocation(Location location){
-		return null;
+	public void modifyLocation(Location location){
+	}
+	
+	// delete the location given the location id
+	public void deleteLocation(int locationID){
+		
 	}
 	
 	// helper functions
 	// =====================
-		// create user
+
+	// create user
 	private User formatUser(ResultSet rs) throws SQLException{
-		return null;
+
+		// Gather data
+   	 	int id = rs.getInt("id");
+   	 	String username = rs.getString("username");
+   	 	String password = rs.getString("password");
+	 	String firstname = rs.getString("first_name");
+	 	String lastname = rs.getString("last_name");
+	 	String email = rs.getString("email");
+	 	boolean isAdmin = rs.getBoolean("isAdmin");
+
+	 	User newUser = new User(username, password, firstname, lastname, email, isAdmin);
+	 	newUser.setID(id);
+	 	
+   	 	return newUser;
 	}
 	
 	private Event formatEvent(ResultSet rs) throws SQLException {
@@ -899,6 +1284,12 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		String name = rs.getString("name");
 		boolean isGroup = rs.getBoolean("isGroupFacility");
 		return new Location(id, name, isGroup);
+	}
+
+	@Override
+	public boolean findNotification(TimeSpan ts) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 

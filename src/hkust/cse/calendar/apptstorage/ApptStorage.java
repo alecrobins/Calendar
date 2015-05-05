@@ -45,6 +45,8 @@ public abstract class ApptStorage {
 	
 	public abstract boolean isApptValid(Appt appt);
 	
+	public abstract boolean findNotification(TimeSpan ts);	//abstract method to check the existence of a notification
+	
 	public abstract void addNotification(TimeSpan ts);	//abstract method to add a new notification
 	
 	public abstract void deleteNotification(TimeSpan ts);	//abstract method to delete a notification

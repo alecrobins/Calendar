@@ -63,6 +63,20 @@ public class TimeSpan implements Serializable {
 			return result;
 	}
 
+	/* Return a TimeSpan n days later */
+	public TimeSpan daysAfter(int n) {
+		Timestamp ts = new Timestamp(mStartTime.getYear(), mStartTime.getMonth(), mStartTime.getDate() + n, mStartTime.getHours(), mStartTime.getMinutes(), mStartTime.getSeconds(), 0);
+		Timestamp te = new Timestamp(mEndTime.getYear(), mEndTime.getMonth(), mEndTime.getDate() + n, mEndTime.getHours(), mEndTime.getMinutes(), mEndTime.getSeconds(), 0);
+		return new TimeSpan(ts, te);
+	}
+	
+	/* Return a TimeSpan n months later */
+	public TimeSpan monthsAfter(int n) {
+		Timestamp ts = new Timestamp(mStartTime.getYear(), mStartTime.getMonth() + n, mStartTime.getDate(), mStartTime.getHours(), mStartTime.getMinutes(), mStartTime.getSeconds(), 0);
+		Timestamp te = new Timestamp(mEndTime.getYear(), mEndTime.getMonth() + n, mEndTime.getDate(), mEndTime.getHours(), mEndTime.getMinutes(), mEndTime.getSeconds(), 0);
+		return new TimeSpan(ts, te);
+	}
+	
 	/* Set the starting time */
 	public void StartTime(Timestamp s) {
 		mStartTime = s;

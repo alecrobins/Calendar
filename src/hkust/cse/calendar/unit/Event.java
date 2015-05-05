@@ -156,6 +156,20 @@ public class Event extends Appt {
 		return eventReminder;
 	}
 	
+	public TimeSpan getNextNotification() {
+		switch (eventFrequency) {
+		case ONETIME:
+			return null;
+		case DAILY:
+			return eventReminder.daysAfter(1);
+		case WEEKLY:
+			return eventReminder.daysAfter(7);
+		case MONTHLY:
+			return eventReminder.monthsAfter(1);
+		}
+		return null;
+	}
+	
 	public void setNotification(TimeSpan ts) {
 		eventReminder = ts;
 	}

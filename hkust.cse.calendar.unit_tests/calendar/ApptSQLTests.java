@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.io.InvalidClassException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import hkust.cse.calendar.apptstorage.ApptStorageSQLImpl;
@@ -22,7 +23,7 @@ public class ApptSQLTests {
 	
 	private ApptStorageSQLImpl db;
 	//TODO: eventually switch out dummyUser with the default User 
-	private User dummyUser = new User(1, "pizzapi", "1234", true);
+	private User dummyUser = new User(4, "alecrobins", "1", true);
 	
 	public ApptSQLTests(){
 		db = new ApptStorageSQLImpl();
@@ -76,7 +77,7 @@ public class ApptSQLTests {
 		
 		testEvent.setIsPublic(true);
 		
-//		 db.SaveAppt(testEvent);
+//		db.SaveAppt(testEvent);
 		
 		// WORKS !
 		
@@ -209,18 +210,18 @@ public class ApptSQLTests {
 	
 	@Test
 	public void testCreateGroupEvent() {
-		Timestamp t1 = new Timestamp(184400);
-		Timestamp t2 = new Timestamp(189600);
+		Timestamp t1 = new Timestamp(284400);
+		Timestamp t2 = new Timestamp(289600);
 		TimeSpan eventTime = new TimeSpan(t1, t2);
 		
-		Timestamp r1 = new Timestamp(181400);
-		Timestamp r2 = new Timestamp(183400);
+		Timestamp r1 = new Timestamp(281400);
+		Timestamp r2 = new Timestamp(283400);
 		TimeSpan eventReminder = new TimeSpan(r1, r2);
 		
-		String title = "First Group Event";
-		String description = " Group event Description ";
+		String title = "Second Group Event";
+		String description = " Second Group event Description ";
 		String addDescription = "additional goes here . . ";
-		int eventLocationID = 2; 
+		int eventLocationID = 3; 
 		Frequency f = Frequency.ONETIME;
 		
 		GroupEvent testGroupEvent = new GroupEvent(eventTime, title, description, eventLocationID,
@@ -233,10 +234,10 @@ public class ApptSQLTests {
 		testGroupEvent.setApproved(false);
 		
 		List<Integer> testUsers = new ArrayList<Integer>();
-		testUsers.add(4);
 		testUsers.add(5);
 		testUsers.add(6);
-		
+		testUsers.add(7);
+//		
 //		// save the dummy group event
 //		try {
 //			db.createGroupEvent(testUsers, testGroupEvent);
@@ -280,6 +281,91 @@ public class ApptSQLTests {
 		assertTrue(db.logInUser("alecrobins", "1"));
 		assertFalse(db.logInUser("alecrobins", "12"));
 		assertFalse(db.logInUser("notauser", "aa"));
+	}
+	
+	@Test
+	public void testIsGroupEventValidated() {
+		assertTrue(db.isGroupEventValidated(25));
+	}
+	
+	@Test
+	public void testApproveGroupEvent(){
+		
+		db.approveGroupEvent(25, 4);
+		db.approveGroupEvent(25, 5);
+		db.approveGroupEvent(25, 6);
+		
+		// Confirmed worked
+	}
+	
+	@Test
+	public void testCreateUser(){
+		User testUser = new User("alekslars", "pass123", "Aleks", "Larsen", "alars@yahoo.com", false);
+//		int userID = db.createUser(testUser);
+//		testUser.setID(userID);
+		
+//		assertTrue(testUser.getID() != -1);
+		
+		// WORKS !
+	}
+	
+	@Test
+	public void testDeleteUser() {
+//		db.deleteUser(8);
+		
+		// WORKS !
+	}
+	
+	@Test
+	public void testGetAllUsers () {
+		List<User> users = db.getListOfAllUsers();
+		System.out.println("GOT ALL THE USERS . . . . ");
+		
+		for(int i = 0; i < users.size(); ++i){
+			System.out.println(users.get(i).toString());
+		}
+		
+		// WORKS ! 
+	}
+	
+	@Test
+	public void testUserNameAvailibilty() {
+		assertFalse(db.isUserNameAvailable("alecrobins"));
+		assertTrue(db.isUserNameAvailable("brannewusername"));
+		
+		// WORKS ! 
+	}
+	
+	@Test
+	public void testGetAllUserEvents() {
+		List<Appt> events = db.getAllEvents(dummyUser.getID());
+		System.out.println();
+		System.out.println("Successfully got all the user events --------");
+		for(int i = 0; i < events.size(); ++i){
+			events.get(i).toString();
+		}
+		// WORKS ! 
+	}
+	
+	@Test
+	public void testGettingAllTheEventsForAListOfUsers() {
+		HashMap<Integer,List<Appt>> userToEvents = db.getUsersAppts();
+		
+		for (HashMap.Entry<Integer, List<Appt>> entry : userToEvents.entrySet()) {
+			int key = entry.getKey();
+			List<Appt> value = entry.getValue();
+			System.out.println("------------------------");
+			System.out.println(key);
+			System.out.println("~~~");
+			// print all the events
+			for(Appt event : value){
+				event.toString();
+			}
+			
+		}
+		
+		// WORKS ! 
+		
 	}
 
 }
