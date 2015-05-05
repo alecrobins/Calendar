@@ -55,8 +55,6 @@ public class GroupSlotPicker extends JDialog implements ActionListener,
 	private int INTERVAL_PER_HOUR = 4;
 	
 	// Old labels
-	private JLabel yearL;
-	private JTextField yearF;
 	private JLabel monthL;
 	private JTextField monthF;
 	private JLabel dayL;
@@ -71,12 +69,7 @@ public class GroupSlotPicker extends JDialog implements ActionListener,
 	private JTextField eTimeM;
 	
 	// Additional UI elements
-	private JLabel locationDL;
-	private JComboBox locationD; // drop down button
-	private JLabel frequencyDL;
-	private JComboBox frequencyD; 
-	private JLabel yearDL;
-	private JComboBox yearD; 
+
 	private JLabel monthDL;
 	private JComboBox monthD; 
 	private JLabel dayDL;
@@ -90,22 +83,6 @@ public class GroupSlotPicker extends JDialog implements ActionListener,
 	private JLabel eTimeMDL;
 	private JComboBox eTimeMD;
 	
-	// reminder UI
-	private JLabel yearReminderDL;
-	private JComboBox yearReminderD; 
-	private JLabel monthReminderDL;
-	private JComboBox monthReminderD; 
-	private JLabel dayReminderDL;
-	private JComboBox dayReminderD; 
-	private JLabel timeReminderHDL;
-	private JComboBox timeReminderHD; 
-	private JLabel timeReminderMDL;
-	private JComboBox timeReminderMD; 
-	
-
-	private DefaultListModel model;
-	private JTextField titleField;
-
 	private JButton saveBut;
 	private JButton CancelBut;
 	private JButton inviteBut;
@@ -117,8 +94,6 @@ public class GroupSlotPicker extends JDialog implements ActionListener,
 	private boolean isChanged = true;
 	private boolean isJoint = false;
 
-	private JTextArea detailArea;
-	
 	private final String[] months = { "January", "Feburary", "March", "April",
 			"May", "June", "July", "August", "September", "October",
 			"November", "December" };
@@ -160,11 +135,6 @@ public class GroupSlotPicker extends JDialog implements ActionListener,
 		pDate.setBorder(dateBorder);
 		
 		// New Date
-		yearDL = new JLabel("YEAR: ");
-		pDate.add(yearDL);
-		yearD = new JComboBox();
-		yearD = loadYear("app");
-		pDate.add(yearD);
 		monthDL = new JLabel("MONTH: ");
 		pDate.add(monthDL);
 		monthD = new JComboBox();
@@ -207,67 +177,12 @@ public class GroupSlotPicker extends JDialog implements ActionListener,
 		eTimeMD = loadMinutesInterval();
 		peTime.add(eTimeMD);
 		
-		// Location panel
-		JPanel pLocation = new JPanel();
-		Border locationBorder = new TitledBorder(null, "Location");
-		pLocation.setBorder(locationBorder);
-		locationDL = new JLabel("Place");
-		pLocation.add(locationDL);
-		locationD = new JComboBox();
-		locationD = loadLocations();
-		pLocation.add(locationD);
-		
-		// Frequency panel
-		JPanel pFrequency = new JPanel();
-		Border frequencyBorder = new TitledBorder(null, "Frequency");
-		pFrequency.setBorder(frequencyBorder);
-		frequencyDL = new JLabel("Event Frequency");
-		pFrequency.add(frequencyDL);
-		frequencyD = new JComboBox();
-		frequencyD = loadFrequency();
-		pFrequency.add(frequencyD);
-		
-		// Reminder Pannel
-		JPanel pReminder = new JPanel();
-		Border reminderBorder = new TitledBorder(null, "REMINDER");
-		pReminder.setBorder(reminderBorder);
-			// Reminder Date
-		yearReminderDL = new JLabel("YEAR: ");
-		pReminder.add(yearReminderDL);
-		yearReminderD = new JComboBox();
-		yearReminderD = loadYear("rem");
-		pReminder.add(yearReminderD);
-		monthReminderDL = new JLabel("MONTH: ");
-		pReminder.add(monthReminderDL);
-		monthReminderD = new JComboBox();
-		monthReminderD = loadMonth("rem");
-		pReminder.add(monthReminderD);
-		dayReminderDL = new JLabel("DAY: ");
-		pReminder.add(dayReminderDL);
-		dayReminderD = new JComboBox();
-		dayReminderD = loadDay("rem");
-		pReminder.add(dayReminderD);
-			// Reminder Time
-		timeReminderHDL = new JLabel("Hour");
-		pReminder.add(timeReminderHDL);
-		timeReminderHD = new JComboBox();
-		timeReminderHD = loadHour("rem");
-		pReminder.add(timeReminderHD);
-		timeReminderMDL = new JLabel("Minute");
-		pReminder.add(timeReminderMDL);
-		timeReminderMD = new JComboBox();
-		timeReminderMD = loadMinutes();
-		pReminder.add(timeReminderMD);
 
+	
 		JPanel pTime = new JPanel();
 		pTime.setLayout(new BorderLayout());
 		pTime.add("West", psTime);
 		pTime.add("East", peTime);
-		
-		JPanel pExtra = new JPanel();
-		pExtra.setLayout(new BorderLayout());
-		pExtra.add("West", pLocation);
-		pExtra.add("East", pFrequency);
 
 		JPanel top = new JPanel();
 		top.setLayout(new BorderLayout());
@@ -278,38 +193,11 @@ public class GroupSlotPicker extends JDialog implements ActionListener,
 		innerTop.setBorder(new BevelBorder(BevelBorder.RAISED));
 		innerTop.add(pDate, BorderLayout.NORTH);
 		innerTop.add(pTime, BorderLayout.CENTER);
-		innerTop.add(pExtra, BorderLayout.SOUTH);
 		
 		top.add("North", innerTop);
-		top.add("Center", pReminder);
 
 		contentPane.add("North", top);
-
-		JPanel titleAndTextPanel = new JPanel();
-		JLabel titleL = new JLabel("TITLE");
-		titleField = new JTextField(15);
-		titleAndTextPanel.add(titleL);
-		titleAndTextPanel.add(titleField);
-
-		detailPanel = new JPanel();
-		detailPanel.setLayout(new BorderLayout());
-		Border detailBorder = new TitledBorder(null, "Appointment Description");
-		detailPanel.setBorder(detailBorder);
-		detailArea = new JTextArea(20, 30);
-		
-		detailArea.setEditable(true);
-		JScrollPane detailScroll = new JScrollPane(detailArea);
-		detailPanel.add(detailScroll);
-
-		pDes = new JSplitPane(JSplitPane.VERTICAL_SPLIT, titleAndTextPanel,
-				detailPanel);
-
-		top.add(pDes, BorderLayout.SOUTH);
-
-		if (NewAppt != null) {
-			detailArea.setText(NewAppt.getInfo());
-
-		}
+ 
 		
 		JPanel panel2 = new JPanel();
 		panel2.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -538,13 +426,8 @@ public class GroupSlotPicker extends JDialog implements ActionListener,
 	private int[] getValidDate() {
 
 		int[] date = new int[3];
-		date[0] = Utility.getNumber(yearF.getText());
+		date[0] = 0;
 		date[1] = Utility.getNumber(monthF.getText());
-		if (date[0] < 1980 || date[0] > 2100) {
-			JOptionPane.showMessageDialog(this, "Please input proper year",
-					"Input Error", JOptionPane.ERROR_MESSAGE);
-			return null;
-		}
 		if (date[1] <= 0 || date[1] > 12) {
 			JOptionPane.showMessageDialog(this, "Please input proper month",
 					"Input Error", JOptionPane.ERROR_MESSAGE);
@@ -626,67 +509,71 @@ public class GroupSlotPicker extends JDialog implements ActionListener,
 		System.out.println("YOU HAVE SAVED THE INFORMATION");
 		// Get all the fields from the form
 		// check if null before assignment
-		String _year = yearD.getSelectedItem() == null ? null : yearD.getSelectedItem().toString();
+
 		String _month = monthD.getSelectedItem() == null ? null : monthD.getSelectedItem().toString();
 		String _day = dayD.getSelectedItem() == null ? null : dayD.getSelectedItem().toString();
-		String _sTimeH = yearD.getSelectedItem() == null ? null : sTimeHD.getSelectedItem().toString();
+
+		String _sTimeH = sTimeHD.getSelectedItem() == null ? null : sTimeHD.getSelectedItem().toString();
 		String _sTimeM = sTimeMD.getSelectedItem() == null ? null : sTimeMD.getSelectedItem().toString();
 		String _eTimeH = eTimeHD.getSelectedItem() == null ? null : eTimeHD.getSelectedItem().toString();
 		String _eTimeM = eTimeMD.getSelectedItem() == null ? null : eTimeMD.getSelectedItem().toString();
-		String _detailArea = detailArea.getText() == null ? null : detailArea.getText();
-		String _titleField = titleField.getText() == null ? null : titleField.getText();
-		// Reminder
-		String _timeReminderH = timeReminderHD.getSelectedItem() == null ? null : timeReminderHD.getSelectedItem().toString();
-		String _timeReminderM = timeReminderMD.getSelectedItem() == null ? null : timeReminderMD.getSelectedItem().toString();
-		String _yearReminder = yearReminderD.getSelectedItem() == null ? null : yearReminderD.getSelectedItem().toString();
-		String _monthReminder = monthReminderD.getSelectedItem() == null ? null : monthReminderD.getSelectedItem().toString();
-		String _dayReminder = dayReminderD.getSelectedItem() == null ? null : dayReminderD.getSelectedItem().toString();
-		// Location & Frequency
-		String _location = locationD.getSelectedItem() == null ? null : locationD.getSelectedItem().toString();
-		String _frequency = frequencyD.getSelectedItem() == null ? null : frequencyD.getSelectedItem().toString();
+
+		int month =  Integer.parseInt(_month);
+		int day =  Integer.parseInt(_day);
 		
-		System.out.println("Creating event . . . ");
+		int startH = Integer.parseInt(_sTimeH);
+		int startM = Integer.parseInt(_sTimeM);
+		int endH = Integer.parseInt(_eTimeH);
+		int endM = Integer.parseInt(_eTimeM);
+		
+		
+		Timestamp start = new Timestamp(parent.currentY, month, day, startH, startM, 0, 0);
+		Timestamp end = new Timestamp(parent.currentY, month, day, endH, endM, 0, 0);
+		TimeSpan slot = new TimeSpan(start, end);
+		
+		//need to send this slot over to 
+		
 		
 		// CREATE THE EVENT
 		// returns an EventReturnMessage - determines if successful or details an error
-		EventReturnMessage returnMessage = eventController.createEvent(
-				_year, _month, _day,
-				_sTimeH, _sTimeM, _eTimeH, _eTimeM,
-				_detailArea, _titleField,
-				_timeReminderH, _timeReminderM, _yearReminder, _monthReminder, _dayReminder,
-				_frequency, _location, parent);
+//		EventReturnMessage returnMessage = eventController.createEvent(
+//				_year, _month, _day,
+//				_sTimeH, _sTimeM, _eTimeH, _eTimeM,
+//				_detailArea, _titleField,
+//				_timeReminderH, _timeReminderM, _yearReminder, _monthReminder, _dayReminder,
+//				_frequency, _location, parent);
 		//
 		//SUCCESS, ERROR_TIME_FORMAT, ERROR_PAST_DATE, ERROR_UNFILLED_REQUIRED_FIELDS,
 		//ERROR_REMINDER, ERROR_EVENT_OVERLAP, ERROR_SECOND_DATE_PAST, ERROR
-		switch (returnMessage){
-			case SUCCESS :
-				setVisible(false);
-				dispose(); // remove
-				parent.repaint();
-				System.out.println("success");
-				break; 
-			case ERROR_TIME_FORMAT :
-				alertMessage("There is an error with the format of your time. Make sure it has the proper format");
-				break;
-			case ERROR_PAST_DATE :
-				alertMessage("You cannot create an event from a past date. Please resubmit the event.");
-				break;
-			case ERROR_UNFILLED_REQUIRED_FIELDS :
-				alertMessage("You have some unfilled required fields. Please check and fill out the required fields.");
-				break;
-			case ERROR_REMINDER :
-				alertMessage("There is problem with your reminder. Please ensure your reminder date is before the event and all fields are filled out.");
-				break;
-			case ERROR_EVENT_OVERLAP :
-				alertMessage("You already have an event at that time! Please find a new date for that event. ");
-				break;
-			case ERROR_SECOND_DATE_PAST :
-				alertMessage("Your end date can't be before your start date. Please resubmit. ");
-				break;
-			default : 
-				alertMessage("Something you did was not right. Review your event. ");
-				break;
-		}
+//		switch (returnMessage){
+//			case SUCCESS :
+//				setVisible(false);
+//				dispose(); // remove
+//				parent.repaint();
+//				System.out.println("success");
+//				break; 
+//			case ERROR_TIME_FORMAT :
+//				alertMessage("There is an error with the format of your time. Make sure it has the proper format");
+//				break;
+//			case ERROR_PAST_DATE :
+//				alertMessage("You cannot create an event from a past date. Please resubmit the event.");
+//				break;
+//			case ERROR_UNFILLED_REQUIRED_FIELDS :
+//				alertMessage("You have some unfilled required fields. Please check and fill out the required fields.");
+//				break;
+//			case ERROR_REMINDER :
+//				alertMessage("There is problem with your reminder. Please ensure your reminder date is before the event and all fields are filled out.");
+//				break;
+//			case ERROR_EVENT_OVERLAP :
+//				alertMessage("You already have an event at that time! Please find a new date for that event. ");
+//				break;
+//			case ERROR_SECOND_DATE_PAST :
+//				alertMessage("Your end date can't be before your start date. Please resubmit. ");
+//				break;
+//			default : 
+//				alertMessage("Something you did was not right. Review your event. ");
+//				break;
+//		}
 		
 //		if(EventReturnMessage.SUCCESS == returnMessage){
 //			//close the window
@@ -746,14 +633,13 @@ public class GroupSlotPicker extends JDialog implements ActionListener,
 	}
 	
 	private void allDisableEdit(){
-		yearF.setEditable(false);
+
 		monthF.setEditable(false);
 		dayF.setEditable(false);
 		sTimeH.setEditable(false);
 		sTimeM.setEditable(false);
 		eTimeH.setEditable(false);
 		eTimeM.setEditable(false);
-		titleField.setEditable(false);
-		detailArea.setEditable(false);
+
 	}
 }
