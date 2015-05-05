@@ -131,6 +131,42 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		return location;
 	}
 	
+	// return a list of all the possible locations
+	public List<Location> getAllLocations(){
+		Connection c = null;
+	    Statement stmt = null;
+	    
+	    // return the event
+	    List<Location> locations = new ArrayList<Location>();
+	    
+	    try {
+	      Class.forName("org.sqlite.JDBC");
+	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	      c.setAutoCommit(false);
+	      System.out.println("Opened database successfully");
+	      
+	      stmt = c.createStatement();
+	      String sql = "select id, name, isGroupFacility from location;";
+	      
+	      ResultSet rs = stmt.executeQuery( sql );
+	      
+	      // go through results
+	      while ( rs.next() ) {
+	    	 locations.add(formatLocation(rs));
+	      }
+	      
+	      rs.close();
+	      stmt.close();
+	      c.close();
+		    
+	    } catch ( Exception e1 ) {
+	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+	      System.exit(0);
+	    }
+	    	    
+		return locations;
+	}
+	
 	@Override
 	// returns the appt id
 	public int SaveAppt(Appt _event) {
@@ -170,7 +206,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      ResultSet rs = stmt.getGeneratedKeys();
 		  rs.next();
 		  eventID = rs.getInt(1);
-		  
+
 		  // create a connection between the user and event
 		  query = c.prepareStatement("insert into userEvent (userID, eventID) values (?, ?)");
 		  query.setInt(1, dummyUser.getID());
@@ -1262,12 +1298,87 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	// modify the user settings by replacing the user stored
 	// return newly created user
 	public void modifyUser(User newUser){
+		Connection c = null;
+	    Statement stmt = null;
+		
+		try {
+		      Class.forName("org.sqlite.JDBC");
+		      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+		      c.setAutoCommit(false);
+		      System.out.println("Opened database successfully");
+		      
+		      stmt = c.createStatement();
+		      PreparedStatement query;
+		      
+		      query = c.prepareStatement("update user set username = ?, password = ?, first_name = ?, last_name = ?, email = ?, isAdmin = ? "+
+		    		  					 "where id = ?;");
+		      // approve the appropiate event
+		      query.setString(1, newUser.getUsername());
+		      query.setString(2, newUser.Password());
+		      query.setString(3, newUser.getFirstname());
+		      query.setString(4, newUser.getLastname());
+		      query.setString(5, newUser.getEmail());
+		      query.setBoolean(6, newUser.isAdmin());
+		      query.setInt(7, newUser.getID());
+		      
+		      boolean done = query.execute();
+		      
+		      // commit
+		      c.commit();
+		      
+		      query.close();
+		      stmt.close();
+		      c.close();
+			    
+		    } catch ( Exception e1 ) {
+		      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+		      System.exit(0);
+		    }
 	}
 	
 	// create a new location
 	// return the new location's id
 	public int createLocation(Location location){
-		return -1;
+		Connection c = null;
+	    Statement stmt = null;
+		
+	    int locationID = -1;
+	    
+		try {
+		      Class.forName("org.sqlite.JDBC");
+		      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+		      c.setAutoCommit(false);
+		      System.out.println("Opened database successfully");
+		      
+		      stmt = c.createStatement();
+		      PreparedStatement query;
+		      
+		      query = c.prepareStatement("insert into location (id, name, isGroupFacility) "+
+		    		  					 "values (null, ?, ?);", Statement.RETURN_GENERATED_KEYS);
+		      
+		      query.setString(1, location.getName());
+		      query.setBoolean(2, location.getIsGroupFacility());
+
+		      boolean done = query.execute();
+
+		   // Get the generated key from the event creation
+		      ResultSet rs = stmt.getGeneratedKeys();
+			  rs.next();
+			  locationID = rs.getInt(1);
+			  
+		   // commit
+		      c.commit();
+		      
+		      query.close();
+		      stmt.close();
+		      c.close();
+			    
+		    } catch ( Exception e1 ) {
+		      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+		      System.exit(0);
+		    }
+		
+		return locationID;
 	}
 	
 	// modify the locatoin (only can be done by the admin)
@@ -1352,7 +1463,11 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		int id = rs.getInt("id");
 		String name = rs.getString("name");
 		boolean isGroup = rs.getBoolean("isGroupFacility");
-		return new Location(id, name, isGroup);
+		
+		Location newLocation = new Location(name, isGroup);
+		newLocation.setLocationID(id);
+		
+		return newLocation;
 	}
 
 	@Override
@@ -1360,7 +1475,5 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
-
 
 }
