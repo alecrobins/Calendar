@@ -38,6 +38,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -104,6 +105,9 @@ ComponentListener {
 	private boolean isNew = true;
 	private boolean isChanged = true;
 	private boolean isJoint = false;
+	
+	
+	private List<JCheckBox> checkBoxList;
 
 	private JTextArea detailArea;
 
@@ -150,20 +154,19 @@ ComponentListener {
 		Border userBorder = new TitledBorder(null, "USERS");
 		pUsers.setBorder(userBorder);
 
-		numUsersL = new JLabel("Number of Users Invited: ");
-		pUsers.add(numUsersL);
-		numUsers = new JComboBox();
-		numUsers = loadMonth("app");
-		pUsers.add(numUsers);
-
+		numUsersL = new JLabel("Invite Users: ");
 
 		//load users
-		List<User> userList = new LinkedList<User>();
+		userList = new LinkedList<User>();
 		userList = this.parent.getController().getDatabase().getListOfAllUsers();
+		checkBoxList = new LinkedList<JCheckBox>();
 		for (User u: userList){
-			chinButton = new JCheckBox(""+u.getID());
-			chinButton.setSelected(true);
+			JCheckBox j = new JCheckBox(u.getUsername());
+			checkBoxList.add(j);
+			j.addActionListener(this);
+			pUsers.add(j);
 		}
+		
 		//add num panels to select each user to invite
 		// Date Panel
 		JPanel pDate = new JPanel();
@@ -373,7 +376,7 @@ ComponentListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-
+		
 		// distinguish which button is clicked and continue with require function
 		if (e.getSource() == CancelBut) {
 
@@ -509,8 +512,13 @@ ComponentListener {
 		String _month = monthD.getSelectedItem() == null ? null : monthD.getSelectedItem().toString();
 		String _day = dayD.getSelectedItem() == null ? null : dayD.getSelectedItem().toString();
 		String _numDays = numDays.getSelectedItem() == null ? null : numDays.getSelectedItem().toString();
-
-
+		
+		List<String> inviteList = new LinkedList<String>();   //a list of all the selected userID's
+		for (JCheckBox j: checkBoxList){
+			if (j.isSelected()){
+				inviteList.add(j.getLabel());
+			}
+		}
 
 		Timestamp startDay = new Timestamp(Timestamp.UTC(Integer.parseInt(_year), Integer.parseInt(_month), Integer.parseInt(_day), 8, 0, 0));
 		dates = new LinkedList<Timestamp>();

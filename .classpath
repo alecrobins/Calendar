@@ -5,10 +5,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry exported="true" kind="lib" path="libs/joda-time-2.7.jar"/>
-<<<<<<< HEAD
-	<classpathentry exported="true" kind="lib" path="/Users/alecrobins/Desktop/sqlite-jdbc-3.8.7.jar"/>
-=======
-	<classpathentry exported="true" kind="lib" path="C:/Users/Roger Min/Downloads/sqlite-jdbc-3.8.7.jar"/>
->>>>>>> 483e715a771ddb18152a3cfa34454acb22b0dc65
+	<classpathentry exported="true" kind="lib" path="/Users/aleksanderlarsen/Downloads/sqlite-jdbc-3.8.7.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
