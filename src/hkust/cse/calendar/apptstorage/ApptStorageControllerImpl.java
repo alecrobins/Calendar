@@ -25,15 +25,22 @@ public class ApptStorageControllerImpl {
 	
 	/* The Appt storage */
 	public ApptStorage mApptStorage;
+	public ApptStorageSQLImpl stor;
 
 	/* Create a new object of ApptStorageControllerImpl from an existing storage of Appt */
-	public ApptStorageControllerImpl(ApptStorage storage) {
-		mApptStorage = storage;
+	
+//	public ApptStorageControllerImpl(ApptStorage storage) {
+//		mApptStorage = storage;
+//	}
+	public ApptStorageSQLImpl getDatabase(){
+		return stor;
 	}
 	
 	public ApptStorageControllerImpl(ApptStorageSQLImpl storage){
+		stor = storage;
 		mApptStorage = new ApptStorageNullImpl(storage);
 	}
+	
 
 	/* Retrieve the Appt's in the storage for a specific user within the specific time span */
 	public Appt[] RetrieveAppts(User entity, TimeSpan time) {

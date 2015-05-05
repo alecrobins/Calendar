@@ -111,6 +111,9 @@ public class CalGrid extends JFrame implements ActionListener {
 	private AppScheduler setAppDial;
 	public LocationStorage locationStorage;
 
+	public ApptStorageControllerImpl getController(){
+		return controller;
+	}
 	public CalGrid(ApptStorageControllerImpl con) {
 		super();
 		

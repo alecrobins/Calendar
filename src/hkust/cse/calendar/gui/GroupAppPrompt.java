@@ -149,14 +149,21 @@ ComponentListener {
 
 		Border userBorder = new TitledBorder(null, "USERS");
 		pUsers.setBorder(userBorder);
-		
+
 		numUsersL = new JLabel("Number of Users Invited: ");
 		pUsers.add(numUsersL);
 		numUsers = new JComboBox();
 		numUsers = loadMonth("app");
 		pUsers.add(numUsers);
 
+
 		//load users
+		List<User> userList = new LinkedList<User>();
+		userList = this.parent.getController().getDatabase().getListOfAllUsers();
+		for (User u: userList){
+			chinButton = new JCheckBox(""+u.getID());
+			chinButton.setSelected(true);
+		}
 		//add num panels to select each user to invite
 		// Date Panel
 		JPanel pDate = new JPanel();
@@ -179,7 +186,7 @@ ComponentListener {
 		dayD = new JComboBox();
 		dayD = loadDay("app");
 		pDate.add(dayD);
-		
+
 		numDaysL = new JLabel("Subsequent Days to Consider: ");
 		pDate.add(numDaysL);
 		numDays = new JComboBox();
@@ -211,13 +218,13 @@ ComponentListener {
 		contentPane.add("North", top);
 		JPanel panel2 = new JPanel();
 		panel2.setLayout(new FlowLayout(FlowLayout.RIGHT));
-		
+
 		saveBut = new JButton("Show Group Availability");
 		saveBut.addActionListener(this);
 		panel2.add(saveBut);
-		
+
 		contentPane.add("South", panel2);
-		
+
 		pack();
 
 		//		inviteBut = new JButton("Invite");
@@ -502,9 +509,9 @@ ComponentListener {
 		String _month = monthD.getSelectedItem() == null ? null : monthD.getSelectedItem().toString();
 		String _day = dayD.getSelectedItem() == null ? null : dayD.getSelectedItem().toString();
 		String _numDays = numDays.getSelectedItem() == null ? null : numDays.getSelectedItem().toString();
-		
-	
-		
+
+
+
 		Timestamp startDay = new Timestamp(Timestamp.UTC(Integer.parseInt(_year), Integer.parseInt(_month), Integer.parseInt(_day), 8, 0, 0));
 		dates = new LinkedList<Timestamp>();
 		for (int i = 0; i < Integer.parseInt(_numDays); i++){
@@ -512,29 +519,29 @@ ComponentListener {
 		}
 		// Location & Frequency
 		//String _location = locationD.getSelectedItem() == null ? null : locationD.getSelectedItem().toString();
-		
+
 
 
 		// Show the Multiple User Schedule
 		// returns an EventReturnMessage - determines if successful or details an error
 
 		//EventReturnMessage returnMessage = EventReturnMessage.ERROR;
-	
+
 		List<User> users = new LinkedList<User>();
 		users.add(new User("poop", "poop"));
 		//get from the GUI
-		
+
 		//HashMap<User, List<Appt>> userMap = gc.getUserMap(users);
 
 		List<Appt> appList = new LinkedList<Appt>();
-		
+
 		HashMap<User, List<Appt>> userMap = new HashMap<User, List<Appt>>();
 		User us = new User("poop","poopie");
 		userMap.put(us, appList);
-		
+
 		setVisible(false);
 		MultipleUserSchedule mus = new MultipleUserSchedule(parent, userMap, dates);
-		
+
 
 
 	}
