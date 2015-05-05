@@ -30,6 +30,7 @@ public class GroupController {
 	public GroupController(CalGrid _cal) {
 		cal = _cal;
 	}
+<<<<<<< HEAD
 
 	//	public HashMap<User, List<Appt>> getUserMap(){
 	//		
@@ -78,15 +79,34 @@ public class GroupController {
 		else return null;
 	}
 
+=======
+	
+//	public HashMap<User, List<Appt>> getUserMap(){
+//		
+//	}
+//	
+//	public TimeSpan suggestedGroupEventTime(List<TimeSpan> list){
+//		List<TimeSpan> suggested = new LinkedList<TimeSpan>();
+//		for (TimeSpan t: list){
+//			
+//		}
+//	}
+	
+>>>>>>> 6138d62a909e8819254be307d8a4aa4a97091873
 	public EventReturnMessage createGroupEvent(
 			String _year, String _month, String _day,
 			String _sTimeH, String _sTimeM, String _eTimeH, String _eTimeM,
 			String _detailArea, String _titleField,
 			String _reminderTimeH, String _reminderTimeM,
 			String _reminderYear, String _reminderMonth, String _reminderDay,
+//			String _frequency, String _location, CalGrid parentGrid){
 			String _frequency, String _location, CalGrid parentGrid, List<User> userList){
 
+<<<<<<< HEAD
 
+=======
+		
+>>>>>>> 6138d62a909e8819254be307d8a4aa4a97091873
 		// check if required fields were met
 		if(_year == null || _month == null || _day == null || _sTimeH == null
 				|| _sTimeM == null || _eTimeH == null || _eTimeM ==null || _frequency == null)

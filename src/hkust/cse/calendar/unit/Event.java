@@ -11,7 +11,6 @@ public class Event extends Appt {
 	
 	// control the frequency of the event
 	//The event frequency can be one-time, daily, weekly, or monthly
-
 	
 	/// made a cahnge here . . . 
 	

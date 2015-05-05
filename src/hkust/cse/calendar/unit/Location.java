@@ -14,10 +14,9 @@ public class Location{
 		name = _name;
 	}
 	
-	public Location(int _id, String _name, boolean _isGroupFacility) {
+	public Location(String _name, boolean _isGroupFacility) {
 		name = _name;
-		locationID = _id;
-		isGroupFacility = _isGroupFacility;
+		setIsGroupFacility(_isGroupFacility);
 	}
 
 	public String getName() {
@@ -34,6 +33,14 @@ public class Location{
 	
 	public int getLocationID(){
 		return locationID;
+	}
+
+	public boolean getIsGroupFacility() {
+		return isGroupFacility;
+	}
+
+	public void setIsGroupFacility(boolean isGroupFacility) {
+		this.isGroupFacility = isGroupFacility;
 	}
 
 	
