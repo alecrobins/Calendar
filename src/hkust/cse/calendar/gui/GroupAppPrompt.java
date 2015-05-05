@@ -38,6 +38,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -104,6 +105,9 @@ ComponentListener {
 	private boolean isNew = true;
 	private boolean isChanged = true;
 	private boolean isJoint = false;
+	
+	
+	private List<JCheckBox> checkBoxList;
 
 	private JTextArea detailArea;
 
@@ -149,14 +153,20 @@ ComponentListener {
 
 		Border userBorder = new TitledBorder(null, "USERS");
 		pUsers.setBorder(userBorder);
-		
-		numUsersL = new JLabel("Number of Users Invited: ");
-		pUsers.add(numUsersL);
-		numUsers = new JComboBox();
-		numUsers = loadMonth("app");
-		pUsers.add(numUsers);
+
+		numUsersL = new JLabel("Invite Users: ");
 
 		//load users
+		userList = new LinkedList<User>();
+		userList = this.parent.getController().getDatabase().getListOfAllUsers();
+		checkBoxList = new LinkedList<JCheckBox>();
+		for (User u: userList){
+			JCheckBox j = new JCheckBox(u.getUsername());
+			checkBoxList.add(j);
+			j.addActionListener(this);
+			pUsers.add(j);
+		}
+		
 		//add num panels to select each user to invite
 		// Date Panel
 		JPanel pDate = new JPanel();
@@ -179,7 +189,7 @@ ComponentListener {
 		dayD = new JComboBox();
 		dayD = loadDay("app");
 		pDate.add(dayD);
-		
+
 		numDaysL = new JLabel("Subsequent Days to Consider: ");
 		pDate.add(numDaysL);
 		numDays = new JComboBox();
@@ -211,13 +221,13 @@ ComponentListener {
 		contentPane.add("North", top);
 		JPanel panel2 = new JPanel();
 		panel2.setLayout(new FlowLayout(FlowLayout.RIGHT));
-		
+
 		saveBut = new JButton("Show Group Availability");
 		saveBut.addActionListener(this);
 		panel2.add(saveBut);
-		
+
 		contentPane.add("South", panel2);
-		
+
 		pack();
 
 		//		inviteBut = new JButton("Invite");
@@ -366,7 +376,7 @@ ComponentListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-
+		
 		// distinguish which button is clicked and continue with require function
 		if (e.getSource() == CancelBut) {
 
@@ -503,8 +513,13 @@ ComponentListener {
 		String _day = dayD.getSelectedItem() == null ? null : dayD.getSelectedItem().toString();
 		String _numDays = numDays.getSelectedItem() == null ? null : numDays.getSelectedItem().toString();
 		
-	
-		
+		List<String> inviteList = new LinkedList<String>();   //a list of all the selected userID's
+		for (JCheckBox j: checkBoxList){
+			if (j.isSelected()){
+				inviteList.add(j.getLabel());
+			}
+		}
+
 		Timestamp startDay = new Timestamp(Timestamp.UTC(Integer.parseInt(_year), Integer.parseInt(_month), Integer.parseInt(_day), 8, 0, 0));
 		dates = new LinkedList<Timestamp>();
 		for (int i = 0; i < Integer.parseInt(_numDays); i++){
@@ -512,29 +527,29 @@ ComponentListener {
 		}
 		// Location & Frequency
 		//String _location = locationD.getSelectedItem() == null ? null : locationD.getSelectedItem().toString();
-		
+
 
 
 		// Show the Multiple User Schedule
 		// returns an EventReturnMessage - determines if successful or details an error
 
 		//EventReturnMessage returnMessage = EventReturnMessage.ERROR;
-	
+
 		List<User> users = new LinkedList<User>();
 		users.add(new User("poop", "poop"));
 		//get from the GUI
-		
+
 		//HashMap<User, List<Appt>> userMap = gc.getUserMap(users);
 
 		List<Appt> appList = new LinkedList<Appt>();
-		
+
 		HashMap<User, List<Appt>> userMap = new HashMap<User, List<Appt>>();
 		User us = new User("poop","poopie");
 		userMap.put(us, appList);
-		
+
 		setVisible(false);
 		MultipleUserSchedule mus = new MultipleUserSchedule(parent, userMap, dates);
-		
+
 
 
 	}
