@@ -64,6 +64,25 @@ public class Appt implements Serializable {
 		joinApptID = -1;
 	}
 	
+	// Complete Constructor
+	public Appt(TimeSpan _eventTime, String _title, String _eventDescription, int _eventLocationID,
+			TimeSpan _eventReminder, String _additionalEventDescription, Frequency _eventFrequency)
+	{
+		super();
+		mTimeSpan = _eventTime;
+		mTitle = _title;
+//			eventLocation = _eventLocation;
+		eventLocationID = _eventLocationID;
+		eventReminder = _eventReminder;
+		mInfo = _additionalEventDescription;
+		eventFrequency = _eventFrequency;
+		
+		// update the apt values
+		mTimeSpan = _eventTime; 
+		mTitle = _title;
+		mInfo = _eventDescription;
+	}
+	
 	public void generateID(){
 		this.mApptID = (int) this.mTimeSpan.StartTime().getTime();
 	}
@@ -213,7 +232,6 @@ public class Appt implements Serializable {
 	public void setJoint(boolean isjoint){
 		this.isjoint = isjoint;
 	}
-
 
 	// Getters
 	public String getEventDescription() {

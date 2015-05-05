@@ -27,7 +27,7 @@ public abstract class ApptStorage {
 
 	public abstract Appt getAppt(Timestamp t);	//abstract method to get an appointment by its starting time
 	
-	public abstract void SaveAppt(Appt appt);	//abstract method to save an appointment record
+	public abstract int SaveAppt(Appt appt);	//abstract method to save an appointment record
 
 	public abstract Appt[] RetrieveAppts(TimeSpan d);	//abstract method to retrieve an appointment record by a given timespan
 

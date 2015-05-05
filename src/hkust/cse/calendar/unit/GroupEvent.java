@@ -30,9 +30,9 @@ public class GroupEvent extends Event {
 		setApproved(false);
 	}
 	
-	public GroupEvent(Event e){
+	public GroupEvent(Appt e){
 		super(e.getEventTime(), e.getTitle(), e.getEventDescription(), e.getEventLocationID(), e.getEventReminder(), 
-				e.getAdditionalEventDescription(), e.getEventFrequency());
+				"", e.getEventFrequency());
 		this.id = e.id;
 		
 		setConfirmed(false);

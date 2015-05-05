@@ -1,5 +1,6 @@
-package hkust.cse.calendar.apptstorage;
+package hkust.cse.calendar.apptstorage;//
 
+import hkust.cse.calendar.apptstorage.ApptStorage;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Event;
 import hkust.cse.calendar.unit.GroupEvent;
@@ -53,7 +54,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    Statement stmt = null;
 	    
 	    // return the event
-	    Event event = null;
+	    Appt event = null;
 	    
 	    try {
 	      Class.forName("org.sqlite.JDBC");
@@ -131,12 +132,8 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	}
 	
 	@Override
-	public void SaveAppt(Appt appt) {
-		SaveAppt((Event) appt);
-	}
-	
 	// returns the appt id
-	public int SaveAppt(Event _event) {
+	public int SaveAppt(Appt _event) {
 		Connection c = null;
 	    Statement stmt = null;
 	    
@@ -242,7 +239,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      // go through results
 	      while ( rs.next() ) {
 	    	  // return the event
-	  	     Event event = null;
+	  	     Appt event = null;
 	    	 event = formatEvent(rs);
 	    	 // put onto events
 	    	 events.add(event);
@@ -274,7 +271,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    Statement stmt = null;
 	    
 	    // cast the appt to an event
-	    Event _event = (Event) appt;
+	    Appt _event = appt;
 	    
 	    try {
 	      Class.forName("org.sqlite.JDBC");
@@ -324,7 +321,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    Statement stmt = null;
 	    
 	    // cast the appt to an event
-	    Event _event = (Event) appt;
+	    Appt _event = appt;
 	    
 	    try {
 	      Class.forName("org.sqlite.JDBC");
@@ -426,7 +423,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    Statement stmt = null;
 	    
 	    // return the event
-	    Event event = null;
+	    Appt event = null;
 	    
 	    try {
 	      Class.forName("org.sqlite.JDBC");
@@ -497,7 +494,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      // go through results
 	      while ( rs.next() ) {
 	    	  // return the event
-	  	     Event event = null;
+	  	     Appt event = null;
 	    	 event = formatEvent(rs);
 	    	 // put onto events
 	    	 events.add(event);
@@ -552,7 +549,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      // go through results
 	      while ( rs.next() ) {
 	    	  // return the event
-	  	     Event event = null;
+	  	     Appt event = null;
 	    	 event = formatEvent(rs);
 	    	 // put onto events
 	    	 events.add(event);
@@ -726,7 +723,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		if(!(event instanceof GroupEvent))
 			throw new InvalidClassException("You can only save GroupEvents not Regular events");
 		
-		GroupEvent groupEvent = new GroupEvent((Event) event );
+		GroupEvent groupEvent = new GroupEvent( event );
 		
 		// save the event
 		int groupID = SaveAppt(groupEvent);
@@ -1277,7 +1274,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
    	 	return newUser;
 	}
 	
-	private Event formatEvent(ResultSet rs) throws SQLException {
+	private Appt formatEvent(ResultSet rs) throws SQLException {
 		 // Gather data
   	  
    	 	int id = rs.getInt("id");
@@ -1299,7 +1296,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
         
         System.out.println(id);
         
-        Event newEvent = new Event(eventTime, eventTitle, eventDescription, locationID, reminder, "", frequency);
+        Appt newEvent = new Appt(eventTime, eventTitle, eventDescription, locationID, reminder, "", frequency);
         newEvent.setEventID(id);
         return newEvent;
 	}
@@ -1309,7 +1306,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		int initiatorID = rs.getInt("initiator");
 		boolean confirmed = rs.getBoolean("confirmed");
 		
-		Event returnedEvent = formatEvent(rs);
+		Appt returnedEvent = formatEvent(rs);
 		GroupEvent ge = new GroupEvent(returnedEvent);
 		
 		ge.setInitiatorID(initiatorID);

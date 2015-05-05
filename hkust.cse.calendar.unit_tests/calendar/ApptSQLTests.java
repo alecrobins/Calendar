@@ -15,7 +15,7 @@ import hkust.cse.calendar.unit.GroupEvent;
 import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
-import hkust.cse.calendar.unit.Event.Frequency;
+import hkust.cse.calendar.unit.Appt.Frequency;
 
 import org.junit.Test;
 
