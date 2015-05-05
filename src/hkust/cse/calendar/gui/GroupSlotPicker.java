@@ -111,12 +111,14 @@ public class GroupSlotPicker extends JDialog implements ActionListener,
 	private int selectedApptId = -1;
 	
 	private LocationStorage ls; 
+	boolean[] rowBool;
 	
 
-	private void commonConstructor(String title, CalGrid cal, LocationStorage _ls) {
+	private void commonConstructor(boolean[] rowVals, String title, CalGrid cal, LocationStorage _ls) {
 		
 		// set up the NoticationController & The LocationStorage
 		ls = _ls;
+		rowBool = rowVals;
 		
 		// set up the event controller
 		eventController = new EventController(cal); 
@@ -372,13 +374,13 @@ public class GroupSlotPicker extends JDialog implements ActionListener,
 		return temp;
 	}
 
-	GroupSlotPicker(String title, CalGrid cal, int selectedApptId, LocationStorage _ls) {
+	GroupSlotPicker(String title, boolean[] row, CalGrid cal, int selectedApptId, LocationStorage _ls) {
 		this.selectedApptId = selectedApptId;
-		commonConstructor(title, cal, _ls);
+		commonConstructor(row, title, cal, _ls);
 	}
 
-	GroupSlotPicker(String title, CalGrid cal, LocationStorage _ls) {
-		commonConstructor(title, cal, _ls);
+	GroupSlotPicker(String title, boolean[] row, CalGrid cal, LocationStorage _ls) {
+		commonConstructor(row, title, cal, _ls);
 	}
 	
 	public void actionPerformed(ActionEvent e) {
@@ -503,6 +505,25 @@ public class GroupSlotPicker extends JDialog implements ActionListener,
 
 		return result;
 	}
+	
+	public boolean isTimeSpanAvailable(TimeSpan s){    //needs to be tested
+		//convert to rows and then decide
+		int day = s.StartTime().getDate();
+		int startH = s.StartTime().getHours();
+		int startM = s.StartTime().getMinutes();
+		int endH = s.EndTime().getHours();
+		int endM = s.EndTime().getMinutes();
+		
+		int startRow = (startH-8)*4+(startM/15);
+		int endRow = (endH-8)*4+(endM/15);
+		
+		for (int i = startRow; i <= endRow; i++){
+			if (rowBool[i] == false){
+				return false;
+			}
+		}
+		return true;
+	}
 
 	private void saveButtonResponse() {
 
@@ -526,65 +547,17 @@ public class GroupSlotPicker extends JDialog implements ActionListener,
 		int endH = Integer.parseInt(_eTimeH);
 		int endM = Integer.parseInt(_eTimeM);
 		
-		
 		Timestamp start = new Timestamp(parent.currentY, month, day, startH, startM, 0, 0);
 		Timestamp end = new Timestamp(parent.currentY, month, day, endH, endM, 0, 0);
 		TimeSpan slot = new TimeSpan(start, end);
-		
+			
+		if (isTimeSpanAvailable(slot)){
+			
+		}
+		else {
+			alertMessage("Unavailable Slot:  Pick A Time That Works for Everyone :)");
+		}
 		//need to send this slot over to 
-		
-		
-		// CREATE THE EVENT
-		// returns an EventReturnMessage - determines if successful or details an error
-//		EventReturnMessage returnMessage = eventController.createEvent(
-//				_year, _month, _day,
-//				_sTimeH, _sTimeM, _eTimeH, _eTimeM,
-//				_detailArea, _titleField,
-//				_timeReminderH, _timeReminderM, _yearReminder, _monthReminder, _dayReminder,
-//				_frequency, _location, parent);
-		//
-		//SUCCESS, ERROR_TIME_FORMAT, ERROR_PAST_DATE, ERROR_UNFILLED_REQUIRED_FIELDS,
-		//ERROR_REMINDER, ERROR_EVENT_OVERLAP, ERROR_SECOND_DATE_PAST, ERROR
-//		switch (returnMessage){
-//			case SUCCESS :
-//				setVisible(false);
-//				dispose(); // remove
-//				parent.repaint();
-//				System.out.println("success");
-//				break; 
-//			case ERROR_TIME_FORMAT :
-//				alertMessage("There is an error with the format of your time. Make sure it has the proper format");
-//				break;
-//			case ERROR_PAST_DATE :
-//				alertMessage("You cannot create an event from a past date. Please resubmit the event.");
-//				break;
-//			case ERROR_UNFILLED_REQUIRED_FIELDS :
-//				alertMessage("You have some unfilled required fields. Please check and fill out the required fields.");
-//				break;
-//			case ERROR_REMINDER :
-//				alertMessage("There is problem with your reminder. Please ensure your reminder date is before the event and all fields are filled out.");
-//				break;
-//			case ERROR_EVENT_OVERLAP :
-//				alertMessage("You already have an event at that time! Please find a new date for that event. ");
-//				break;
-//			case ERROR_SECOND_DATE_PAST :
-//				alertMessage("Your end date can't be before your start date. Please resubmit. ");
-//				break;
-//			default : 
-//				alertMessage("Something you did was not right. Review your event. ");
-//				break;
-//		}
-		
-//		if(EventReturnMessage.SUCCESS == returnMessage){
-//			//close the window
-//			setVisible(false);
-//			dispose();
-//			parent.repaint();
-//			System.out.println("success");
-//		}else{
-//			// report back the erorr message
-//			System.out.println("error");
-//		}
 		
 	}
 	
@@ -603,7 +576,16 @@ public class GroupSlotPicker extends JDialog implements ActionListener,
 	}
 
 	public void updateSetApp(Appt appt) {
-		// Fix Me!
+		int i = appt.TimeSpan().StartTime().getMonth();
+		monthD.setSelectedIndex(i);
+		i = appt.TimeSpan().StartTime().getDate();
+		dayD.setSelectedIndex(i - 1);
+		i = appt.TimeSpan().StartTime().getHours();
+		sTimeHD.setSelectedIndex(i - 1);
+		eTimeHD.setSelectedIndex(i);
+		i = appt.TimeSpan().StartTime().getMinutes();
+		sTimeMD.setSelectedIndex(i/15);
+		eTimeMD.setSelectedIndex(i/15);
 	}
 
 	public void componentHidden(ComponentEvent e) {

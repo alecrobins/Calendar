@@ -198,9 +198,11 @@ public class MultipleUserSchedule {
 	}
 	
 	private void NewAppt() {   // only initiator can use this, and it should send invites out
+		//send out notification to other users
+		//set user who calls this to be the initator
 	}
 	private void pickSlot() {
-		GroupSlotPicker gsp = new GroupSlotPicker("New Slot", parent, parentLS);
+		GroupSlotPicker gsp = new GroupSlotPicker("New Slot", rowBool, parent, parentLS);
 		gsp.updateSetApp(hkust.cse.calendar.gui.Utility.createDefaultAppt(
 				parent.currentY, parent.currentM, parent.currentD,
 				parent.mCurrUser));
@@ -307,8 +309,8 @@ public class MultipleUserSchedule {
 	}
 
 	public void getColumnTitles(int month, int date){
-		currentM = month+1;
-		firstM = month+1;
+		currentM = month;
+		firstM = month;
 		secondM = 20;
 		currentD = date;
 		firstD = date;
