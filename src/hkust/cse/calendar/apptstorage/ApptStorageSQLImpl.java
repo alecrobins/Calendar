@@ -1165,8 +1165,6 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		return userToEvents;
 	}
 	
-	
-	
 	// return the user calendars for all listed users within a period
 	public HashMap<User,List<Appt>> getUsersAppts(List<User> users, Timestamp start, Timestamp end){
 		return null;
@@ -1189,26 +1187,28 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	
 	// modify the user settings by replacing the user stored
 	// return newly created user
-	public User modifyUser(User newUser){
-		return null;
+	public void modifyUser(User newUser){
 	}
 	
 	// modify other user setting as an admin
 	// return newly created user
-	public User modifyOtherUser(User newUser){
-		return null;
+	public void modifyOtherUser(User newUser){
 	}
 	
 	// create a new location
-	// return the new location
-	public Location createLocation(Location location){
-		return null;
+	// return the new location's id
+	public int createLocation(Location location){
+		return -1;
 	}
 	
 	// modify the locatoin (only can be done by the admin)
 	// return the newly modified location
-	public Location modifyLocation(Location location){
-		return null;
+	public void modifyLocation(Location location){
+	}
+	
+	// delete the location given the location id
+	public void deleteLocation(int locationID){
+		
 	}
 	
 	// helper functions
