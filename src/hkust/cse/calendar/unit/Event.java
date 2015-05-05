@@ -13,6 +13,8 @@ public class Event extends Appt {
 	//The event frequency can be one-time, daily, weekly, or monthly
 
 	
+	/// made a cahnge here . . . 
+	
 	// Private data members
 	private TimeSpan eventTime;
 	private String eventDescription;

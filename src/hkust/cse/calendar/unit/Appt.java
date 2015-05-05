@@ -4,6 +4,7 @@ package hkust.cse.calendar.unit;
 import java.io.Serializable;
 import java.util.LinkedList;
 
+
 public class Appt implements Serializable {
 
 	// control the frequency of the event
