@@ -98,9 +98,7 @@ public class Event extends Appt {
 	public String getAdditionalEventDescription() {
 		return additionalEventDescription;
 	}
-	public Frequency getEventFrequency() {
-		return eventFrequency;
-	}
+
 	public int getEventID(){
 		return id;
 	}
