@@ -532,7 +532,7 @@ public class AppList extends JPanel implements ActionListener {
 			startTime = currentRow * 15 + 480;
 		else 
 			startTime = (currentRow + 20) * 15 + 480;
-		//call AppScheduler window which prompts for users and dates
+		//call group Prompt window which prompts for users and dates
 		GroupAppPrompt a = new GroupAppPrompt(parent, parentLS);
 		a.updateSetApp(hkust.cse.calendar.gui.Utility.createDefaultAppt(
 				parent.currentY, parent.currentM, parent.currentD,

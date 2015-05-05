@@ -187,32 +187,6 @@ public class MultipleUserSchedule {
 				pickSlot();
 			}
 		});
-
-		mi = (JMenuItem) pop.add(new JMenuItem("Delete"));
-
-		mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				delete();
-			}
-		});
-
-		mi = (JMenuItem) pop.add(new JMenuItem("Modify"));
-		mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				modify();
-			}
-		});
-		
-		pop.add(new JPopupMenu.Separator());
-		JMenuItem j = new JMenuItem("Details");
-		j.setFont(f);
-		pop.add(j);
-
-		j.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				getDetail();
-			}
-		});
 	}
 	
 	public void setParent(CalGrid grid) {
@@ -220,7 +194,7 @@ public class MultipleUserSchedule {
 		parentLS = parent.locationStorage;
 	}
 	
-	private void NewAppt() {   // only initiator can use this
+	private void NewAppt() {   // only initiator can use this, and it should send invites out
 	}
 	private void pickSlot() {
 		GroupSlotPicker gsp = new GroupSlotPicker("New Slot", parent, parentLS);
