@@ -5,9 +5,11 @@ import static org.junit.Assert.*;
 import java.sql.Timestamp;
 
 import hkust.cse.calendar.apptstorage.ApptStorageSQLImpl;
+import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Event;
 import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.TimeSpan;
+import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.unit.Event.Frequency;
 
 import org.junit.Test;
@@ -15,6 +17,8 @@ import org.junit.Test;
 public class ApptSQLTests {
 	
 	private ApptStorageSQLImpl db;
+	//TODO: eventually switch out dummyUser with the default User 
+	private User dummyUser = new User(1, "pizzapi", "1234", true);
 	
 	public ApptSQLTests(){
 		db = new ApptStorageSQLImpl();
@@ -49,15 +53,15 @@ public class ApptSQLTests {
 	@Test
 	public void testSaveAppt(){
 		
-		Timestamp t1 = new Timestamp(3400);
-		Timestamp t2 = new Timestamp(8600);
+		Timestamp t1 = new Timestamp(4400);
+		Timestamp t2 = new Timestamp(9600);
 		TimeSpan eventTime = new TimeSpan(t1, t2);
 		
 		Timestamp r1 = new Timestamp(1400);
 		Timestamp r2 = new Timestamp(3400);
 		TimeSpan eventReminder = new TimeSpan(r1, r2);
 		
-		String title = "This is a title from the test";
+		String title = "NEW TITLE";
 		String description = "hello this is a description test";
 		String addDescription = "additional goes here . . ";
 		int eventLocationID = 1; 
@@ -66,7 +70,55 @@ public class ApptSQLTests {
 		Event testEvent = new Event(eventTime, title, description, eventLocationID,
 				eventReminder, addDescription, f);
 		
-		db.SaveAppt(testEvent);
+		// db.SaveAppt(testEvent);
+		
+		// WORKS !
+		
+	}
+	
+	@Test
+	public void testGetAppts() {
+		
+		Timestamp t1 = new Timestamp(0);
+		Timestamp t2 = new Timestamp(8600);
+		TimeSpan time = new TimeSpan(t1,t2);
+		
+		System.out.println("GO . . .");
+		
+		Event[] appts = (Event[]) db.RetrieveAppts(time);
+		
+		System.out.println("RETRIEVED");
+		System.out.println(appts.length);
+		
+		for(int i = 0; i < appts.length; ++i){
+			System.out.println("RETRIEVED");
+			System.out.println(appts[i].toString());
+		}
+		
+		assertTrue(appts.length == 1);
+		
+	}
+	
+	@Test
+	public void testGetApptsWithID() {
+		
+		Timestamp t1 = new Timestamp(0);
+		Timestamp t2 = new Timestamp(8600);
+		TimeSpan time = new TimeSpan(t1,t2);
+		
+		System.out.println("GO . . .");
+		
+		Event[] appts = (Event[]) db.RetrieveAppts(dummyUser, time);
+		
+		System.out.println("RETRIEVED");
+		System.out.println(appts.length);
+		
+		for(int i = 0; i < appts.length; ++i){
+			System.out.println("RETRIEVED");
+			System.out.println(appts[i].toString());
+		}
+		
+		assertTrue(appts.length == 1);
 		
 	}
 

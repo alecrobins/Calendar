@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -170,17 +171,70 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      System.exit(0);
 	    }
 	}
-
+	
 	@Override
 	public Appt[] RetrieveAppts(TimeSpan d) {
-		// TODO Auto-generated method stub
-		return null;
+		return RetrieveAppts(dummyUser, d);
 	}
 
 	@Override
 	public Appt[] RetrieveAppts(User entity, TimeSpan time) {
-		// TODO Auto-generated method stub
-		return null;
+		Connection c = null;
+	    Statement stmt = null;
+	    
+	    // Start and end time of time span
+	    Timestamp start = time.StartTime();
+	    Timestamp end = time.EndTime();
+	    
+	    List<Appt> events = new ArrayList<Appt>();
+	    
+	    try {
+	      Class.forName("org.sqlite.JDBC");
+	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	      c.setAutoCommit(false);
+	      System.out.println("Opened database successfully");
+	      
+	      stmt = c.createStatement();
+	      PreparedStatement query;
+	      
+	      query = c.prepareStatement( 
+	    		  "select distinct e.id as 'id', e.startTime as 'startTime', e.endTime as 'endTime', " +
+	    		  "e.eventTitle as 'title', e.eventDescription as 'description', " +
+	    		  "e.frequency as 'frequency', e.eventReminderStart as 'reminderStart', " +
+	    		  "e.eventReminderEnd as 'reminderEnd', e.locationID as 'locationID', " +
+	    		  "e.isGroup as 'isGroup', e.isPublic as 'isPublic' " +
+	    		  "from event e, userEvent ue " +
+	    		  "where ue.userID = ? "+
+	    		  "and e.id = ue.eventID and e.startTime >= ? and " +
+	    		  "e.endTime <= ? ;");
+	      
+//	      ResultSet rs = stmt.executeQuery( sql );
+	      query.setInt(1, entity.getID()); 
+	      query.setTimestamp(2, start);
+	      query.setTimestamp(3, end);
+	      
+	      ResultSet rs = query.executeQuery();
+	      
+	      // go through results
+	      while ( rs.next() ) {
+	    	  // return the event
+	  	     Event event = null;
+	    	 event = formatEvent(rs);
+	    	 // put onto events
+	    	 events.add(event);
+	         System.out.println(event.toString());
+	      }
+	      
+	      rs.close();
+	      stmt.close();
+	      c.close();
+		    
+	    } catch ( Exception e1 ) {
+	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+	      System.exit(0);
+	    }
+	    	    
+		return (Appt[]) events.toArray();
 	}
 
 	@Override
