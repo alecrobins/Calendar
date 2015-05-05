@@ -201,7 +201,22 @@ public class Appt implements Serializable {
 	
 	// Getter of the appointment title
 	public String toString() {
-		return mTitle;
+		
+		String event =
+		"ID: " + id + "  " +
+		mTimeSpan.toString() + " " +
+		mInfo + " " +
+		eventLocationID+ " " +
+		eventReminder + " " +
+		" " +
+		eventFrequency + " " +
+		
+		// update the apt values
+		mTimeSpan.toString() + " " +
+		mTitle + " " +
+		mInfo;
+		
+		return event;
 	}
 
 	// Setter of the appointment title

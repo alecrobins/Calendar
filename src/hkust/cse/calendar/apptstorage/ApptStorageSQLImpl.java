@@ -340,6 +340,15 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      
 	      boolean done = query.execute();
 	      
+	      // delete from userEvent
+	      query = c.prepareStatement("delete from userEvent " +
+					 "where id = ?");
+
+	      // assign variables
+	      query.setInt(1, _event.getID());
+		
+	      done = query.execute();
+	      
 	      // commit
 	      c.commit();
 	      
@@ -962,6 +971,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    return userID;
 	}
 	
+	// retrieve the user from db with username
 	public User getUser(String username){
 		Connection c = null;
 	    Statement stmt = null;
@@ -1189,26 +1199,21 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		return userToEvents;
 	}
 	
-	// N/A - to be controlled by the controller
-	// return the user calendars for all listed users within a period
-	public HashMap<User,List<Appt>> getUsersAppts(List<User> users, Timestamp start, Timestamp end){
-		return null;
-	}
-	
 	// modify the group with a new group event and users
 	// NOTE: that only the intiator of admin
 	public void modifyGroupEvent (Appt newGroupEvent, int groupID){
-		Connection c = null;
-	    Statement stmt = null;
-	    
-	    // cast the appt to an event
-	    GroupEvent _event = (GroupEvent) newGroupEvent;
-	    
+		
 	    // update the event part of the group event
 	    UpdateAppt(newGroupEvent);
 	    
+	}
+	
+	// delete a group event
+	public void deleteGroupEvent (int groupID){
+		Connection c = null;
+	    Statement stmt = null;
+
 	    try {
-	      
 	      Class.forName("org.sqlite.JDBC");
 	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
 	      c.setAutoCommit(false);
@@ -1217,26 +1222,29 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      stmt = c.createStatement();
 	      PreparedStatement query;
 	      
-	      query = c.prepareStatement("update event set startTime = ?, endTime = ?, eventTitle = ?, "+
-	    		  					 "eventDescription = ?, eventReminderStart = ?, eventReminderEnd = ?, " +
-	    		  					 "frequency = ?, locationID = ?, isGroup = ?, isPublic = ? " +
-	    		  					 "where id = ?");
+	      query = c.prepareStatement("delete from event " +
+		    		"where id = ?");
 	      
-	      // assign variables
-	      query.setTimestamp(1, _event.getEventTime().StartTime());
-	      query.setTimestamp(2, _event.getEventTime().EndTime());
-	      query.setString(3, _event.getTitle());
-	      query.setString(4, _event.getEventDescription());
-	      query.setTimestamp(5, _event.getEventReminder().StartTime());
-	      query.setTimestamp(6, _event.getEventReminder().EndTime());
-	      query.setInt(7, _event.getEventFrequency().getValue());
-	      query.setInt(8, _event.getEventLocationID());
-	      query.setBoolean(9, _event.getIsGroup());
-	      query.setBoolean(10, _event.getIsPublic());
-	      query.setInt(11, _event.getID());
+	      query.setInt(1, groupID);
 	      
 	      boolean done = query.execute();
+   	   
+	      // remove from group event
+	      query = c.prepareStatement("delete from groupEvent " +
+		    		"where eventID = ?");
+
+	      query.setInt(1, groupID);
 	      
+	      done = query.execute();
+	      
+	      // remove from group event
+	      query = c.prepareStatement("delete from groupUser " +
+		    		"where eventID = ?");
+
+	      query.setInt(1, groupID);
+	      
+	      done = query.execute();
+
 	      // commit
 	      c.commit();
 	      
@@ -1248,21 +1256,12 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
 	      System.exit(0);
 	    }
-	}
-	
-	// delete a group event
-	public boolean deleteGroupEvent (int groupID){
-		return false;
+	    
 	}
 	
 	// modify the user settings by replacing the user stored
 	// return newly created user
 	public void modifyUser(User newUser){
-	}
-	
-	// modify other user setting as an admin
-	// return newly created user
-	public void modifyOtherUser(User newUser){
 	}
 	
 	// create a new location

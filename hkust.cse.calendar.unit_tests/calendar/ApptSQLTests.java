@@ -111,7 +111,7 @@ public class ApptSQLTests {
 		Timestamp t2 = new Timestamp(8600);
 		TimeSpan time = new TimeSpan(t1,t2);
 		
-		Event[] appts = (Event[]) db.RetrieveAppts(dummyUser, time);
+		Appt[] appts = db.RetrieveAppts(dummyUser, time);
 		
 		System.out.println("RETRIEVED");
 		System.out.println(appts.length);
@@ -210,15 +210,15 @@ public class ApptSQLTests {
 	
 	@Test
 	public void testCreateGroupEvent() {
-		Timestamp t1 = new Timestamp(284400);
-		Timestamp t2 = new Timestamp(289600);
+		Timestamp t1 = new Timestamp(4284400);
+		Timestamp t2 = new Timestamp(4289600);
 		TimeSpan eventTime = new TimeSpan(t1, t2);
 		
-		Timestamp r1 = new Timestamp(281400);
-		Timestamp r2 = new Timestamp(283400);
+		Timestamp r1 = new Timestamp(4281400);
+		Timestamp r2 = new Timestamp(4283400);
 		TimeSpan eventReminder = new TimeSpan(r1, r2);
 		
-		String title = "Second Group Event";
+		String title = "Third new Group Event";
 		String description = " Second Group event Description ";
 		String addDescription = "additional goes here . . ";
 		int eventLocationID = 3; 
@@ -238,13 +238,13 @@ public class ApptSQLTests {
 		testUsers.add(6);
 		testUsers.add(7);
 //		
-//		// save the dummy group event
-//		try {
-//			db.createGroupEvent(testUsers, testGroupEvent);
-//			System.out.println("GROUP EVENT SAVED");
-//		} catch (InvalidClassException e) {
-//			e.printStackTrace();
-//		}
+		// save the dummy group event
+		try {
+			db.createGroupEvent(testUsers, testGroupEvent);
+			System.out.println("GROUP EVENT SAVED");
+		} catch (InvalidClassException e) {
+			e.printStackTrace();
+		}
 		
 		// WORKED ! 
 		
@@ -264,13 +264,13 @@ public class ApptSQLTests {
 	
 	@Test
 	public void testGetGroupEvent() {
-		GroupEvent testEvent = db.getGroupEvent(25);
+		GroupEvent testEvent = db.getGroupEvent(31);
 		GroupEvent testBadEvent = db.getGroupEvent(1);
 		
 		System.out.println("RECIEVED GROUP ITEM 25");
 		testEvent.toString();
 		
-		assertTrue(testEvent.getEventID() == 25);
+		assertTrue(testEvent.getEventID() == 31);
 		assertNull(testBadEvent);
 		
 		// WORKS !
@@ -368,5 +368,11 @@ public class ApptSQLTests {
 		// WORKS ! 
 		
 	}
+	
+	@Test
+	public void testDeleteGroupEvent(){
+		db.deleteGroupEvent(32);
+	}
 
+	
 }
