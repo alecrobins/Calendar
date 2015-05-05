@@ -10,7 +10,7 @@ import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Event;
 import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.TimeSpan;
-import hkust.cse.calendar.unit.Event.Frequency;
+import hkust.cse.calendar.unit.Appt.Frequency;
 
 //
 // Class responsible for communication between calendar view and
