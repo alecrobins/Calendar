@@ -1,6 +1,6 @@
 # Ignore everything
 *
-
+.classpath
 # But not these files...
 !.gitignore
 !*.java
