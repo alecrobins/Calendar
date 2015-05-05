@@ -35,12 +35,12 @@ public class GroupController {
 //		
 //	}
 	
-//	public TimeSpan suggestedGroupEventTime(List<TimeSpan> list){
-//		List<TimeSpan> suggested = new LinkedList<TimeSpan>();
-//		for (TimeSpan t: list){
-//			
-//		}
-//	}
+	public TimeSpan suggestedGroupEventTime(List<TimeSpan> list){
+		List<TimeSpan> suggested = new LinkedList<TimeSpan>();
+		for (TimeSpan t: list){
+			
+		}
+	}
 	
 	public EventReturnMessage createGroupEvent(
 			String _year, String _month, String _day,
@@ -48,7 +48,7 @@ public class GroupController {
 			String _detailArea, String _titleField,
 			String _reminderTimeH, String _reminderTimeM,
 			String _reminderYear, String _reminderMonth, String _reminderDay,
-			String _frequency, String _location, CalGrid parentGrid){
+			String _frequency, String _location, CalGrid parentGrid, List<User> userList){
 		
 		
 		// check if required fields were met

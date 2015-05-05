@@ -557,6 +557,8 @@ public class GroupSlotPicker extends JDialog implements ActionListener,
 		else {
 			alertMessage("Unavailable Slot:  Pick A Time That Works for Everyone :)");
 		}
+		
+		setVisible(false);
 		//need to send this slot over to 
 		
 	}
