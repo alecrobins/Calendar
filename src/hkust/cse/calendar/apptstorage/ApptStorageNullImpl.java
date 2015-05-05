@@ -4,8 +4,12 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import hkust.cse.calendar.unit.Appt;
+import hkust.cse.calendar.unit.Event;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 
@@ -17,6 +21,22 @@ public class ApptStorageNullImpl extends ApptStorage {
 	public ApptStorageNullImpl( User user )
 	{
 		defaultUser = user;
+	}
+	
+	public ApptStorageNullImpl(ApptStorageSQLImpl stor){
+		defaultUser = stor.getDefaultUser();
+		mAppts = new HashMap<Integer, Appt>();
+		mNotifications = new ArrayList<TimeSpan>();
+		pullFromDatabase(stor);
+		
+	}
+	
+	public void pullFromDatabase(ApptStorageSQLImpl stor){
+		List<Appt> defaultUserApptList = new LinkedList<Appt>();
+		defaultUserApptList = stor.getAllEvents(defaultUser.getID());
+		for (Appt a: defaultUserApptList){
+			mAppts.put(a.getID(), a);
+		}
 	}
 	
 	public ApptStorageNullImpl(){
@@ -86,9 +106,12 @@ public class ApptStorageNullImpl extends ApptStorage {
 	@Override
 	public void RemoveAppt(Appt appt) {
 		//mAppts.put(appt.getID(), null);
+
 		int apptId = appt.getID();
 		// try to remove the appt from the db
 		try{
+			deleteNotification(appt.getNotification());
+			if (appt.getEventFrequency() != Appt.Frequency.DAILY) deleteNotification(appt.getNextNotification());
 			mAppts.remove(apptId);
 		}catch(Exception e){
 			System.out.println("ERROR");
@@ -131,15 +154,14 @@ public class ApptStorageNullImpl extends ApptStorage {
 		return false;
 	}
 	
-	
+	@Override
+	public boolean findNotification(TimeSpan ts){
+		return mNotifications.contains(ts);
+	}
 	@Override
 	public void addNotification(TimeSpan ts) {
 		// TODO Auto-generated method stub
-		for(TimeSpan t : mNotifications){
-			if(t.equals(ts)){
-				return;
-			}
-		}
+		if (findNotification(ts)) return;
 		mNotifications.add(ts);
 		mergeNotification();
 	}

@@ -30,6 +30,10 @@ public class ApptStorageControllerImpl {
 	public ApptStorageControllerImpl(ApptStorage storage) {
 		mApptStorage = storage;
 	}
+	
+	public ApptStorageControllerImpl(ApptStorageSQLImpl storage){
+		mApptStorage = new ApptStorageNullImpl(storage);
+	}
 
 	/* Retrieve the Appt's in the storage for a specific user within the specific time span */
 	public Appt[] RetrieveAppts(User entity, TimeSpan time) {
@@ -78,6 +82,10 @@ public class ApptStorageControllerImpl {
 		return mApptStorage.isApptValid(appt);
 	}
 	
+	// method used to check the existence of a notification
+	public boolean findNotification(TimeSpan ts){
+		return mApptStorage.findNotification(ts);
+	}
 	// method used to store notification time
 	public void addNotification(TimeSpan ts){
 		mApptStorage.addNotification(ts);

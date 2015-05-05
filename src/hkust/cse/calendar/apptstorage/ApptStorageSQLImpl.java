@@ -6,7 +6,7 @@ import hkust.cse.calendar.unit.GroupEvent;
 import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
-import hkust.cse.calendar.unit.Event.Frequency;
+import hkust.cse.calendar.unit.Appt.Frequency;
 
 import java.io.InvalidClassException;
 import java.lang.reflect.Array;
@@ -1329,6 +1329,12 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		String name = rs.getString("name");
 		boolean isGroup = rs.getBoolean("isGroupFacility");
 		return new Location(id, name, isGroup);
+	}
+
+	@Override
+	public boolean findNotification(TimeSpan ts) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 

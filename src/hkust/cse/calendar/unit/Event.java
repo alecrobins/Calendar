@@ -11,19 +11,7 @@ public class Event extends Appt {
 	
 	// control the frequency of the event
 	//The event frequency can be one-time, daily, weekly, or monthly
-	public enum Frequency {
-		ONETIME(0), DAILY(1), WEEKLY(2), MONTHLY(3);
-		 
-		private final int value;
 
-	    private Frequency(int value) {
-	        this.value = value;
-	    }
-
-	    public int getValue() {
-	        return value;
-	    }
-	}
 	
 	// Private data members
 	private TimeSpan eventTime;
@@ -32,7 +20,7 @@ public class Event extends Appt {
 	private int eventLocationID;
 	private TimeSpan eventReminder;
 	private String additionalEventDescription;
-	private Frequency eventFrequency;
+	private hkust.cse.calendar.unit.Appt.Frequency eventFrequency;
 	
 	// determines if this event is a group event
 	private boolean isGroup;
@@ -98,7 +86,7 @@ public class Event extends Appt {
 	public String getAdditionalEventDescription() {
 		return additionalEventDescription;
 	}
-	public Frequency getEventFrequency() {
+	public hkust.cse.calendar.unit.Appt.Frequency getEventFrequency() {
 		return eventFrequency;
 	}
 	public int getEventID(){
@@ -154,6 +142,20 @@ public class Event extends Appt {
 	
 	public TimeSpan getNotification() {
 		return eventReminder;
+	}
+	
+	public TimeSpan getNextNotification() {
+		switch (eventFrequency) {
+		case ONETIME:
+			return null;
+		case DAILY:
+			return eventReminder.daysAfter(1);
+		case WEEKLY:
+			return eventReminder.daysAfter(7);
+		case MONTHLY:
+			return eventReminder.monthsAfter(1);
+		}
+		return null;
 	}
 	
 	public void setNotification(TimeSpan ts) {

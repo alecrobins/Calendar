@@ -9,7 +9,7 @@ import hkust.cse.calendar.controllers.GroupController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Clock;
 import hkust.cse.calendar.unit.LocationList;
-import hkust.cse.calendar.unit.Event.Frequency;
+import hkust.cse.calendar.unit.Appt.Frequency;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 
@@ -535,50 +535,7 @@ ComponentListener {
 		setVisible(false);
 		MultipleUserSchedule mus = new MultipleUserSchedule(parent, userMap, dates);
 		
-	
-		//
-		//SUCCESS, ERROR_TIME_FORMAT, ERROR_PAST_DATE, ERROR_UNFILLED_REQUIRED_FIELDS,
-		//ERROR_REMINDER, ERROR_EVENT_OVERLAP, ERROR_SECOND_DATE_PAST, ERROR
-//		switch (returnMessage){
-//		case SUCCESS :
-//			setVisible(false);
-//			dispose(); // remove
-//			parent.repaint();
-//			System.out.println("success");
-//			break; 
-//		case ERROR_TIME_FORMAT :
-//			alertMessage("There is an error with the format of your time. Make sure it has the proper format");
-//			break;
-//		case ERROR_PAST_DATE :
-//			alertMessage("You cannot create an event from a past date. Please resubmit the event.");
-//			break;
-//		case ERROR_UNFILLED_REQUIRED_FIELDS :
-//			alertMessage("You have some unfilled required fields. Please check and fill out the required fields.");
-//			break;
-//		case ERROR_REMINDER :
-//			alertMessage("There is problem with your reminder. Please ensure your reminder date is before the event and all fields are filled out.");
-//			break;
-//		case ERROR_EVENT_OVERLAP :
-//			alertMessage("You already have an event at that time! Please find a new date for that event. ");
-//			break;
-//		case ERROR_SECOND_DATE_PAST :
-//			alertMessage("Your end date can't be before your start date. Please resubmit. ");
-//			break;
-//		default : 
-//			alertMessage("Something you did was not right. Review your event. ");
-//			break;
-//		}
 
-		//		if(EventReturnMessage.SUCCESS == returnMessage){
-		//			//close the window
-		//			setVisible(false);
-		//			dispose();
-		//			parent.repaint();
-		//			System.out.println("success");
-		//		}else{
-		//			// report back the erorr message
-		//			System.out.println("error");
-		//		}
 
 	}
 

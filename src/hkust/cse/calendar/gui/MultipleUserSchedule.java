@@ -41,6 +41,9 @@ public class MultipleUserSchedule {
 	public int currentCol;
 	public int currentD;
 	public int currentM;
+	public int firstM;
+	public int secondM;
+	public int firstD;
 	public int currentY;
 	private int pressRow;
 	private int pressCol;
@@ -195,11 +198,16 @@ public class MultipleUserSchedule {
 	}
 	
 	private void NewAppt() {   // only initiator can use this, and it should send invites out
+		//send out notification to other users
+		//set user who calls this to be the initator
 	}
 	private void pickSlot() {
-		GroupSlotPicker gsp = new GroupSlotPicker("New Slot", parent, parentLS);
-		//right now it doesn't work yet since the CalGrid hasn't been instantiated first
-		//we need a function in CalGrid that says "hey --- want a group event???"
+		GroupSlotPicker gsp = new GroupSlotPicker("New Slot", rowBool, parent, parentLS);
+		gsp.updateSetApp(hkust.cse.calendar.gui.Utility.createDefaultAppt(
+				parent.currentY, parent.currentM, parent.currentD,
+				parent.mCurrUser));
+		gsp.setLocationRelativeTo(null);
+		gsp.show();
 	}
 	private void delete() {
 	}
@@ -301,8 +309,11 @@ public class MultipleUserSchedule {
 	}
 
 	public void getColumnTitles(int month, int date){
-		currentM = month+1;
+		currentM = month;
+		firstM = month;
+		secondM = 20;
 		currentD = date;
+		firstD = date;
 		columnTitles = new String[numDays+1];
 		int[] monthNum = new int[7];
 		int[] dateNum = new int[7];
@@ -313,6 +324,7 @@ public class MultipleUserSchedule {
 				dateNum[i] = currentD;
 				if (currentD == 28){
 					currentM++;
+					secondM = currentM;
 					currentD = 0;
 				}
 				currentD++;
@@ -324,6 +336,7 @@ public class MultipleUserSchedule {
 				dateNum[j] = currentD;
 				if (currentD == 30){
 					currentM++;
+					secondM = currentM;
 					currentD = 0;
 				}
 				currentD++;
@@ -346,6 +359,7 @@ public class MultipleUserSchedule {
 				dateNum[l] = currentD;
 				if (currentD == 31){
 					currentM++;
+					secondM = currentM;
 					currentD = 0;
 				}
 				currentD++;

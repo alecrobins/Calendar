@@ -6,7 +6,7 @@ import hkust.cse.calendar.gui.CalGrid;
 import hkust.cse.calendar.gui.MultipleUserSchedule;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Event;
-import hkust.cse.calendar.unit.Event.Frequency;
+import hkust.cse.calendar.unit.Appt.Frequency;
 import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
@@ -15,6 +15,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JComboBox;
@@ -32,6 +33,13 @@ public class GroupController {
 	
 //	public HashMap<User, List<Appt>> getUserMap(){
 //		
+//	}
+	
+//	public TimeSpan suggestedGroupEventTime(List<TimeSpan> list){
+//		List<TimeSpan> suggested = new LinkedList<TimeSpan>();
+//		for (TimeSpan t: list){
+//			
+//		}
 //	}
 	
 	public EventReturnMessage createGroupEvent(

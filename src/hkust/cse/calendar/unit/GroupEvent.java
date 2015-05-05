@@ -2,7 +2,7 @@ package hkust.cse.calendar.unit;
 
 import java.util.List;
 
-import hkust.cse.calendar.unit.Event.Frequency;
+import hkust.cse.calendar.unit.Appt.Frequency;
 
 public class GroupEvent extends Event {
 	
