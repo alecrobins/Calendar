@@ -48,7 +48,7 @@ import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
 
-public class AppScheduler extends JDialog implements ActionListener,
+public class GroupSlotPicker extends JDialog implements ActionListener,
 		ComponentListener {
 
 	// constant
@@ -154,15 +154,6 @@ public class AppScheduler extends JDialog implements ActionListener,
 		Container contentPane;
 		contentPane = getContentPane();
 		
-		JPanel pUsers = new JPanel();
-		
-		if (this.getTitle().equals("New Group Event")){
-			Border userBorder = new TitledBorder(null, "USERS");
-			pUsers.setBorder(userBorder);
-			JLabel num = new JLabel("Number of Members: ");
-			//load users
-			//add num panels to select each user to invite
-		}
 		// Date Panel
 		JPanel pDate = new JPanel();
 		Border dateBorder = new TitledBorder(null, "DATE");
@@ -283,21 +274,11 @@ public class AppScheduler extends JDialog implements ActionListener,
 		top.setBorder(new BevelBorder(BevelBorder.RAISED));
 		
 		JPanel innerTop = new JPanel();
-		
-		if (this.getTitle().equals("New Group Event")){
-			innerTop.setLayout(new BorderLayout());
-			innerTop.setBorder(new BevelBorder(BevelBorder.RAISED));
-			innerTop.add(pDate, BorderLayout.CENTER);
-			innerTop.add(pTime, BorderLayout.SOUTH);
-			innerTop.add(pUsers, BorderLayout.NORTH);
-		}
-		else{
 		innerTop.setLayout(new BorderLayout());
 		innerTop.setBorder(new BevelBorder(BevelBorder.RAISED));
 		innerTop.add(pDate, BorderLayout.NORTH);
 		innerTop.add(pTime, BorderLayout.CENTER);
 		innerTop.add(pExtra, BorderLayout.SOUTH);
-		}
 		
 		top.add("North", innerTop);
 		top.add("Center", pReminder);
@@ -503,12 +484,12 @@ public class AppScheduler extends JDialog implements ActionListener,
 		return temp;
 	}
 
-	AppScheduler(String title, CalGrid cal, int selectedApptId, LocationStorage _ls) {
+	GroupSlotPicker(String title, CalGrid cal, int selectedApptId, LocationStorage _ls) {
 		this.selectedApptId = selectedApptId;
 		commonConstructor(title, cal, _ls);
 	}
 
-	AppScheduler(String title, CalGrid cal, LocationStorage _ls) {
+	GroupSlotPicker(String title, CalGrid cal, LocationStorage _ls) {
 		commonConstructor(title, cal, _ls);
 	}
 	
@@ -668,20 +649,12 @@ public class AppScheduler extends JDialog implements ActionListener,
 		
 		// CREATE THE EVENT
 		// returns an EventReturnMessage - determines if successful or details an error
-		
-		EventReturnMessage returnMessage = EventReturnMessage.ERROR;
-		
-		if (this.getTitle().equals("New Group Event")){
-			
-		}
-		else{
-			returnMessage = eventController.createEvent(
+		EventReturnMessage returnMessage = eventController.createEvent(
 				_year, _month, _day,
 				_sTimeH, _sTimeM, _eTimeH, _eTimeM,
 				_detailArea, _titleField,
 				_timeReminderH, _timeReminderM, _yearReminder, _monthReminder, _dayReminder,
 				_frequency, _location, parent);
-		}
 		//
 		//SUCCESS, ERROR_TIME_FORMAT, ERROR_PAST_DATE, ERROR_UNFILLED_REQUIRED_FIELDS,
 		//ERROR_REMINDER, ERROR_EVENT_OVERLAP, ERROR_SECOND_DATE_PAST, ERROR
@@ -743,16 +716,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 	}
 
 	public void updateSetApp(Appt appt) {
-		int i = appt.TimeSpan().StartTime().getMonth();
-		monthD.setSelectedIndex(i);
-		i = appt.TimeSpan().StartTime().getDate();
-		dayD.setSelectedIndex(i - 1);
-		i = appt.TimeSpan().StartTime().getHours();
-		sTimeHD.setSelectedIndex(i - 1);
-		eTimeHD.setSelectedIndex(i);
-		i = appt.TimeSpan().StartTime().getMinutes();
-		sTimeMD.setSelectedIndex(i/15);
-		eTimeMD.setSelectedIndex(i/15);
+		// Fix Me!
 	}
 
 	public void componentHidden(ComponentEvent e) {
@@ -778,7 +742,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 	
 	public String getCurrentUser()		// get the id of the current user
 	{
-		return this.parent.mCurrUser.getUsername();
+		return ""+this.parent.mCurrUser.getID();
 	}
 	
 	private void allDisableEdit(){
