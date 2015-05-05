@@ -1164,19 +1164,65 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		return userToEvents;
 	}
 	
+	// N/A - to be controlled by the controller
 	// return the user calendars for all listed users within a period
 	public HashMap<User,List<Appt>> getUsersAppts(List<User> users, Timestamp start, Timestamp end){
 		return null;
 	}
 	
-	// modify the event with a new event
-	public boolean modifyEvent (Appt newEvent, int eventID){
-		return false;
-	}
-	
 	// modify the group with a new group event and users
-	public boolean modifyEvent (Appt newGroupEvent, List<User> users, int groupID){
-		return false; 
+	// NOTE: that only the intiator of admin
+	public void modifyGroupEvent (Appt newGroupEvent, int groupID){
+		Connection c = null;
+	    Statement stmt = null;
+	    
+	    // cast the appt to an event
+	    GroupEvent _event = (GroupEvent) newGroupEvent;
+	    
+	    // update the event part of the group event
+	    UpdateAppt(newGroupEvent);
+	    
+	    try {
+	      
+	      Class.forName("org.sqlite.JDBC");
+	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	      c.setAutoCommit(false);
+	      System.out.println("Opened database successfully");
+	      
+	      stmt = c.createStatement();
+	      PreparedStatement query;
+	      
+	      query = c.prepareStatement("update event set startTime = ?, endTime = ?, eventTitle = ?, "+
+	    		  					 "eventDescription = ?, eventReminderStart = ?, eventReminderEnd = ?, " +
+	    		  					 "frequency = ?, locationID = ?, isGroup = ?, isPublic = ? " +
+	    		  					 "where id = ?");
+	      
+	      // assign variables
+	      query.setTimestamp(1, _event.getEventTime().StartTime());
+	      query.setTimestamp(2, _event.getEventTime().EndTime());
+	      query.setString(3, _event.getTitle());
+	      query.setString(4, _event.getEventDescription());
+	      query.setTimestamp(5, _event.getEventReminder().StartTime());
+	      query.setTimestamp(6, _event.getEventReminder().EndTime());
+	      query.setInt(7, _event.getEventFrequency().getValue());
+	      query.setInt(8, _event.getEventLocationID());
+	      query.setBoolean(9, _event.getIsGroup());
+	      query.setBoolean(10, _event.getIsPublic());
+	      query.setInt(11, _event.getID());
+	      
+	      boolean done = query.execute();
+	      
+	      // commit
+	      c.commit();
+	      
+	      query.close();
+	      stmt.close();
+	      c.close();
+		    
+	    } catch ( Exception e1 ) {
+	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+	      System.exit(0);
+	    }
 	}
 	
 	// delete a group event

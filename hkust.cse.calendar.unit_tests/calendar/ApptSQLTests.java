@@ -301,6 +301,7 @@ public class ApptSQLTests {
 	@Test
 	public void testCreateUser(){
 		User testUser = new User("alekslars", "pass123", "Aleks", "Larsen", "alars@yahoo.com", false);
+		
 //		int userID = db.createUser(testUser);
 //		testUser.setID(userID);
 		
