@@ -15,7 +15,7 @@ import hkust.cse.calendar.unit.User;
 
 public class ApptStorageNullImpl extends ApptStorage {
 	
-	private int interval = 60;
+	private int interval = 100;
 	private User defaultUser = null;
 	
 	public ApptStorageNullImpl( User user )
@@ -34,9 +34,17 @@ public class ApptStorageNullImpl extends ApptStorage {
 	public void pullFromDatabase(ApptStorageSQLImpl stor){
 		List<Appt> defaultUserApptList = new LinkedList<Appt>();
 		defaultUserApptList = stor.getAllEvents(defaultUser.getID());
-		for (Appt a: defaultUserApptList){
-			mAppts.put(a.getID(), a);
+		
+		for(int i = 0; i < defaultUserApptList.size(); ++i){
+			Appt curr = defaultUserApptList.get(i);
+			int appID = curr.getEventID();
+			this.mAppts.put(appID, curr);
 		}
+		
+		//for (Appt a: defaultUserApptList){
+		//	mAppts.put(a.getID(), a);
+		//}
+		
 	}
 	
 	public ApptStorageNullImpl(){
@@ -70,7 +78,8 @@ public class ApptStorageNullImpl extends ApptStorage {
 //			}
 //		}
 //		
-		for (HashMap.Entry<Integer, Appt> entry : mAppts.entrySet())
+		
+		for (HashMap.Entry<Integer, Appt> entry : this.mAppts.entrySet())
 		{
 			Appt currentAppt = entry.getValue();
 			long startTime = currentAppt.getEventTime().StartTime().getTime();
@@ -94,7 +103,6 @@ public class ApptStorageNullImpl extends ApptStorage {
 			}
 			return newArray;
 		}
-			
 
 	}
 

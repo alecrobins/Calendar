@@ -202,12 +202,16 @@ public class Appt implements Serializable {
 	// Getter of the appointment title
 	public String toString() {
 		
+		String eR = "";
+		if(eventReminder != null)
+			eR = eventReminder.toString();
+		
 		String event =
 		"ID: " + id + "  " +
 		mTimeSpan.toString() + " " +
 		mInfo + " " +
 		eventLocationID+ " " +
-		eventReminder + " " +
+		eR + " " +
 		" " +
 		eventFrequency + " " +
 		

@@ -1468,20 +1468,24 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		 // Gather data
   	  
    	 	int id = rs.getInt("id");
-        Timestamp startTime = new Timestamp(rs.getInt("startTime"));
-        Timestamp endTime = new Timestamp(rs.getInt("endTime") );
+   	 	Timestamp startTime = rs.getTimestamp("startTime");
+   	 	Timestamp endTime = rs.getTimestamp("endTime");
         String eventTitle = rs.getString("title");
         String  eventDescription = rs.getString("description");
         int frequencyNum = rs.getInt("frequency");
-        Timestamp eventReminderStart = new Timestamp(rs.getInt("reminderStart"));
-        Timestamp eventReminderEnd = new Timestamp(rs.getInt("reminderEnd") );
+        Timestamp eventReminderStart = rs.getTimestamp("reminderStart");
+        Timestamp eventReminderEnd = rs.getTimestamp("reminderEnd");
         int locationID = rs.getInt("locationID");
         boolean isGroup = rs.getBoolean("isGroup");
         boolean isPublic = rs.getBoolean("isPublic");
         
-        // set the event
         TimeSpan eventTime = new TimeSpan(startTime, endTime);
-        TimeSpan reminder = new TimeSpan(eventReminderStart, eventReminderEnd);
+        
+        // set the reminder
+        TimeSpan reminder = null;
+        if(!(eventReminderStart == null || eventReminderEnd == null))
+        	reminder = new TimeSpan(eventReminderStart, eventReminderEnd);
+        
         Frequency frequency = Frequency.values()[frequencyNum];
         
         System.out.println(id);
