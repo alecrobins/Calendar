@@ -133,11 +133,12 @@ public class RegistrationDialog extends JFrame implements ActionListener {
 			
 			}
 				
+			else{   //if userName is already exists
 			System.out.println("check");
 			
 			JOptionPane.showMessageDialog(null, "Change your name and try again!", "Opps There is Something Wrong",
                     JOptionPane.ERROR_MESSAGE);
-			
+			}
 
 
 		} else if (e.getSource() == closeButton) {
