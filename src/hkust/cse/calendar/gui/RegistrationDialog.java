@@ -132,8 +132,6 @@ public class RegistrationDialog extends JFrame implements ActionListener {
 			
 				LoginDialog loginDialog = new LoginDialog();
 				
-				setVisible(false);
-			
 			
 			}else{
 				System.out.println("check");
