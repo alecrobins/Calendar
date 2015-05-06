@@ -193,6 +193,8 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    	 endtime = _event.getEventReminder().EndTime();
 	      }
 	      
+	      int locationID = _event.getEventLocationID();
+	      
 	      // assign variables
 	      query.setTimestamp(1, _event.getEventTime().StartTime());
 	      query.setTimestamp(2, _event.getEventTime().EndTime());
@@ -201,7 +203,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      query.setTimestamp(5, starttime);
 	      query.setTimestamp(6, endtime);
 	      query.setInt(7, _event.getEventFrequency().getValue());
-	      query.setInt(8, _event.getEventLocationID());
+	      query.setInt(8, locationID);
 	      query.setBoolean(9, _event.getIsGroup());
 	      query.setBoolean(10, _event.getIsPublic());
 	      
@@ -329,7 +331,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      query.setTimestamp(5, _event.getEventReminder().StartTime());
 	      query.setTimestamp(6, _event.getEventReminder().EndTime());
 	      query.setInt(7, _event.getEventFrequency().getValue());
-	      query.setInt(8, _event.getEventLocationID());
+	      query.setInt(8, _event.getEventLocation());
 	      query.setBoolean(9, _event.getIsGroup());
 	      query.setBoolean(10, _event.getIsPublic());
 	      query.setInt(11, _event.getID());
@@ -1372,6 +1374,45 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		return locationID;
 	}
 	
+	public Location getLocationByName (String name){
+		Connection c = null;
+	    Statement stmt = null;
+		Location l = null;
+		try {
+		      Class.forName("org.sqlite.JDBC");
+		      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+		      c.setAutoCommit(false);
+		      System.out.println("Opened database successfully");
+		      
+		      stmt = c.createStatement();
+		      PreparedStatement query;
+		      
+		      query = c.prepareStatement("select id, isGroupFacility from location where name = ?");
+		      
+		      query.setString(1, name);
+		      ResultSet rs = query.executeQuery();
+		      // go through results
+		      while ( rs.next() ) {
+	    		int id = rs.getInt("id");
+	    		boolean isGroup = rs.getBoolean("isGroupFacility");
+	    		
+	    		Location newLocation = new Location(name, isGroup);
+	    		newLocation.setLocationID(id);
+	    		
+	    		l = newLocation;  
+		      }			  
+		  
+		      query.close();
+		      stmt.close();
+		      c.close();
+			    
+		    } catch ( Exception e1 ) {
+		      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+		      System.exit(0);
+		    }
+		return l;
+	}
+	
 	// modify the locatoin (only can be done by the admin)
 	// return the newly modified location
 	public void modifyLocation(Location location){
@@ -1427,6 +1468,39 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		      query = c.prepareStatement("delete from location where id = ?; ");
 		      
 		      query.setInt(1, locationID);
+
+		      boolean done = query.execute();
+			  
+		   // commit
+		      c.commit();
+		      
+		      query.close();
+		      stmt.close();
+		      c.close();
+			    
+		    } catch ( Exception e1 ) {
+		      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+		      System.exit(0);
+		    }
+	}
+	
+	// delete a location by the name
+	public void deleteLocationByName(String name){
+		Connection c = null;
+	    Statement stmt = null;
+		
+		try {
+		      Class.forName("org.sqlite.JDBC");
+		      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+		      c.setAutoCommit(false);
+		      System.out.println("Opened database successfully");
+		      
+		      stmt = c.createStatement();
+		      PreparedStatement query;
+		      
+		      query = c.prepareStatement("delete from location where name = ?; ");
+		      
+		      query.setString(1, name);
 
 		      boolean done = query.execute();
 			  

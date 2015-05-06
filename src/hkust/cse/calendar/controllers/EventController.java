@@ -95,7 +95,7 @@ public class EventController {
 		Location location = null;
 		// create the location if not null
 		if(_location != null)
-			location = new Location(_location);
+			location = db.getLocationByName(_location);
 
 
 		// MAKE THE EVENT
@@ -117,59 +117,134 @@ public class EventController {
 		return EventReturnMessage.SUCCESS;
 	}
 
-	public void saveEvent(Event e){
+	public void saveEvent(Appt e){
 		// Add notification in to notification array
 		cal.controller.addNotification(e.getNotification());
 		System.out.println("Notification added successfully");
 		
+		int eventID = -1;
+		Appt pastEvent = null;
+		TimeSpan curr = null;
+		long time = -1;
+		
+		
 		switch (e.getEventFrequency()){
 		case ONETIME:
-			cal.controller.mApptStorage.SaveAppt(e);
 			// save to db
-			db.SaveAppt(e);
+			eventID = db.SaveAppt(e);
+			e.setEventID(eventID);
+			cal.controller.mApptStorage.SaveAppt(e);
 			break;
 		case WEEKLY:
-			Event eNew = e;
+			eventID = db.SaveAppt(e);
+			e.setEventID(eventID);
+			cal.controller.mApptStorage.SaveAppt(e);
+			
+			pastEvent = e;
+			
 			for (int i = 0; i < 52; i++)   { //1 years in weeks
-				Event eNew1 = new Event(eNew.getEventTime(), eNew.getEventFrequency()) ;
-				cal.controller.mApptStorage.SaveAppt(eNew1);
-				TimeSpan curr = eNew.getEventTime();
+				
+				// Set teh current tim 
+				curr = pastEvent.getEventTime();
 				Timestamp start = new Timestamp(curr.StartTime().getTime()+604800000);
 				Timestamp fin = new Timestamp(curr.EndTime().getTime()+604800000);
-				eNew.setEventTime(new TimeSpan(start, fin));
+				
+				// generate the new event
+				Appt eNew = formatEvent(start, fin, e);
 				// save to db
-				db.SaveAppt(eNew1);
+				eNew.setEventID(e.getEventID());
+				
+				cal.controller.mApptStorage.SaveAppt(eNew);
+				// save to db
+				
+				pastEvent = eNew;
+				
 			}
 			break;
 		case MONTHLY:
-			Event eNew1 = e;
+			eventID = db.SaveAppt(e);
+			e.setEventID(eventID);
+			cal.controller.mApptStorage.SaveAppt(e);
+			
+			pastEvent = e;
+			
 			for (int i = 0; i < 13; i++){   //1 years in groups of 4 weeks
-				Event eNew2 = new Event(eNew1.getEventTime(), eNew1.getEventFrequency()) ;
-				cal.controller.mApptStorage.SaveAppt(eNew2);
-				TimeSpan curr = eNew1.getEventTime();
-				curr.StartTime().setMonth(curr.StartTime().getMonth()+1);
-				curr.EndTime().setMonth(curr.EndTime().getMonth()+1);
-				Timestamp star = curr.StartTime();
-				Timestamp fi = curr.EndTime();
-				eNew1.setEventTime(new TimeSpan(star, fi));
+//				Appt eNew2 = new Appt(e.getEventTime(), e.getEventFrequency()) ;
+//				cal.controller.mApptStorage.SaveAppt(eNew2);
+//				TimeSpan curr = e.getEventTime();
+//				curr.StartTime().setMonth(curr.StartTime().getMonth()+1);
+//				curr.EndTime().setMonth(curr.EndTime().getMonth()+1);
+//				Timestamp star = curr.StartTime();
+//				Timestamp fi = curr.EndTime();
+//				eNew2.setEventTime(new TimeSpan(star, fi));
+//				// save to db
+//				db.SaveAppt(eNew2);
+				
+				curr = pastEvent.getEventTime();
+				
+				Timestamp start = curr.StartTime(); 
+				Timestamp end = curr.EndTime();
+				
+				start.setMonth(curr.StartTime().getMonth()+1);
+				end.setMonth(curr.EndTime().getMonth()+1);
+				
+				// generate the new event
+				Appt eNew = formatEvent(start, end, e);
 				// save to db
-				db.SaveAppt(eNew2);
+				eNew.setEventID(e.getEventID());
+				cal.controller.mApptStorage.SaveAppt(eNew);
+				
+				// set past event
+				pastEvent = eNew;
 			}
 			break;
 		case DAILY:
-			Event eNew2 = e;
+			eventID = db.SaveAppt(e);
+			e.setEventID(eventID);
+			cal.controller.mApptStorage.SaveAppt(e);
+			
+			pastEvent = e;
+			
 			for (int i = 0; i < 365; i++){
-				Event eNew3 = new Event(eNew2.getEventTime(), eNew2.getEventFrequency()) ;
-				cal.controller.mApptStorage.SaveAppt(eNew3);
-				TimeSpan curr = eNew2.getEventTime();
-				Timestamp start1 = new Timestamp(curr.StartTime().getTime()+86400000);
-				Timestamp fin = new Timestamp(curr.EndTime().getTime()+86400000);
-				eNew2.setEventTime(new TimeSpan(start1, fin));
+//				Event eNew3 = new Event(eNew2.getEventTime(), eNew2.getEventFrequency()) ;
+//				cal.controller.mApptStorage.SaveAppt(eNew3);
+//				TimeSpan curr = eNew2.getEventTime();
+//				Timestamp start1 = new Timestamp(curr.StartTime().getTime()+86400000);
+//				Timestamp fin = new Timestamp(curr.EndTime().getTime()+86400000);
+//				eNew2.setEventTime(new TimeSpan(start1, fin));
+//				// save to db
+//				db.SaveAppt(eNew3);
+				curr = pastEvent.getEventTime();
+				Timestamp start = new Timestamp(curr.StartTime().getTime()+86400000);
+				Timestamp end = new Timestamp(curr.EndTime().getTime()+86400000);
 				// save to db
-				db.SaveAppt(eNew3);
+				
+				// generate the new event
+				Appt eNew = formatEvent(start, end, e);
+				// save to db
+				eNew.setEventID(e.getEventID());
+				cal.controller.mApptStorage.SaveAppt(eNew);
+				// set past event
+				pastEvent = eNew;
 			}
 			break;
 		}
+		
+	}
+	
+	private Appt formatEvent(Timestamp start, Timestamp end, Appt e){
+		Appt eNew = new Appt() ;
+		
+		// get information for new event
+		eNew.setEventFrequency(e.getEventFrequency());
+		eNew.setEventTime(new TimeSpan(start, end));
+		eNew.setTitle(e.getTitle());
+		eNew.setInfo(e.getInfo());
+		eNew.setEventLocation(e.getEventLocationID());
+		eNew.setIsGroup(e.getIsGroup());
+		eNew.setIsPublic(e.getIsPublic());
+		
+		return eNew;
 	}
 
 	//

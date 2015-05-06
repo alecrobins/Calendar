@@ -78,8 +78,6 @@ ComponentListener {
 	
 		setTitle("Manage Location");
 		
-		
-		
 		JPanel panel = new JPanel();
 		panel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		

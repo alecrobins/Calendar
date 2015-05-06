@@ -64,6 +64,19 @@ public class Appt implements Serializable {
 		waiting = new LinkedList<String>();
 		joinApptID = -1;
 	}
+	// Partial Constructor (the minimally required information)
+	public Appt(TimeSpan _eventTime, Frequency _eventFrequency)
+	{
+		super();
+		mTimeSpan = _eventTime;
+		mInfo = null;
+		mTitle = null;
+		eventLocationID = 0;
+		eventReminder = null;
+//		additionalEventDescription = null;
+		eventFrequency = _eventFrequency;
+	}
+
 	
 	// Complete Constructor
 	public Appt(TimeSpan _eventTime, String _title, String _eventDescription, int _eventLocationID,
@@ -210,7 +223,7 @@ public class Appt implements Serializable {
 		"ID: " + id + "  " +
 		mTimeSpan.toString() + " " +
 		mInfo + " " +
-		eventLocationID+ " " +
+		eventLocationID + " " +
 		eR + " " +
 		" " +
 		eventFrequency + " " +
@@ -257,11 +270,15 @@ public class Appt implements Serializable {
 	public String getEventDescription() {
 		return mInfo;
 	}
-	public int getEventLocationID() {
+	public int getEventLocation() {
 		return eventLocationID;
 	}
 	public TimeSpan getEventReminder() {
 		return eventReminder;
+	}
+	
+	public int getEventLocationID(){
+		return eventLocationID;
 	}
 
 	public Frequency getEventFrequency() {

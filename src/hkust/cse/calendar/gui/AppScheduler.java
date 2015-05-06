@@ -753,6 +753,8 @@ public class AppScheduler extends JDialog implements ActionListener,
 		i = appt.TimeSpan().StartTime().getMinutes();
 		sTimeMD.setSelectedIndex(i/15);
 		eTimeMD.setSelectedIndex(i/15);
+		
+//		eventController(appt);
 	}
 
 	public void componentHidden(ComponentEvent e) {

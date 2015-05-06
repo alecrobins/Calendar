@@ -122,7 +122,6 @@ public class LoginDialog extends JFrame implements ActionListener
 				
 				CalGrid grid = new CalGrid(new ApptStorageControllerImpl(new ApptStorageSQLImpl(user)));
 				setVisible( false );
-				
 						
 			}
 			else{

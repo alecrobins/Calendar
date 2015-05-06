@@ -37,12 +37,113 @@ public class ApptStorageNullImpl extends ApptStorage {
 		
 		for(int i = 0; i < defaultUserApptList.size(); ++i){
 			Appt curr = defaultUserApptList.get(i);
-			int appID = curr.getEventID();
-			this.mAppts.put(appID, curr);
+			generateEvents(curr);
+		}
+	}
+	
+	private void generateEvents(Appt e){
+		// Add notification in to notification array
+		int time = -1;
+		Appt pastEvent = null;
+		switch (e.getEventFrequency()){
+		case ONETIME:
+			// save to db
+			time = (int) e.getEventTime().StartTime().getTime();
+			this.mAppts.put(time, e);
+			break;
+		case WEEKLY:
+			
+			// save the first event
+			time = (int) e.getEventTime().StartTime().getTime();
+			this.mAppts.put(time, e);
+			
+			pastEvent = e;
+			
+			for (int i = 0; i < 52; i++)   { //1 years in weeks
+				
+				// Set teh current tim 
+				TimeSpan curr = pastEvent.getEventTime();
+				Timestamp start = new Timestamp(curr.StartTime().getTime()+604800000);
+				Timestamp fin = new Timestamp(curr.EndTime().getTime()+604800000);
+				
+				// generate the new event
+				Appt eNew = formatEvent(start, fin, e);
+				time = (int) eNew.getEventTime().StartTime().getTime();
+				// put into hashmap
+				this.mAppts.put(time, eNew);
+				
+				// set past event
+				pastEvent = eNew;
+				
+			}
+			break;
+		case MONTHLY:
+			// save the first event
+			time = (int) e.getEventTime().StartTime().getTime();
+			this.mAppts.put(time, e);
+			
+			pastEvent = e;
+
+			for (int i = 0; i < 13; i++){   //1 years in groups of 4 weeks
+				TimeSpan curr = pastEvent.getEventTime();
+				
+				Timestamp start = curr.StartTime(); 
+				Timestamp end = curr.EndTime();
+				
+				start.setMonth(curr.StartTime().getMonth()+1);
+				end.setMonth(curr.EndTime().getMonth()+1);
+				
+				// generate the new event
+				Appt eNew = formatEvent(start, end, e);
+				time = (int) eNew.getEventTime().StartTime().getTime();
+				// put into hashmap
+				this.mAppts.put(time, eNew);
+				
+				// set past event
+				pastEvent = eNew;
+			}
+			break;
+		case DAILY:
+			// save the first event
+			time = (int) e.getEventTime().StartTime().getTime();
+			this.mAppts.put(time, e);
+			
+			pastEvent = e;
+			
+			for (int i = 0; i < 365; i++){
+				TimeSpan curr = pastEvent.getEventTime();
+				Timestamp start = new Timestamp(curr.StartTime().getTime()+86400000);
+				Timestamp end = new Timestamp(curr.EndTime().getTime()+86400000);
+				// save to db
+				
+				// generate the new event
+				Appt eNew = formatEvent(start, end, e);
+				time = (int) eNew.getEventTime().StartTime().getTime();
+				// put into hashmap
+				this.mAppts.put(time, eNew);
+				
+				// set past event
+				pastEvent = eNew;
+			}
+			break;
 		}
 		
 	}
 	
+	private Appt formatEvent(Timestamp start, Timestamp end, Appt e){
+		Appt eNew = new Appt() ;
+		
+		// get information for new event
+		eNew.setEventFrequency(e.getEventFrequency());
+		eNew.setEventTime(new TimeSpan(start, end));
+		eNew.setTitle(e.getTitle());
+		eNew.setInfo(e.getInfo());
+		eNew.setEventLocation(e.getEventLocationID());
+		eNew.setIsGroup(e.getIsGroup());
+		eNew.setIsPublic(e.getIsPublic());
+		
+		return eNew;
+	}
 	public ApptStorageNullImpl(){
 		super();
 	}
