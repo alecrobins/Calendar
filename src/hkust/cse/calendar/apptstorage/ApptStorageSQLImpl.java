@@ -1,4 +1,4 @@
-package hkust.cse.calendar.apptstorage;//
+ package hkust.cse.calendar.apptstorage;//
 
 import hkust.cse.calendar.apptstorage.ApptStorage;
 import hkust.cse.calendar.unit.Appt;
@@ -29,9 +29,6 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	private int interval = 60;
 	private User defaultUser = null;
 	
-	//TODO: eventually switch out dummyUser with the default User 
-	private User dummyUser = new User(4, "alecrobins", "1", true);
-
 	public ApptStorageSQLImpl( User user )
 	{
 		defaultUser = user;
@@ -70,7 +67,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    		  "e.eventReminderEnd as 'reminderEnd', e.locationID as 'locationID', " +
 	    		  "e.isGroup as 'isGroup', e.isPublic as 'isPublic' " +
 	    		  "from event e, userEvent ue " +
-	    		  "where ue.userID = "+ dummyUser.getID() +
+	    		  "where ue.userID = "+ defaultUser.getID() +
 	    		  " and e.id = ue.eventID and e.startTime = " +
 	    		  time + ";";
 	      
@@ -209,7 +206,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 
 		  // create a connection between the user and event
 		  query = c.prepareStatement("insert into userEvent (userID, eventID) values (?, ?)");
-		  query.setInt(1, dummyUser.getID());
+		  query.setInt(1, defaultUser.getID());
 		  query.setInt(2, eventID);
 		  
 		  done = query.execute();
@@ -231,7 +228,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	
 	@Override
 	public Appt[] RetrieveAppts(TimeSpan d) {
-		return RetrieveAppts(dummyUser, d);
+		return RetrieveAppts(defaultUser, d);
 	}
 
 	@Override
@@ -292,13 +289,6 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    }
 	    	    
 		return (Appt[]) events.toArray();
-	}
-
-	// N/A
-	@Override
-	public Appt RetrieveAppts(int joinApptID) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -402,17 +392,10 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	public User getDefaultUser() {
 		return defaultUser;
 	}
+	
 
-	// N/A
 	@Override
-	public void LoadApptFromXml() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	// N/A this is done in controller
-	@Override
-	public boolean isApptValid(Appt appt) {
+	public boolean findNotification(TimeSpan ts) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -484,7 +467,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    		  "e.eventReminderEnd as 'reminderEnd', e.locationID as 'locationID', " +
 	    		  "e.isGroup as 'isGroup', e.isPublic as 'isPublic' " +
 	    		  "from event e, userEvent ue " +
-	    		  "where ue.userID = "+ dummyUser.getID() +
+	    		  "where ue.userID = "+ defaultUser.getID() +
 	    		  " and e.id = ue.eventID and e.id = " +
 	    		  id + ";";
 	      
@@ -792,7 +775,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      // set the initiator to who ever the current user is
 	      // the group is initially set to false
 	      query.setInt(1, groupID);
-	      query.setInt(2, dummyUser.getID());
+	      query.setInt(2, defaultUser.getID());
 	      query.setBoolean(3, groupEvent.isConfirmed());
 	      
 	      boolean done = query.execute();
@@ -1384,11 +1367,72 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	// modify the locatoin (only can be done by the admin)
 	// return the newly modified location
 	public void modifyLocation(Location location){
+		
+		Connection c = null;
+	    Statement stmt = null;
+		
+		try {
+		      Class.forName("org.sqlite.JDBC");
+		      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+		      c.setAutoCommit(false);
+		      System.out.println("Opened database successfully");
+		      
+		      stmt = c.createStatement();
+		      PreparedStatement query;
+		      
+		      query = c.prepareStatement("update location set name = ? , isGroupFacility = ? where id = ?; ");
+		      
+		      query.setString(1, location.getName());
+		      query.setBoolean(2, location.getIsGroupFacility());
+		      query.setInt(3, location.getLocationID());
+
+		      boolean done = query.execute();
+			  
+		   // commit
+		      c.commit();
+		      
+		      query.close();
+		      stmt.close();
+		      c.close();
+			    
+		    } catch ( Exception e1 ) {
+		      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+		      System.exit(0);
+		    }
+		
 	}
 	
 	// delete the location given the location id
 	public void deleteLocation(int locationID){
+		Connection c = null;
+	    Statement stmt = null;
 		
+		try {
+		      Class.forName("org.sqlite.JDBC");
+		      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+		      c.setAutoCommit(false);
+		      System.out.println("Opened database successfully");
+		      
+		      stmt = c.createStatement();
+		      PreparedStatement query;
+		      
+		      query = c.prepareStatement("delete from location where id = ?; ");
+		      
+		      query.setInt(1, locationID);
+
+		      boolean done = query.execute();
+			  
+		   // commit
+		      c.commit();
+		      
+		      query.close();
+		      stmt.close();
+		      c.close();
+			    
+		    } catch ( Exception e1 ) {
+		      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+		      System.exit(0);
+		    }
 	}
 	
 	// helper functions
@@ -1469,11 +1513,22 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		
 		return newLocation;
 	}
+	
+	
+	// N/A
+	@Override
+	public Appt RetrieveAppts(int joinApptID) {
+		return null;
+	}
 
 	@Override
-	public boolean findNotification(TimeSpan ts) {
-		// TODO Auto-generated method stub
+	public void LoadApptFromXml() {
+	}
+
+	@Override
+	public boolean isApptValid(Appt appt) {
 		return false;
 	}
+
 
 }
