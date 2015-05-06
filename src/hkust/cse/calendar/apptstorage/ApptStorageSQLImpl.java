@@ -185,13 +185,21 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      query = c.prepareStatement("insert into event (id, startTime, endTime, eventTitle, eventDescription, eventReminderStart, eventReminderEnd, frequency, locationID, isGroup, isPublic) " +
 		    		"values (null, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
 	      
+	      Timestamp starttime = null;
+	      Timestamp endtime = null;
+	      // check if the event reminder is null
+	      if(_event.getEventReminder() != null){
+	    	 starttime = _event.getEventReminder().StartTime();
+	    	 endtime = _event.getEventReminder().EndTime();
+	      }
+	      
 	      // assign variables
 	      query.setTimestamp(1, _event.getEventTime().StartTime());
 	      query.setTimestamp(2, _event.getEventTime().EndTime());
 	      query.setString(3, _event.getTitle());
 	      query.setString(4, _event.getEventDescription());
-	      query.setTimestamp(5, _event.getEventReminder().StartTime());
-	      query.setTimestamp(6, _event.getEventReminder().EndTime());
+	      query.setTimestamp(5, starttime);
+	      query.setTimestamp(6, endtime);
 	      query.setInt(7, _event.getEventFrequency().getValue());
 	      query.setInt(8, _event.getEventLocationID());
 	      query.setBoolean(9, _event.getIsGroup());
