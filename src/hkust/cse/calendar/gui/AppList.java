@@ -152,7 +152,7 @@ public class AppList extends JPanel implements ActionListener {
 			}
 		});
 
-		mi = (JMenuItem) pop.add(new JMenuItem("Show Group Availability"));
+		mi = (JMenuItem) pop.add(new JMenuItem("Prompt Group Event"));
 
 		mi.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {				

@@ -53,27 +53,13 @@ import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
 
-public class GroupAppPrompt extends JDialog implements ActionListener,
+public class GroupAppReadyNotification extends JDialog implements ActionListener,
 ComponentListener {
 
 	// constant
 	private int INTERVAL_PER_HOUR = 4;
 
 	// Old labels
-	private JLabel yearL;
-	private JTextField yearF;
-	private JLabel monthL;
-	private JTextField monthF;
-	private JLabel dayL;
-	private JTextField dayF;
-	private JLabel sTimeHL;
-	private JTextField sTimeH;
-	private JLabel sTimeML;
-	private JTextField sTimeM;
-	private JLabel eTimeHL;
-	private JTextField eTimeH;
-	private JLabel eTimeML;
-	private JTextField eTimeM;
 
 	// Additional UI elements
 	private JLabel locationDL;
@@ -95,7 +81,7 @@ ComponentListener {
 
 	private JTextField titleField;
 
-	private JButton saveBut;
+	private JButton saveBut;	
 	private JButton CancelBut;
 	private JButton inviteBut;
 	private JButton rejectBut;
@@ -109,7 +95,6 @@ ComponentListener {
 	
 	private List<JCheckBox> checkBoxList;
 
-	private JTextArea detailArea;
 
 	private final String[] months = { "January", "Feburary", "March", "April",
 			"May", "June", "July", "August", "September", "October",
@@ -118,8 +103,7 @@ ComponentListener {
 	// responsible for communication between scheduler events and the contoller
 	private EventController eventController;
 
-	private JSplitPane pDes;
-	JPanel detailPanel;
+
 
 	//	private JTextField attendField;
 	//	private JTextField rejectField;
@@ -131,9 +115,13 @@ ComponentListener {
 	private GroupController gc;
 	private List<User> userList;
 	private List<Timestamp> dates;
+	private boolean[] rowBool;
+	private TimeSpan suggested;
 
 
-	private void commonConstructor(CalGrid cal, LocationStorage _ls) {
+	private void commonConstructor(boolean[] rowVal, CalGrid cal, LocationStorage _ls, List<User> userLis, TimeSpan s) {
+		rowBool = rowVal;
+		suggested = s;
 		gc = new GroupController(cal);
 		// set up the NoticationController & The LocationStorage
 		ls = _ls;
@@ -158,54 +146,17 @@ ComponentListener {
 
 		//load users
 		userList = new LinkedList<User>();
-		userList = this.parent.getController().getDatabase().getListOfAllUsers();
+		userList = userLis;
 		checkBoxList = new LinkedList<JCheckBox>();
 		for (User u: userList){
 			JCheckBox j = new JCheckBox(u.getUsername());
 			checkBoxList.add(j);
-			j.addActionListener(this);
+			j.setSelected(true);
+			j.setEnabled(false);
 			pUsers.add(j);
 		}
 		
 		//add num panels to select each user to invite
-		// Date Panel
-		JPanel pDate = new JPanel();
-		Border dateBorder = new TitledBorder(null, "DATE");
-		pDate.setBorder(dateBorder);
-
-		// New Date
-		yearDL = new JLabel("YEAR: ");
-		pDate.add(yearDL);
-		yearD = new JComboBox();
-		yearD = loadYear("app");
-		pDate.add(yearD);
-		monthDL = new JLabel("MONTH: ");
-		pDate.add(monthDL);
-		monthD = new JComboBox();
-		monthD = loadMonth("app");
-		pDate.add(monthD);
-		dayDL = new JLabel("DAY: ");
-		pDate.add(dayDL);
-		dayD = new JComboBox();
-		dayD = loadDay("app");
-		pDate.add(dayD);
-
-		numDaysL = new JLabel("Subsequent Days to Consider: ");
-		pDate.add(numDaysL);
-		numDays = new JComboBox();
-		numDays = loadMonth("app");
-		pDate.add(numDays);
-
-		// Location panel
-		JPanel pLocation = new JPanel();
-		Border locationBorder = new TitledBorder(null, "Location");
-		pLocation.setBorder(locationBorder);
-		locationDL = new JLabel("Place");
-		pLocation.add(locationDL);
-		locationD = new JComboBox();
-		locationD = loadLocations();
-		pLocation.add(locationD);
-
 
 		JPanel top = new JPanel();
 		top.setLayout(new BorderLayout());
@@ -214,7 +165,6 @@ ComponentListener {
 		JPanel innerTop = new JPanel();
 		innerTop.setLayout(new BorderLayout());
 		innerTop.setBorder(new BevelBorder(BevelBorder.RAISED));
-		innerTop.add(pDate, BorderLayout.CENTER);
 		innerTop.add(pUsers, BorderLayout.NORTH);
 
 		top.add("North", innerTop);
@@ -222,9 +172,11 @@ ComponentListener {
 		JPanel panel2 = new JPanel();
 		panel2.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-		saveBut = new JButton("Send Invitations");
+		saveBut = new JButton("Schedule Group Appointment");
 		saveBut.addActionListener(this);
 		panel2.add(saveBut);
+		
+		
 
 		contentPane.add("South", panel2);
 
@@ -366,13 +318,13 @@ ComponentListener {
 		return temp;
 	}
 
-	GroupAppPrompt(CalGrid cal, int selectedApptId, LocationStorage _ls) {
+	GroupAppReadyNotification(boolean[] rowVal, CalGrid cal, LocationStorage _ls, List<User> userLis, int selectedApptId, TimeSpan s) {
 		this.selectedApptId = selectedApptId;
-		commonConstructor(cal, _ls);
+		commonConstructor(rowVal, cal, _ls, userLis, s);
 	}
 
-	GroupAppPrompt(CalGrid cal, LocationStorage _ls) {
-		commonConstructor(cal, _ls);
+	GroupAppReadyNotification(boolean[] rowVal, CalGrid cal, LocationStorage _ls, List<User> userLis, TimeSpan s) {
+		commonConstructor(rowVal, cal, _ls, userLis, s);
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -385,7 +337,8 @@ ComponentListener {
 		} else if (e.getSource() == saveBut) {
 			saveButtonResponse();
 
-		} else if (e.getSource() == rejectBut){
+		}
+		else if (e.getSource() == rejectBut){
 			if (JOptionPane.showConfirmDialog(this, "Reject this joint appointment?", "Confirmation", JOptionPane.YES_NO_OPTION) == 0){
 				NewAppt.addReject(getCurrentUser());
 				NewAppt.getAttendList().remove(getCurrentUser());
@@ -417,38 +370,7 @@ ComponentListener {
 
 	}
 
-	private int[] getValidDate() {
-
-		int[] date = new int[3];
-		date[0] = Utility.getNumber(yearF.getText());
-		date[1] = Utility.getNumber(monthF.getText());
-		if (date[0] < 1980 || date[0] > 2100) {
-			JOptionPane.showMessageDialog(this, "Please input proper year",
-					"Input Error", JOptionPane.ERROR_MESSAGE);
-			return null;
-		}
-		if (date[1] <= 0 || date[1] > 12) {
-			JOptionPane.showMessageDialog(this, "Please input proper month",
-					"Input Error", JOptionPane.ERROR_MESSAGE);
-			return null;
-		}
-
-		date[2] = Utility.getNumber(dayF.getText());
-		int monthDay = CalGrid.monthDays[date[1] - 1];
-		if (date[1] == 2) {
-			GregorianCalendar c = new GregorianCalendar();
-			if (c.isLeapYear(date[0]))
-				monthDay = 29;
-		}
-		if (date[2] <= 0 || date[2] > monthDay) {
-			JOptionPane.showMessageDialog(this,
-					"Please input proper month day", "Input Error",
-					JOptionPane.ERROR_MESSAGE);
-			return null;
-		}
-		return date;
-	}
-
+	
 	private int getTime(JTextField h, JTextField min) {
 
 		int hour = Utility.getNumber(h.getText());
@@ -462,90 +384,16 @@ ComponentListener {
 
 	}
 
-	private int[] getValidTimeInterval() {
-
-		int[] result = new int[2];
-		result[0] = getTime(sTimeH, sTimeM);
-		result[1] = getTime(eTimeH, eTimeM);
-		if ((result[0] % 15) != 0 || (result[1] % 15) != 0) {
-			JOptionPane.showMessageDialog(this,
-					"Minute Must be 0, 15, 30, or 45 !", "Input Error",
-					JOptionPane.ERROR_MESSAGE);
-			return null;
-		}
-
-		if (!sTimeM.getText().equals("0") && !sTimeM.getText().equals("15") && !sTimeM.getText().equals("30") && !sTimeM.getText().equals("45") 
-				|| !eTimeM.getText().equals("0") && !eTimeM.getText().equals("15") && !eTimeM.getText().equals("30") && !eTimeM.getText().equals("45")){
-			JOptionPane.showMessageDialog(this,
-					"Minute Must be 0, 15, 30, or 45 !", "Input Error",
-					JOptionPane.ERROR_MESSAGE);
-			return null;
-		}
-
-		if (result[1] == -1 || result[0] == -1) {
-			JOptionPane.showMessageDialog(this, "Please check time",
-					"Input Error", JOptionPane.ERROR_MESSAGE);
-			return null;
-		}
-		if (result[1] <= result[0]) {
-			JOptionPane.showMessageDialog(this,
-					"End time should be bigger than \nstart time",
-					"Input Error", JOptionPane.ERROR_MESSAGE);
-			return null;
-		}
-		if ((result[0] < AppList.OFFSET * 60)
-				|| (result[1] > (AppList.OFFSET * 60 + AppList.ROWNUM * 2 * 15))) {
-			JOptionPane.showMessageDialog(this, "Out of Appointment Range !",
-					"Input Error", JOptionPane.ERROR_MESSAGE);
-			return null;
-		}
-
-		return result;
-	}
 
 	private void saveButtonResponse() {
 
-		System.out.println("YOU HAVE SAVED THE INFORMATION");
-		// Get all the fields from the form
-		// check if null before assignment
-		String _year = yearD.getSelectedItem() == null ? null : yearD.getSelectedItem().toString();
-		String _month = monthD.getSelectedItem() == null ? null : monthD.getSelectedItem().toString();
-		String _day = dayD.getSelectedItem() == null ? null : dayD.getSelectedItem().toString();
-		String _numDays = numDays.getSelectedItem() == null ? null : numDays.getSelectedItem().toString();
-		
-		List<String> inviteList = new LinkedList<String>();   //a list of all the selected username's
-		for (JCheckBox j: checkBoxList){
-			if (j.isSelected()){
-				inviteList.add(j.getLabel());
-			}
-		}
-		
-		ApptStorageSQLImpl asql = new ApptStorageSQLImpl(parent.getCurrUser());
-		List<User> invitedUsers = new LinkedList<User>();
-		
-		for (User u: userList){
-			if (inviteList.contains(u.getUsername())){
-				invitedUsers.add(u);
-			}
-		}
-		
-		
-		
-		
-		HashMap<User, List<Appt>> userMap = new HashMap<User, List<Appt>>();
-		for (User u: invitedUsers){
-			userMap.put(u, asql.getAllEvents(u.getID()));
-		}
-		userMap.put(parent.getCurrUser(), asql.getAllEvents(parent.getCurrUser().getID()));
-
-		Timestamp startDay = new Timestamp(Timestamp.UTC(Integer.parseInt(_year), Integer.parseInt(_month), Integer.parseInt(_day), 8, 0, 0));
-		dates = new LinkedList<Timestamp>();
-		for (int i = 0; i < Integer.parseInt(_numDays); i++){
-			dates.add(new Timestamp(startDay.getTime()+i*86400000));
-		}
+		GroupApptScheduler gas = new GroupApptScheduler(rowBool, "New Group Event",  parent,  parent.locationStorage, suggested);
+		gas.updateSetApp(hkust.cse.calendar.gui.Utility.createDefaultAppt(
+				parent.currentY, parent.currentM, parent.currentD,
+				parent.mCurrUser));
+		gas.setLocationRelativeTo(null);
+		gas.show();
 		setVisible(false);
-		
-		MultipleUserSchedule mus = new MultipleUserSchedule("Initiator Pre-Response", parent, userMap, dates);
 
 
 
@@ -582,11 +430,10 @@ ComponentListener {
 
 	public void componentResized(ComponentEvent e) {
 
-		Dimension dm = pDes.getSize();
+		Dimension dm = new Dimension(500, 500);
 		double width = dm.width * 0.93;
 		double height = dm.getHeight() * 0.6;
-		detailPanel.setSize((int) width, (int) height);
-
+		
 	}
 
 	public void componentShown(ComponentEvent e) {
@@ -599,14 +446,8 @@ ComponentListener {
 	}
 
 	private void allDisableEdit(){
-		yearF.setEditable(false);
-		monthF.setEditable(false);
-		dayF.setEditable(false);
-		sTimeH.setEditable(false);
-		sTimeM.setEditable(false);
-		eTimeH.setEditable(false);
-		eTimeM.setEditable(false);
+
 		titleField.setEditable(false);
-		detailArea.setEditable(false);
+	
 	}
 }

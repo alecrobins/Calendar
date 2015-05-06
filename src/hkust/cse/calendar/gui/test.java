@@ -1,5 +1,7 @@
 package hkust.cse.calendar.gui;
 
+import hkust.cse.calendar.apptstorage.ApptStorageControllerImpl;
+import hkust.cse.calendar.apptstorage.ApptStorageSQLImpl;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
@@ -44,6 +46,16 @@ public class test {
 		dates.add(new Timestamp(0));
 		dates.add(new Timestamp(86400000));
 		
+		boolean[] rowBool = new boolean[0];
+		
+		User user = new User("popp", "poop");
+		List<User> lis = new LinkedList<User>();
+		lis.add(user);
+		ApptStorageSQLImpl sql = new ApptStorageSQLImpl(user);
+		ApptStorageControllerImpl as = new ApptStorageControllerImpl(sql);
+		CalGrid cal = new CalGrid(as);
+		
+		MultipleUserSchedule mus = new MultipleUserSchedule("Invitee", cal, userMap, dates);
 
 		
 		

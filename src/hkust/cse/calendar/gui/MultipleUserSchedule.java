@@ -1,8 +1,10 @@
 package hkust.cse.calendar.gui;
 
+import hkust.cse.calendar.apptstorage.ApptStorageSQLImpl;
 import hkust.cse.calendar.apptstorage.LocationStorage;
 import hkust.cse.calendar.controllers.GroupController;
 import hkust.cse.calendar.unit.Appt;
+import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 
 import java.awt.BorderLayout;
@@ -19,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -31,7 +34,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
-public class MultipleUserSchedule {
+public class MultipleUserSchedule implements ActionListener{
 
 	//input:  week of:  mm/dd where the dd is the date of a given monday
 	private MouseEvent tempe;
@@ -55,11 +58,16 @@ public class MultipleUserSchedule {
 	Object[][] data;
 	String[] columnTitles;
 	JTable tableView;
+	String title;
 	
 	private CalGrid parent;
 	private LocationStorage parentLS;
-	
+	private TimeSpan suggest;
+	private HashMap<User, List<Appt>> userMap;
+	private List<Timestamp> dateList;
 	private GroupController gc;
+	
+	private JButton reject;
 
 	//public static final int[] monthDays = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 	//january, march, may, jul, aug, october, dec --31
@@ -102,8 +110,22 @@ public class MultipleUserSchedule {
 		rowBool = rowVal;
 		return rowVal;
 	}
+	MultipleUserSchedule(String t, CalGrid c, HashMap<User, List<Appt>> h, List<Timestamp> l){
+		this.suggest = null;
+		this.dateList = null;
+		commonConstructor(t, c, h, l);
+	}
 	
-	public MultipleUserSchedule(CalGrid cal, HashMap<User, List<Appt>> userMap, List<Timestamp> dates){
+	MultipleUserSchedule(String t, CalGrid c, HashMap<User, List<Appt>> h, List<Timestamp> l, TimeSpan t1){
+		this.suggest = t1;
+		this.dateList = null;
+		commonConstructor(t, c, h, l);
+
+	}
+	public void commonConstructor(String tit, CalGrid cal, HashMap<User, List<Appt>> userMa, List<Timestamp> dates){
+		userMap = userMa;
+		dateList = dates;
+		title = tit;
 		parent = cal;
 		parentLS = cal.locationStorage;
 		gc = new GroupController(parent);
@@ -155,6 +177,12 @@ public class MultipleUserSchedule {
 		JScrollPane scrollPane = new JScrollPane(tableView);
 		scrollPane.getViewport().setViewPosition(new Point(0,0));
 		frame.add(scrollPane, BorderLayout.CENTER);
+		if (title == "Invitee"){
+			reject = new JButton("Reject Group Appointment");
+			reject.addActionListener(this);
+			frame.add(reject, BorderLayout.SOUTH);
+			
+		}
 		frame.setSize(100*(1+numDays), 700);
 		frame.pack();
 		frame.setVisible(true);
@@ -173,15 +201,21 @@ public class MultipleUserSchedule {
 		Font f1 = new Font("Helvetica", Font.ITALIC, 11);
 		pop = new JPopupMenu();
 		pop.setFont(f1);
-
+		
 		JMenuItem mi;
-		mi = (JMenuItem) pop.add(new JMenuItem("New"));
+		
+		if (title == "Initiator"){
+		mi = (JMenuItem) pop.add(new JMenuItem("Schedule Group Event"));
 
 		mi.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {				
-				NewAppt();
+				ScheduleGroupEvent();
 			}
 		});
+		}
+		
+		if (title == "Invitee"){
+			
 		
 		mi = (JMenuItem) pop.add(new JMenuItem("Pick Slot"));
 
@@ -190,6 +224,18 @@ public class MultipleUserSchedule {
 				pickSlot();
 			}
 		});
+		}
+		
+		if (title == "Initiator Pre-Response"){
+			
+		mi = (JMenuItem) pop.add(new JMenuItem("Send Invitations"));
+
+		mi.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {				
+				SendInvites();
+			}
+		});
+		}
 	}
 	
 	public void setParent(CalGrid grid) {
@@ -197,9 +243,8 @@ public class MultipleUserSchedule {
 		parentLS = parent.locationStorage;
 	}
 	
-	private void NewAppt() {   // only initiator can use this, and it should send invites out
-		//send out notification to other users
-		//set user who calls this to be the initator
+	private void ScheduleGroupEvent() {   
+		GroupApptScheduler gas = new GroupApptScheduler(rowBool, title, parent, parentLS, suggest);
 	}
 	private void pickSlot() {
 		GroupSlotPicker gsp = new GroupSlotPicker("New Slot", rowBool, parent, parentLS);
@@ -208,6 +253,10 @@ public class MultipleUserSchedule {
 				parent.mCurrUser));
 		gsp.setLocationRelativeTo(null);
 		gsp.show();
+	}
+	private void SendInvites(){
+		ApptStorageSQLImpl asql = new ApptStorageSQLImpl(parent.mCurrUser);
+		asql.sendInvites(userMap.keySet(), dateList);
 	}
 	private void delete() {
 	}
@@ -305,6 +354,9 @@ public class MultipleUserSchedule {
 		if (e.getSource() == tableView) {
 			pop.show(tableView, currentRow * 20, currentRow * 20);
 
+		}
+		if (e.getSource() == reject){
+			rejectResponse();
 		}
 	}
 

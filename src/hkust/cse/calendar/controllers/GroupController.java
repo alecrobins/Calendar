@@ -23,7 +23,6 @@ import javax.swing.JLabel;
 
 
 public class GroupController {
-	private MultipleUserSchedule mus;
 
 	private CalGrid cal;
 
