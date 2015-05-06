@@ -104,12 +104,16 @@ public class LoginDialog extends JFrame implements ActionListener
 						
 			ApptStorageSQLImpl dataBase= new ApptStorageSQLImpl();
 					
+			boolean check=dataBase.logInUser(name, pass);
+			
 			if(dataBase.logInUser(name, pass)){  //check if the user is in dataBase   ///////////UPDATE HERE
 						
+				User user=dataBase.getUser(name);
+				
 				System.out.println("oley");
 				
-		//UPDATE THIS!		//CalGrid grid = new CalGrid(new ApptStorageControllerImpl(new ApptStorageNullImpl(user)));
-				//setVisible( false );
+				CalGrid grid = new CalGrid(new ApptStorageControllerImpl(new ApptStorageSQLImpl(user)));
+				setVisible( false );
 		
 						
 			}
