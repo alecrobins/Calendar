@@ -1384,11 +1384,72 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	// modify the locatoin (only can be done by the admin)
 	// return the newly modified location
 	public void modifyLocation(Location location){
+		
+		Connection c = null;
+	    Statement stmt = null;
+		
+		try {
+		      Class.forName("org.sqlite.JDBC");
+		      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+		      c.setAutoCommit(false);
+		      System.out.println("Opened database successfully");
+		      
+		      stmt = c.createStatement();
+		      PreparedStatement query;
+		      
+		      query = c.prepareStatement("update location set name = ? , isGroupFacility = ? where id = ?; ");
+		      
+		      query.setString(1, location.getName());
+		      query.setBoolean(2, location.getIsGroupFacility());
+		      query.setInt(3, location.getLocationID());
+
+		      boolean done = query.execute();
+			  
+		   // commit
+		      c.commit();
+		      
+		      query.close();
+		      stmt.close();
+		      c.close();
+			    
+		    } catch ( Exception e1 ) {
+		      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+		      System.exit(0);
+		    }
+		
 	}
 	
 	// delete the location given the location id
 	public void deleteLocation(int locationID){
+		Connection c = null;
+	    Statement stmt = null;
 		
+		try {
+		      Class.forName("org.sqlite.JDBC");
+		      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+		      c.setAutoCommit(false);
+		      System.out.println("Opened database successfully");
+		      
+		      stmt = c.createStatement();
+		      PreparedStatement query;
+		      
+		      query = c.prepareStatement("delete from location where id = ?; ");
+		      
+		      query.setInt(1, locationID);
+
+		      boolean done = query.execute();
+			  
+		   // commit
+		      c.commit();
+		      
+		      query.close();
+		      stmt.close();
+		      c.close();
+			    
+		    } catch ( Exception e1 ) {
+		      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+		      System.exit(0);
+		    }
 	}
 	
 	// helper functions
