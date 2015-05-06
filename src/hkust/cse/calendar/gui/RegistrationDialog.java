@@ -2,6 +2,7 @@ package hkust.cse.calendar.gui;
 
 import hkust.cse.calendar.apptstorage.ApptStorageControllerImpl;
 import hkust.cse.calendar.apptstorage.ApptStorageNullImpl;
+import hkust.cse.calendar.apptstorage.ApptStorageSQLImpl;
 import hkust.cse.calendar.unit.User;
 
 import java.awt.Container;
@@ -106,6 +107,40 @@ public class RegistrationDialog extends JFrame implements ActionListener {
 		 if (e.getSource() == registerButton) {
 			// Save the user to the DataBase
 
+			 
+			 ApptStorageSQLImpl dataBase= new ApptStorageSQLImpl();
+			 
+			Boolean isAdmin = false;
+
+			String name = userName.getText().trim(); // getting the username
+			String pass = new String(password.getPassword()); // getting the
+																// password
+			if(setAdmin.getSelectedItem().equals("Admin")){  //check if he/she is admin
+				isAdmin=true;
+			}
+			 
+			if(dataBase.isUserNameAvailable(name)){
+				
+				User newUser = new User(name,pass,null,null," ",isAdmin);
+				
+				int userID=dataBase.createUser(newUser);
+				
+				newUser.setID(userID);
+				
+				JOptionPane.showMessageDialog(null, "Registration is successfull, Close this window please", "Congratulations!",
+	                    JOptionPane.INFORMATION_MESSAGE);
+			
+				LoginDialog loginDialog = new LoginDialog();
+				
+			
+			}else{
+				System.out.println("check");
+				
+				JOptionPane.showMessageDialog(null, "Change your name and try again!", "Opps There is Something Wrong",
+	                    JOptionPane.ERROR_MESSAGE);
+				
+			}
+
 		} else if (e.getSource() == closeButton) {
 			int n = JOptionPane.showConfirmDialog(null, "Exit Program ?",
 					"Confirm", JOptionPane.YES_NO_OPTION);
@@ -130,3 +165,4 @@ public class RegistrationDialog extends JFrame implements ActionListener {
 		return true;
 	}
 }
+

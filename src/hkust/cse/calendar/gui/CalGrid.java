@@ -94,6 +94,7 @@ public class CalGrid extends JFrame implements ActionListener {
 	// private boolean isLogin = false;
 	private JMenu Appmenu = new JMenu("Appointment");
 	private JMenu Clockmenu = new JMenu("TimeMachine");
+	private JMenu Accountmenu=new JMenu("Settings");
 
 	private final String[] holidays = {
 			"New Years Day\nSpring Festival\n",
@@ -253,6 +254,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		//mCurrUser = getCurrUser(); // totally meaningless code
 		Appmenu.setEnabled(true);
 		Clockmenu.setEnabled(true);
+		Accountmenu.setEnabled(true);
 		
 		// Refreshes calendar every 0.5 second, in order to trigger notification
 		ActionListener actionL = new ActionListener(){
@@ -266,6 +268,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		UpdateCal();
 		pack();				// sized the window to a preferred size
 		setVisible(true);	//set the window to be visible
+		
 	}
 
 	// A function to trigger reminder
@@ -361,6 +364,7 @@ public class CalGrid extends JFrame implements ActionListener {
 	JMenuBar createMenuBar() {
 
 		ActionListener listener = new ActionListener() {
+			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
 				if (e.getActionCommand().equals("Manual Scheduling")) {
 					AppScheduler a = new AppScheduler("New", CalGrid.this, locationStorage);
@@ -384,6 +388,16 @@ public class CalGrid extends JFrame implements ActionListener {
 					ManageTimeMachine t = new ManageTimeMachine(CalGrid.this);
 					t.setLocationRelativeTo(null);
 					t.show();
+					TableModel tm = prepareTableModel();
+					tableView.setModel(tm);
+					tableView.repaint();
+					
+					/******************EDITED FOR ACCOUNT*********************************************/
+				}else if (e.getActionCommand().equals("Change Settings")) {
+					System.out.println("CHANGE SETTINGS");
+					ManageAccount m = new ManageAccount(CalGrid.this);
+					m.setLocationRelativeTo(null);
+					m.show();
 					TableModel tm = prepareTableModel();
 					tableView.setModel(tm);
 					tableView.repaint();
@@ -454,6 +468,21 @@ public class CalGrid extends JFrame implements ActionListener {
 		mi.addActionListener(listener);
 		Clockmenu.add(mi);
 
+		/***********EDITED FOR SETTINGS*****************/
+		
+		menuBar.add(Accountmenu);
+		Accountmenu.setEnabled(false);
+		Accountmenu.setMnemonic('p');
+		Accountmenu.getAccessibleContext().setAccessibleDescription(
+				"Account Management");
+		mi = new JMenuItem("Change Settings");
+		mi.addActionListener(listener);
+		Accountmenu.add(mi);
+		
+		
+		/***********************************************/
+		
+		
 		return menuBar;
 	}
 

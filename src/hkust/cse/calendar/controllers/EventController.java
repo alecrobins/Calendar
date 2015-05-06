@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
+import hkust.cse.calendar.apptstorage.ApptStorageSQLImpl;
 import hkust.cse.calendar.gui.CalGrid;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Event;
@@ -28,9 +29,11 @@ public class EventController {
 
 	// used to set reminders for events
 	private CalGrid cal;
+	private ApptStorageSQLImpl db;
 
 	public EventController(CalGrid _cal) {
 		cal = _cal;
+		db = new ApptStorageSQLImpl(_cal.getCurrUser());
 	}
 
 	// update the view with the newly created event
@@ -122,6 +125,8 @@ public class EventController {
 		switch (e.getEventFrequency()){
 		case ONETIME:
 			cal.controller.mApptStorage.SaveAppt(e);
+			// save to db
+			db.SaveAppt(e);
 			break;
 		case WEEKLY:
 			Event eNew = e;
@@ -170,7 +175,7 @@ public class EventController {
 	// Returns true if there is overlap with other appts
 	public boolean eventOverlap(Event e, HashMap<Integer, Appt> as) {
 		for (Appt existing: as.values()){
-			Event exist = (Event) existing;
+			Appt exist = existing;
 			if (existing.TimeSpan().EndTime().getTime() > e.TimeSpan().StartTime().getTime()){
 			switch(e.getEventFrequency()){
 			case ONETIME:
@@ -204,7 +209,7 @@ public class EventController {
 	}
 
 	@SuppressWarnings("deprecation")
-	public boolean isEventValid(Event given, Event existing, String compare){
+	public boolean isEventValid(Appt given, Appt existing, String compare){
 		switch(compare){
 		case "absTime":
 			if (given.TimeSpan().EndTime().getTime() < existing.TimeSpan().StartTime().getTime()

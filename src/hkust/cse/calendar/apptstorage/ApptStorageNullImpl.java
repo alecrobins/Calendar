@@ -15,7 +15,7 @@ import hkust.cse.calendar.unit.User;
 
 public class ApptStorageNullImpl extends ApptStorage {
 	
-	private int interval = 60;
+	private int interval = 100;
 	private User defaultUser = null;
 	
 	public ApptStorageNullImpl( User user )
@@ -34,9 +34,17 @@ public class ApptStorageNullImpl extends ApptStorage {
 	public void pullFromDatabase(ApptStorageSQLImpl stor){
 		List<Appt> defaultUserApptList = new LinkedList<Appt>();
 		defaultUserApptList = stor.getAllEvents(defaultUser.getID());
-		for (Appt a: defaultUserApptList){
-			mAppts.put(a.getID(), a);
+		
+		for(int i = 0; i < defaultUserApptList.size(); ++i){
+			Appt curr = defaultUserApptList.get(i);
+			int appID = curr.getEventID();
+			this.mAppts.put(appID, curr);
 		}
+		
+		//for (Appt a: defaultUserApptList){
+		//	mAppts.put(a.getID(), a);
+		//}
+		
 	}
 	
 	public ApptStorageNullImpl(){
@@ -62,10 +70,23 @@ public class ApptStorageNullImpl extends ApptStorage {
 		long start = d.StartTime().getTime();
 		long end = d.EndTime().getTime();
 		
-		for (int i = (int) start; i < (int) end; i+=interval){
-			if (mAppts.containsKey(i)){
+//		for (int i = (int) start; i < (int) end; i+=interval){
+//			if (mAppts.containsKey(i)){
+//				System.out.println("key found");
+//				applist.add((Appt)this.mAppts.get(i)); 
+//				System.out.println("Yes . . ");
+//			}
+//		}
+//		
+		
+		for (HashMap.Entry<Integer, Appt> entry : this.mAppts.entrySet())
+		{
+			Appt currentAppt = entry.getValue();
+			long startTime = currentAppt.getEventTime().StartTime().getTime();
+			long endTime = currentAppt.getEventTime().EndTime().getTime();
+			if (startTime >= start && endTime <= end){
 				System.out.println("key found");
-				applist.add((Appt)this.mAppts.get(i)); 
+				applist.add(currentAppt); 
 				System.out.println("Yes . . ");
 			}
 		}
@@ -82,7 +103,6 @@ public class ApptStorageNullImpl extends ApptStorage {
 			}
 			return newArray;
 		}
-			
 
 	}
 
@@ -113,12 +133,57 @@ public class ApptStorageNullImpl extends ApptStorage {
 		try{
 			deleteNotification(appt.getNotification());
 			if (appt.getEventFrequency() != Appt.Frequency.DAILY) deleteNotification(appt.getNextNotification());
-			mAppts.remove(apptId);
+							
+			switch (appt.getEventFrequency()){
+			case ONETIME:
+				mAppts.remove(apptId);
+				break;
+			case WEEKLY:
+				Event eNew = (Event) appt;
+				for (int i = 0; i < 52; i++)   { //1 years in weeks
+					Event eNew1 = new Event(eNew.getEventTime(), eNew.getEventFrequency()) ;
+					eNew1.generateID();
+					apptId = eNew1.getID();
+					mAppts.remove(apptId);
+					TimeSpan curr = eNew.getEventTime();
+					Timestamp start = new Timestamp(curr.StartTime().getTime()+604800000);
+					Timestamp fin = new Timestamp(curr.EndTime().getTime()+604800000);
+					eNew.setEventTime(new TimeSpan(start, fin));
+				}
+				break;
+			case MONTHLY:
+				Event eNew1 = (Event) appt;
+				for (int i = 0; i < 13; i++){   //1 years in groups of 4 weeks
+					Event eNew2 = new Event(eNew1.getEventTime(), eNew1.getEventFrequency()) ;
+					eNew2.generateID();
+					apptId = eNew2.getID();
+					mAppts.remove(apptId);
+					TimeSpan curr = eNew1.getEventTime();
+					curr.StartTime().setMonth(curr.StartTime().getMonth()+1);
+					curr.EndTime().setMonth(curr.EndTime().getMonth()+1);
+					Timestamp star = curr.StartTime();
+					Timestamp fi = curr.EndTime();
+					eNew1.setEventTime(new TimeSpan(star, fi));
+				}
+				break;
+			case DAILY:
+				Event eNew2 = (Event) appt;
+				for (int i = 0; i < 365; i++){
+					Event eNew3 = new Event(eNew2.getEventTime(), eNew2.getEventFrequency()) ;
+					eNew3.generateID();
+					apptId = eNew3.getID();
+					mAppts.remove(apptId);
+					TimeSpan curr = eNew2.getEventTime();
+					Timestamp start1 = new Timestamp(curr.StartTime().getTime()+86400000);
+					Timestamp fin = new Timestamp(curr.EndTime().getTime()+86400000);
+					eNew2.setEventTime(new TimeSpan(start1, fin));
+				}
+				break;
+			}
 		}catch(Exception e){
 			System.out.println("ERROR");
 			System.out.println(e.getMessage());
 		}
-
 	}
 
 	@Override
