@@ -110,36 +110,36 @@ public class RegistrationDialog extends JFrame implements ActionListener {
 			 
 			 ApptStorageSQLImpl dataBase= new ApptStorageSQLImpl();
 			 
-			 Boolean isAdmin = false;
+			Boolean isAdmin = false;
 
-				String name = userName.getText().trim(); // getting the username
-				String pass = password.getPassword().toString(); // getting the
-																	// password
-				if(setAdmin.getSelectedItem().equals("Admin")){  //check if he/she is admin
-					isAdmin=true;
-				}
+			String name = userName.getText().trim(); // getting the username
+			String pass = new String(password.getPassword()); // getting the
+																// password
+			if(setAdmin.getSelectedItem().equals("Admin")){  //check if he/she is admin
+				isAdmin=true;
+			}
 			 
 			if(dataBase.isUserNameAvailable(name)){
-			User newUser=new User(name,pass,null,null," ",isAdmin);
-			int userID=dataBase.createUser(newUser);
-			newUser.setID(userID);
-			
-			JOptionPane.showMessageDialog(null, "Registration is successfull, Close this window please", "Congratulations!",
-                    JOptionPane.INFORMATION_MESSAGE);
-		
-			LoginDialog loginDialog = new LoginDialog();
-			setVisible(false);
-			
-			
-			}
 				
-			else{   //if userName is already exists
-			System.out.println("check");
+				User newUser = new User(name,pass,null,null," ",isAdmin);
+				
+				int userID=dataBase.createUser(newUser);
+				
+				newUser.setID(userID);
+				
+				JOptionPane.showMessageDialog(null, "Registration is successfull, Close this window please", "Congratulations!",
+	                    JOptionPane.INFORMATION_MESSAGE);
 			
-			JOptionPane.showMessageDialog(null, "Change your name and try again!", "Opps There is Something Wrong",
-                    JOptionPane.ERROR_MESSAGE);
+				LoginDialog loginDialog = new LoginDialog();
+				
+			
+			}else{
+				System.out.println("check");
+				
+				JOptionPane.showMessageDialog(null, "Change your name and try again!", "Opps There is Something Wrong",
+	                    JOptionPane.ERROR_MESSAGE);
+				
 			}
-
 
 		} else if (e.getSource() == closeButton) {
 			int n = JOptionPane.showConfirmDialog(null, "Exit Program ?",

@@ -40,7 +40,6 @@ public class LoginDialog extends JFrame implements ActionListener
 				System.exit(0);
 			}
 		});
-
 		
 		Container contentPane;
 		contentPane = getContentPane();
@@ -100,7 +99,8 @@ public class LoginDialog extends JFrame implements ActionListener
 			// When the button is clicked, check the user name and password, and try to log the user in
 			
 			String name= userName.getText().trim();   //getting the username
-			String pass= password.getPassword().toString();  // getting the password
+//			String pass= password.getPassword().toString();  // getting the password
+			String pass = new String(password.getPassword());
 						
 			ApptStorageSQLImpl dataBase= new ApptStorageSQLImpl();
 					

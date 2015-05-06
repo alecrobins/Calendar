@@ -393,12 +393,6 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		return defaultUser;
 	}
 	
-
-	@Override
-	public boolean findNotification(TimeSpan ts) {
-		// TODO Auto-generated method stub
-		return false;
-	}
 	
 	// NOTIFICATIONS 
 	// ===================
@@ -407,6 +401,12 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	public void addNotification(TimeSpan ts) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	@Override
+	public boolean findNotification(TimeSpan ts) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override
