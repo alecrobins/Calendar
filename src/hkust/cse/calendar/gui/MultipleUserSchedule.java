@@ -256,7 +256,7 @@ public class MultipleUserSchedule implements ActionListener{
 	}
 	private void SendInvites(){
 		ApptStorageSQLImpl asql = new ApptStorageSQLImpl(parent.mCurrUser);
-		asql.sendInvites(userMap.keySet(), dateList);
+//		asql.sendInvites(userMap.keySet(), dateList);
 	}
 	private void delete() {
 	}
@@ -356,7 +356,7 @@ public class MultipleUserSchedule implements ActionListener{
 
 		}
 		if (e.getSource() == reject){
-			rejectResponse();
+//			rejectResponse();
 		}
 	}
 

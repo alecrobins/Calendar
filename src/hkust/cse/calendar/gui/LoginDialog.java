@@ -158,49 +158,49 @@ public class LoginDialog extends JFrame implements ActionListener
 
 		// Request from the db all the appts from the user
 
-		// load those apps into the hash map . . . this part is not implemented yet
-		ApptStorageSQLImpl asql = new ApptStorageSQLImpl(user);
-		CalGrid grid = new CalGrid(new ApptStorageControllerImpl(asql));
-		setVisible( false );
-
-		//IF USER HAS AN INVITE
-		//GET INVITE INFO== TIMES, USERS
-		if (asql.hasInvite()){
-			for (int i = 0; i < asql.inviteList.size(); i++){
-				List<User> userList = asql.inviteList.get(i).getEventUsers();
-				HashMap<User, List<Appt>> usMap = new HashMap<User, List<Appt>>();
-				for (User u: userList){
-					usMap.put(u, asql.getAllEvents(u.getID()));
-				}
-				List<Timestamp> dates = asql.inviteList.get(i).getProposedTimes();
-
-				MultipleUserSchedule mus = new MultipleUserSchedule("Invitee", grid, usMap, dates);
-			}
-		}
-
-		if (asql.hasResponses()){
-			for (int i = 0; i < asql.responseList.size(); i++){
-				if (asql.responseList.get(i) == reject){
-//					alertMessage("Group Event Was Rejected");
-				}
-				else{
-					GroupController gc = new GroupController(grid);
-					List<User> userList = asql.responseList.get(i).getEventUsers();
-					HashMap<User, List<Appt>> usMap = new HashMap<User, List<Appt>>();
-					for (User u: userList){
-						usMap.put(u, asql.getAllEvents(u.getID()));
-					}
-					List<Timestamp> dates = asql.responseList.get(i).getProposedTimes();
-					List<TimeSpan> responses = asql.responseList.get(i).getUserTimes();
-					
-					TimeSpan suggested = gc.suggestedGroupEventTime(responses);
-					
-					MultipleUserSchedule mus = new MultipleUserSchedule("Initiator", grid, usMap, dates, suggested);
-
-				}
-
-			}
-		}
+//		// load those apps into the hash map . . . this part is not implemented yet
+//		ApptStorageSQLImpl asql = new ApptStorageSQLImpl(user);
+//		CalGrid grid = new CalGrid(new ApptStorageControllerImpl(asql));
+//		setVisible( false );
+//
+//		//IF USER HAS AN INVITE
+//		//GET INVITE INFO== TIMES, USERS
+//		if (asql.hasInvite()){
+//			for (int i = 0; i < asql.inviteList.size(); i++){
+//				List<User> userList = asql.inviteList.get(i).getEventUsers();
+//				HashMap<User, List<Appt>> usMap = new HashMap<User, List<Appt>>();
+//				for (User u: userList){
+//					usMap.put(u, asql.getAllEvents(u.getID()));
+//				}
+//				List<Timestamp> dates = asql.inviteList.get(i).getProposedTimes();
+//
+//				MultipleUserSchedule mus = new MultipleUserSchedule("Invitee", grid, usMap, dates);
+//			}
+//		}
+//
+//		if (asql.hasResponses()){
+//			for (int i = 0; i < asql.responseList.size(); i++){
+//				if (asql.responseList.get(i) == reject){
+////					alertMessage("Group Event Was Rejected");
+//				}
+//				else{
+//					GroupController gc = new GroupController(grid);
+//					List<User> userList = asql.responseList.get(i).getEventUsers();
+//					HashMap<User, List<Appt>> usMap = new HashMap<User, List<Appt>>();
+//					for (User u: userList){
+//						usMap.put(u, asql.getAllEvents(u.getID()));
+//					}
+//					List<Timestamp> dates = asql.responseList.get(i).getProposedTimes();
+//					List<TimeSpan> responses = asql.responseList.get(i).getUserTimes();
+//					
+//					TimeSpan suggested = gc.suggestedGroupEventTime(responses);
+//					
+//					MultipleUserSchedule mus = new MultipleUserSchedule("Initiator", grid, usMap, dates, suggested);
+//
+//				}
+//
+//			}
+//		}
 
 	}
 

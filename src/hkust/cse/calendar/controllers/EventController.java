@@ -137,6 +137,8 @@ public class EventController {
 				Timestamp start = new Timestamp(curr.StartTime().getTime()+604800000);
 				Timestamp fin = new Timestamp(curr.EndTime().getTime()+604800000);
 				eNew.setEventTime(new TimeSpan(start, fin));
+				// save to db
+				db.SaveAppt(eNew1);
 			}
 			break;
 		case MONTHLY:
@@ -150,6 +152,8 @@ public class EventController {
 				Timestamp star = curr.StartTime();
 				Timestamp fi = curr.EndTime();
 				eNew1.setEventTime(new TimeSpan(star, fi));
+				// save to db
+				db.SaveAppt(eNew2);
 			}
 			break;
 		case DAILY:
@@ -161,6 +165,8 @@ public class EventController {
 				Timestamp start1 = new Timestamp(curr.StartTime().getTime()+86400000);
 				Timestamp fin = new Timestamp(curr.EndTime().getTime()+86400000);
 				eNew2.setEventTime(new TimeSpan(start1, fin));
+				// save to db
+				db.SaveAppt(eNew3);
 			}
 			break;
 		}
@@ -169,8 +175,6 @@ public class EventController {
 	//
 	// Helper functions
 	//
-
-	
 
 	// Returns true if there is overlap with other appts
 	public boolean eventOverlap(Event e, HashMap<Integer, Appt> as) {

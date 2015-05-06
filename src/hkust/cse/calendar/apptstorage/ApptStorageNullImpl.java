@@ -41,10 +41,6 @@ public class ApptStorageNullImpl extends ApptStorage {
 			this.mAppts.put(appID, curr);
 		}
 		
-		//for (Appt a: defaultUserApptList){
-		//	mAppts.put(a.getID(), a);
-		//}
-		
 	}
 	
 	public ApptStorageNullImpl(){
@@ -69,15 +65,6 @@ public class ApptStorageNullImpl extends ApptStorage {
 		
 		long start = d.StartTime().getTime();
 		long end = d.EndTime().getTime();
-		
-//		for (int i = (int) start; i < (int) end; i+=interval){
-//			if (mAppts.containsKey(i)){
-//				System.out.println("key found");
-//				applist.add((Appt)this.mAppts.get(i)); 
-//				System.out.println("Yes . . ");
-//			}
-//		}
-//		
 		
 		for (HashMap.Entry<Integer, Appt> entry : this.mAppts.entrySet())
 		{
