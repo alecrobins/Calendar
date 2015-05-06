@@ -40,7 +40,6 @@ public class LoginDialog extends JFrame implements ActionListener
 				System.exit(0);
 			}
 		});
-
 		
 		Container contentPane;
 		contentPane = getContentPane();

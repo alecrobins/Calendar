@@ -239,12 +239,12 @@ public class ApptSQLTests {
 		testUsers.add(7);
 //		
 		// save the dummy group event
-		try {
-			db.createGroupEvent(testUsers, testGroupEvent);
-			System.out.println("GROUP EVENT SAVED");
-		} catch (InvalidClassException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			db.createGroupEvent(testUsers, testGroupEvent);
+//			System.out.println("GROUP EVENT SAVED");
+//		} catch (InvalidClassException e) {
+//			e.printStackTrace();
+//		}
 		
 		// WORKED ! 
 		
