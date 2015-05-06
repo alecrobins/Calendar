@@ -1,4 +1,4 @@
-package hkust.cse.calendar.apptstorage;//
+ package hkust.cse.calendar.apptstorage;//
 
 import hkust.cse.calendar.apptstorage.ApptStorage;
 import hkust.cse.calendar.unit.Appt;
