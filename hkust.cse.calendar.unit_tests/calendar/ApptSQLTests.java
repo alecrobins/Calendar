@@ -26,7 +26,7 @@ public class ApptSQLTests {
 	private User dummyUser = new User(4, "alecrobins", "1", true);
 	
 	public ApptSQLTests(){
-		db = new ApptStorageSQLImpl();
+		db = new ApptStorageSQLImpl(dummyUser);
 	}
 	
 	@Test
