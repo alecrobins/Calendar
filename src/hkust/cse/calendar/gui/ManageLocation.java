@@ -1,4 +1,3 @@
-
 package hkust.cse.calendar.gui;
 
 import javax.swing.JDialog;

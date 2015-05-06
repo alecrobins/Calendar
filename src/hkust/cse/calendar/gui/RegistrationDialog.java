@@ -106,6 +106,7 @@ public class RegistrationDialog extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		 if (e.getSource() == registerButton) {
 			// Save the user to the DataBase
+
 			 
 			 ApptStorageSQLImpl dataBase= new ApptStorageSQLImpl();
 			 
@@ -134,6 +135,7 @@ public class RegistrationDialog extends JFrame implements ActionListener {
 				
 			System.out.println("check");
 
+
 		} else if (e.getSource() == closeButton) {
 			int n = JOptionPane.showConfirmDialog(null, "Exit Program ?",
 					"Confirm", JOptionPane.YES_NO_OPTION);
@@ -141,7 +143,6 @@ public class RegistrationDialog extends JFrame implements ActionListener {
 				System.exit(0);
 		}
 	}
-
 
 	// This method checks whether a string is a valid user name or password, as
 	// they can contains only letters and numbers
