@@ -75,7 +75,7 @@ public class LoginDialog extends JFrame implements ActionListener
 		JPanel butPanel = new JPanel();
 		butPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-		button = new JButton("Log in (No user name and password required)");
+		button = new JButton("Log in (You Need to Register First)");
 		button.addActionListener(this);
 		butPanel.add(button);
 		
@@ -98,23 +98,34 @@ public class LoginDialog extends JFrame implements ActionListener
 		{
 			// When the button is clicked, check the user name and password, and try to log the user in
 			
-			//String name= userName.getText().trim();   getting the username
-			//String pass= password.getPassword().toString();   getting the password
+			String name= userName.getText().trim();   //getting the username
+			String pass= password.getPassword().toString();  // getting the password
+						
+			ApptStorageSQLImpl dataBase= new ApptStorageSQLImpl();
+					
+			boolean check=dataBase.logInUser(name, pass);
 			
-			//login();
-			//User user=new User(name,pass); connect this user to the calendar
+			if(dataBase.logInUser(name, pass)){  //check if the user is in dataBase   ///////////UPDATE HERE
+						
+				User user=dataBase.getUser(name);
+				
+				System.out.println("oley");
+				
+				CalGrid grid = new CalGrid(new ApptStorageControllerImpl(new ApptStorageSQLImpl(user)));
+				setVisible( false );
+		
+						
+			}
+			else{
+			System.out.println("Please register first");
+							
+							 JOptionPane.showMessageDialog(null, "Check your username or password again!!!", "Something is Wrong",
+			                         JOptionPane.INFORMATION_MESSAGE);
+							
+			}
 			
-			User user = new User( "noname", "nopass");
-			
-			// Check if user is logged in
-			
-			// Request from the db all the appts from the user
-			
-			// load those apps into the hash map . . . this part is not implemented yet
-			
-			CalGrid grid = new CalGrid(new ApptStorageControllerImpl(new ApptStorageSQLImpl(user)));
-			setVisible( false );
 		}
+		
 		else if(e.getSource() == signupButton)
 		{
 			// Create a new account
