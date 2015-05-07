@@ -53,7 +53,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
-public class ManageAccount extends JDialog implements ActionListener,
+public class ChangeUserAccount extends JDialog implements ActionListener,
 ComponentListener {
 
 	private CalGrid parent;
@@ -71,13 +71,16 @@ ComponentListener {
 	private JButton changeNameBut;
 	private JButton changePassBut;
 	private JButton changeEmailBut;
+	
 	private JButton finishBut;
-	private JButton editUserList;
+	
+	private User user;
 	
 
 	
-	private void commonConstructer(CalGrid cal){
+	private void commonConstructer(CalGrid cal, User u){
 		
+		user = u;
 		parent = cal;
 		Container con;
 		con = getContentPane();
@@ -134,22 +137,13 @@ ComponentListener {
 		top.add(ePanel);
 		
 		con.add("North",top);
-		
-		if (cal.getCurrUser().isAdmin()){
-			JPanel userPanel = new JPanel();
-			editUserList = new JButton("Edit User List");
-			editUserList.addActionListener(this);
-			userPanel.add(editUserList);
-			JPanel locationPanel = new JPanel();
-			con.add("South", userPanel);
-		}
-			
+
 		pack();
 
 	}
 	
-	  ManageAccount(CalGrid cal) {
-			commonConstructer(cal);
+	  ChangeUserAccount(CalGrid cal, User u) {
+			commonConstructer(cal, u);
 		
 	}
 	
@@ -209,7 +203,6 @@ ComponentListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
-		User user=parent.getCurrUser();  //who is this user
 		int userID=user.getID();         //what is his/her ID
 		ApptStorageSQLImpl dataBase= new ApptStorageSQLImpl(); //connecting to database
 		
@@ -259,15 +252,7 @@ ComponentListener {
 				
 				
 		
-		}else if(e.getSource() == editUserList){
-			setVisible(false);
-			ManageUser mu = new ManageUser(parent);
-			mu.setLocationRelativeTo(null);
-			mu.show();
-			
-		} 
-		
-		else if(e.getSource() == finishBut){
+		} else if(e.getSource() == finishBut){
 			setVisible(false);
 			dispose();
 			

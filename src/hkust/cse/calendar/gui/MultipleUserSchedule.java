@@ -18,6 +18,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -59,14 +60,15 @@ public class MultipleUserSchedule implements ActionListener{
 	String[] columnTitles;
 	JTable tableView;
 	String title;
-	
+
+	private List<TimeSpan> timeOptions;
+
 	private CalGrid parent;
 	private LocationStorage parentLS;
-	private TimeSpan suggest;
 	private HashMap<User, List<Appt>> userMap;
 	private List<Timestamp> dateList;
 	private GroupController gc;
-	
+
 	private JButton reject;
 
 	//public static final int[] monthDays = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
@@ -82,7 +84,7 @@ public class MultipleUserSchedule implements ActionListener{
 
 	//dates = list of Timestamps of 8am's of each date
 	//15 minutes = 900,000 milliseconds
-	
+
 	public boolean[] isRowAvailable(HashMap<User, List<Appt>> userMap, List<Timestamp> dates){
 		boolean[] rowVal = new boolean[(dates.size())*40];
 		System.out.println("row boolean length = "+rowVal.length);
@@ -104,28 +106,28 @@ public class MultipleUserSchedule implements ActionListener{
 					if (!((ap.get(i).TimeSpan().EndTime().getTime() <= rowStart)||(ap.get(i).TimeSpan().StartTime().getTime()>=rowEnd))){
 						rowVal[j-1] = false;
 					}
-//					if (rowVal[j] == true){
-//						if (isHourOverlap(ap.get(i), new TimeSpan(new Timestamp(rowStart), new Timestamp(rowEnd)))){
-//							rowVal[j] = false;
-//						}
-//					}
+					//					if (rowVal[j] == true){
+					//						if (isHourOverlap(ap.get(i), new TimeSpan(new Timestamp(rowStart), new Timestamp(rowEnd)))){
+					//							rowVal[j] = false;
+					//						}
+					//					}
 					//System.out.println("rowEnd "+j+" = "+rowEnd);
 					if (j == 1){
 						rowStart += 900000;
 						rowEnd += 900000;
 					}
 					else {
-					if (j%40 == 0){
-						dateCount++;
-						System.out.println("THIS IS THE DATECOUNT = "+ dateCount);
-						rowStart = dates.get(0).getTime() + 86400000*dateCount;
-						System.out.println("THIS IS THE NEW ROWSTART = "+ rowStart);
-						rowEnd = rowStart + 900000;
-					}
-					else{
-					rowStart += 900000;
-					rowEnd += 900000;
-					}
+						if (j%40 == 0){
+							dateCount++;
+							System.out.println("THIS IS THE DATECOUNT = "+ dateCount);
+							rowStart = dates.get(0).getTime() + 86400000*dateCount;
+							System.out.println("THIS IS THE NEW ROWSTART = "+ rowStart);
+							rowEnd = rowStart + 900000;
+						}
+						else{
+							rowStart += 900000;
+							rowEnd += 900000;
+						}
 					}
 				}
 			}
@@ -134,41 +136,44 @@ public class MultipleUserSchedule implements ActionListener{
 		return rowVal;
 	}
 	MultipleUserSchedule(String t, CalGrid c, HashMap<User, List<Appt>> h, List<Timestamp> l){
-		this.suggest = null;
 		this.dateList = null;
 		commonConstructor(t, c, h, l);
 	}
-	
+
 	MultipleUserSchedule(String t, CalGrid c, HashMap<User, List<Appt>> h, List<Timestamp> l, TimeSpan t1){
-		this.suggest = t1;
 		this.dateList = null;
 		commonConstructor(t, c, h, l);
 
 	}
-	
+
 	private boolean isHourOverlap(Appt appt, TimeSpan purposed){
 		TimeSpan eventTime = appt.getEventTime();
-//		
+		//		
 		// check if starttime or end time of propossed is in between start or end time of event
 		if( inBetween(purposed.StartTime(), eventTime) || inBetween(purposed.EndTime(), eventTime))
 			return true;
 		else if( beforeAndAfter(purposed, eventTime))
 			return true;
-		
+
 		return false;
 	}
-	
+
 	// check if t1 is in between t1 or tw
 	private boolean inBetween(Timestamp t1, TimeSpan t2){
 		return t1.getTime() >= t2.StartTime().getTime() && t1.getTime() <= t2.EndTime().getTime();
 	}
-	
+
 	// check if the start time AND end of t1 start at before AND after t2
 	private boolean beforeAndAfter(TimeSpan t1, TimeSpan t2){
 		return t1.StartTime().getTime() <= t2.StartTime().getTime() && t1.EndTime().getTime() >= t2.EndTime().getTime();
 	}
-	
+
+	public void updateTimeOptions(TimeSpan s){
+		timeOptions.add(s);
+	}
+
 	public void commonConstructor(String tit, CalGrid cal, HashMap<User, List<Appt>> userMa, List<Timestamp> dates){
+		timeOptions = new LinkedList<TimeSpan>();
 		userMap = userMa;
 		dateList = dates;
 		title = tit;
@@ -179,7 +184,7 @@ public class MultipleUserSchedule implements ActionListener{
 		previousCol = 0;
 		currentRow = 0;
 		currentCol = 0;
-	numDays = dates.size();
+		numDays = dates.size();
 		final boolean[] rowVals = isRowAvailable(userMap, dates);
 		int startMonth = dates.get(0).getMonth();
 		int startDate = dates.get(0).getDate();
@@ -213,10 +218,10 @@ public class MultipleUserSchedule implements ActionListener{
 			public void mouseReleased(MouseEvent e) {
 				releaseResponse(e);
 				if(e.getButton()==1)
-				calculateDrag(e);
+					calculateDrag(e);
 			}
 		});
-		
+
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -227,73 +232,90 @@ public class MultipleUserSchedule implements ActionListener{
 			reject = new JButton("Reject Group Appointment");
 			reject.addActionListener(this);
 			frame.add(reject, BorderLayout.SOUTH);
-			
+
 		}
 		frame.setSize(100*(1+numDays), 700);
 		frame.pack();
 		frame.setVisible(true);
-		
+
 		frame.setLayout(new BorderLayout());
 		currentRow = 0;
 		currentCol = 0;
-		
+
 		TitledBorder b = BorderFactory
 				.createTitledBorder("Group Availability");
 		b.setTitleColor(new Color(102, 0, 51));
 		Font f = new Font("Helvetica", Font.BOLD + Font.ITALIC, 11);
 		b.setTitleFont(f);
 		scrollPane.setBorder(b);
-		
+
 		Font f1 = new Font("Helvetica", Font.ITALIC, 11);
 		pop = new JPopupMenu();
 		pop.setFont(f1);
-		
+
 		JMenuItem mi;
-		
+
 		if (title == "Initiator"){
-		mi = (JMenuItem) pop.add(new JMenuItem("Schedule Group Event"));
+			mi = (JMenuItem) pop.add(new JMenuItem("wrong title"));
 
-		mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {				
-				ScheduleGroupEvent();
-			}
-		});
+			mi.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {				
+					ScheduleGroupEvent();
+				}
+			});
 		}
-		
+
 		if (title == "Invitee"){
-			
-		
-		mi = (JMenuItem) pop.add(new JMenuItem("Pick Slot"));
 
-		mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {				
-				pickSlot();
-			}
-		});
+
+			mi = (JMenuItem) pop.add(new JMenuItem("wrong title"));
+
+			mi.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {				
+					pickSlot();
+				}
+			});
 		}
-		
-		if (title == "Initiator Pre-Response"){
-			
-		mi = (JMenuItem) pop.add(new JMenuItem("Send Invitations"));
 
-		mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {				
-				SendInvites();
-			}
-		});
+		if (title == "Initiator Pre-Response"){
+
+			mi = (JMenuItem) pop.add(new JMenuItem("Pick Possible Group Event Time"));
+
+			mi.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {				
+					pickSlot();
+				}
+			});
+			mi = (JMenuItem) pop.add(new JMenuItem("Add Group Event Details"));
+
+			mi.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {				
+					ScheduleGroupEvent();
+				}
+			});
 		}
 	}
-	
+
 	public void setParent(CalGrid grid) {
 		parent = grid;
 		parentLS = parent.locationStorage;
 	}
-	
-	private void ScheduleGroupEvent() {   
-		GroupApptScheduler gas = new GroupApptScheduler(rowBool, title, parent, parentLS, suggest);
+
+	private void ScheduleGroupEvent() {  
+		for (int i = 0; i < timeOptions.size(); i++){
+			System.out.println(timeOptions.get(i).StartTime().getHours());
+			System.out.println(timeOptions.get(i).EndTime().getHours());
+		}
+		List<User> userList = new LinkedList<User>();
+		for (User u: userMap.keySet()){
+			userList.add(u);
+		}
+		GroupApptScheduler gas = new GroupApptScheduler(userList, timeOptions, rowBool, "Add Group Event Details", parent, parentLS);
+		gas.setLocationRelativeTo(null);
+		gas.show();
 	}
 	private void pickSlot() {
-		GroupSlotPicker gsp = new GroupSlotPicker("New Slot", rowBool, parent, parentLS);
+		GroupSlotPicker gsp = new GroupSlotPicker(this, "Add Possible Group Event Time", rowBool, parent, parentLS);
 		gsp.updateSetApp(hkust.cse.calendar.gui.Utility.createDefaultAppt(
 				parent.currentY, parent.currentM, parent.currentD,
 				parent.mCurrUser));
@@ -301,8 +323,8 @@ public class MultipleUserSchedule implements ActionListener{
 		gsp.show();
 	}
 	private void SendInvites(){
-		ApptStorageSQLImpl asql = new ApptStorageSQLImpl(parent.mCurrUser);
-//		asql.sendInvites(userMap.keySet(), dateList);
+
+		//		asql.sendInvites(userMap.keySet(), dateList);
 	}
 	private void delete() {
 	}
@@ -310,7 +332,7 @@ public class MultipleUserSchedule implements ActionListener{
 	}
 	private void getDetail() {
 	}
-	
+
 	public TableModel prepareTableModel() {
 
 		TableModel dataModel = new AbstractTableModel() {
@@ -345,7 +367,7 @@ public class MultipleUserSchedule implements ActionListener{
 		};
 		return dataModel;
 	}
-	
+
 	private void pressResponse(MouseEvent e) {
 		tempe = e;
 		pressRow = tableView.getSelectedRow();
@@ -354,7 +376,7 @@ public class MultipleUserSchedule implements ActionListener{
 			pop.show(e.getComponent(), e.getX(), e.getY());
 	}
 	private void releaseResponse(MouseEvent e) {
-		
+
 		releaseRow = tableView.getSelectedRow();
 		releaseCol = tableView.getSelectedColumn();
 		if ((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
@@ -365,16 +387,16 @@ public class MultipleUserSchedule implements ActionListener{
 			currentRow = tableView.getSelectedRow()+tableView.getSelectedRowCount()-1;			
 		}else{
 			currentRow = releaseRow;
-			
+
 		}
-		
+
 		if(releaseCol==pressCol){			
 			currentCol = tableView.getSelectedColumn()+tableView.getSelectedColumnCount()-1;
 		}else{
 			currentCol = releaseCol;
 		}
 	}
-		
+
 
 	public void getDataArray(Object[][] data) {
 		int tam = 480;
@@ -395,14 +417,14 @@ public class MultipleUserSchedule implements ActionListener{
 			}
 		}
 	}
-	
+
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == tableView) {
 			pop.show(tableView, currentRow * 20, currentRow * 20);
 
 		}
 		if (e.getSource() == reject){
-//			rejectResponse();
+			//			rejectResponse();
 		}
 	}
 

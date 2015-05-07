@@ -223,7 +223,7 @@ ComponentListener {
 		JPanel panel2 = new JPanel();
 		panel2.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-		saveBut = new JButton("Send Invitations");
+		saveBut = new JButton("Show Group Schedule");
 		saveBut.addActionListener(this);
 		panel2.add(saveBut);
 
@@ -553,13 +553,10 @@ ComponentListener {
 		}
 		setVisible(false);
 		
-		HashMap<User, List<Appt>> userMaps = new HashMap<User, List<Appt>>();
-		User poop = new User("poop","poop");
-		List<Appt> poopList = new LinkedList<Appt>();
-		poopList.add(new Appt(new TimeSpan(new Timestamp(startDay.getTime()), new Timestamp(startDay.getTime()+947000*5)), Appt.Frequency.ONETIME));
-		userMaps.put(poop, poopList);
 		
 		MultipleUserSchedule mus = new MultipleUserSchedule("Initiator Pre-Response", parent, userMap, dates);
+		
+		//create group Event , set initiated to false
 	}
 	
 
