@@ -5,6 +5,8 @@ import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Clock;
 import hkust.cse.calendar.unit.Event;
 import hkust.cse.calendar.unit.GroupEvent;
+import hkust.cse.calendar.unit.GroupResponse;
+import hkust.cse.calendar.unit.Invite;
 import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
@@ -1622,6 +1624,42 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	@Override
 	public boolean isApptValid(Appt appt) {
 		return false;
+	}
+	
+	// Group Event Information
+	
+	//should generate a groupEventID for each group event, each invite / response associated with group event have same ID
+
+	public void groupInviteUsers (List<User> userList, List<Timestamp> dates){
+		
+	}
+	
+	public boolean hasGroupInvite(){
+		return false;
+	}
+	
+	public List<Invite> groupInviteList(User user){
+		return null;
+	}
+
+	public boolean hasGroupResponse(){
+		return false;
+	}
+
+	//	returns a given group event’s list of responses
+	public List<GroupResponse> responseList(int _groupID)  {
+		
+		return null;
+	}
+	
+	//	creates an invite object and adds it to each user’s invite list 
+	public void sendGroupInvites(List<User> userList, List<Timestamp> dates){
+	
+	}
+
+
+	//	creates a response object and adds it to the group’s response list 
+	public void sendResponse(GroupResponse r){
 	}
 
 
