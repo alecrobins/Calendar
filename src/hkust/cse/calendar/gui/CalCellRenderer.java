@@ -15,6 +15,8 @@ class CalCellRenderer extends DefaultTableCellRenderer
 	private int c;
 
 	public CalCellRenderer(Object value, Vector v) {
+		setHorizontalAlignment(SwingConstants.RIGHT);
+		setVerticalAlignment(SwingConstants.TOP);
 		if (value != null) {
 			setForeground(Color.red);
 		} else
@@ -34,8 +36,7 @@ class CalCellRenderer extends DefaultTableCellRenderer
 				setBackground(Color.white);
 			}
 		}
-		setHorizontalAlignment(SwingConstants.RIGHT);
-		setVerticalAlignment(SwingConstants.TOP);
+
 	}
 
 	public int row() {

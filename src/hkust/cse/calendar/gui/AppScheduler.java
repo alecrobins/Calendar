@@ -694,7 +694,6 @@ public class AppScheduler extends JDialog implements ActionListener,
 		String _location = locationD.getSelectedItem() == null ? null : locationD.getSelectedItem().toString();
 		String _frequency = frequencyD.getSelectedItem() == null ? null : frequencyD.getSelectedItem().toString();
 		boolean isPub = publicCheck.isSelected();
-		System.out.println("Creating event . . . ");
 		
 		// CREATE THE EVENT
 		// returns an EventReturnMessage - determines if successful or details an error
