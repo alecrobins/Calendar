@@ -387,16 +387,13 @@ ComponentListener {
 
 	private void saveButtonResponse() {
 
-		GroupApptScheduler gas = new GroupApptScheduler(rowBool, "New Group Event",  parent,  parent.locationStorage, suggested);
-		gas.updateSetApp(hkust.cse.calendar.gui.Utility.createDefaultAppt(
-				parent.currentY, parent.currentM, parent.currentD,
-				parent.mCurrUser));
-		gas.setLocationRelativeTo(null);
-		gas.show();
-		setVisible(false);
-
-
-
+		//GroupApptScheduler gas = new GroupApptScheduler(rowBool, "New Group Event",  parent,  parent.locationStorage, suggested);
+//		gas.updateSetApp(hkust.cse.calendar.gui.Utility.createDefaultAppt(
+//				parent.currentY, parent.currentM, parent.currentD,
+//				parent.mCurrUser));
+//		gas.setLocationRelativeTo(null);
+//		gas.show();
+//		setVisible(false);
 	}
 
 	private void alertMessage(String message){

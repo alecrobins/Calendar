@@ -112,13 +112,16 @@ public class GroupSlotPicker extends JDialog implements ActionListener,
 	
 	private LocationStorage ls; 
 	boolean[] rowBool;
+	private MultipleUserSchedule mus;
 	
 
-	private void commonConstructor(boolean[] rowVals, String title, CalGrid cal, LocationStorage _ls) {
+	private void commonConstructor(MultipleUserSchedule m, boolean[] rowVals, String title, CalGrid cal, LocationStorage _ls) {
 		
 		// set up the NoticationController & The LocationStorage
 		ls = _ls;
 		rowBool = rowVals;
+		
+		mus = m;
 		
 		// set up the event controller
 		eventController = new EventController(cal); 
@@ -374,13 +377,13 @@ public class GroupSlotPicker extends JDialog implements ActionListener,
 		return temp;
 	}
 
-	GroupSlotPicker(String title, boolean[] row, CalGrid cal, int selectedApptId, LocationStorage _ls) {
+	GroupSlotPicker(MultipleUserSchedule m, String title, boolean[] row, CalGrid cal, int selectedApptId, LocationStorage _ls) {
 		this.selectedApptId = selectedApptId;
-		commonConstructor(row, title, cal, _ls);
+		commonConstructor(m, row, title, cal, _ls);
 	}
 
-	GroupSlotPicker(String title, boolean[] row, CalGrid cal, LocationStorage _ls) {
-		commonConstructor(row, title, cal, _ls);
+	GroupSlotPicker(MultipleUserSchedule m, String title, boolean[] row, CalGrid cal, LocationStorage _ls) {
+		commonConstructor(m, row, title, cal, _ls);
 	}
 	
 	public void actionPerformed(ActionEvent e) {
@@ -552,7 +555,7 @@ public class GroupSlotPicker extends JDialog implements ActionListener,
 		TimeSpan slot = new TimeSpan(start, end);
 			
 		if (isTimeSpanAvailable(slot)){
-			//send out slot
+			mus.updateTimeOptions(slot);
 		}
 		else {
 			alertMessage("Unavailable Slot:  Pick A Time That Works for Everyone :)");

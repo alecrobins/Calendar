@@ -26,6 +26,7 @@ import javax.swing.JTextField;
 public class RegistrationDialog extends JFrame implements ActionListener {
 	private JTextField userName;
 	private JPasswordField password;
+	//private JTextField email;
 	private JButton closeButton;
 	private JButton registerButton;
 	private JComboBox setAdmin;
@@ -66,8 +67,15 @@ public class RegistrationDialog extends JFrame implements ActionListener {
 		pwPanel.add(password);
 		top.add(pwPanel);
 		
+//		JPanel ePanel = new JPanel();
+//		pwPanel.add(new JLabel("E-mail Address:  "));
+//		email = new JPasswordField(15);
+//		pwPanel.add(email);
+//		top.add(ePanel);
+		
+		
 		JPanel adminPanel = new JPanel();
-		adminPanel.add(new JLabel("Wanna be a User or an Admin?:"));
+		adminPanel.add(new JLabel("Account Type:"));
 		setAdmin = new JComboBox();
 		setAdmin.addActionListener(this);
 		setAdmin.setPreferredSize(new Dimension(100, 20));
@@ -113,15 +121,17 @@ public class RegistrationDialog extends JFrame implements ActionListener {
 			Boolean isAdmin = false;
 
 			String name = userName.getText().trim(); // getting the username
-			String pass = new String(password.getPassword()); // getting the
-																// password
+			String pass = new String(password.getPassword()); // getting the password
+			//String mail = email.getText().trim();
+			
 			if(setAdmin.getSelectedItem().equals("Admin")){  //check if he/she is admin
 				isAdmin=true;
 			}
 			 
 			if((name!=null)&& (pass!=null) && (dataBase.isUserNameAvailable(name))){
 				
-				User newUser = new User(name,pass,null,null," ",isAdmin);
+				User newUser = new User(name,pass,null,null, " ",    //mail
+						isAdmin);
 				
 				int userID=dataBase.createUser(newUser);
 				

@@ -8,6 +8,7 @@ import hkust.cse.calendar.controllers.GroupController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Clock;
 import hkust.cse.calendar.unit.LocationList;
+import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.unit.Appt.Frequency;
 import hkust.cse.calendar.unit.TimeSpan;
 
@@ -50,11 +51,11 @@ import javax.swing.border.TitledBorder;
 
 
 public class GroupApptScheduler extends JDialog implements ActionListener,
-		ComponentListener {
+ComponentListener {
 
 	// constant
 	private int INTERVAL_PER_HOUR = 4;
-	
+
 	// Old labels
 	private JLabel yearL;
 	private JTextField yearF;
@@ -70,7 +71,7 @@ public class GroupApptScheduler extends JDialog implements ActionListener,
 	private JTextField eTimeH;
 	private JLabel eTimeML;
 	private JTextField eTimeM;
-	
+
 	// Additional UI elements
 	private JLabel locationDL;
 	private JComboBox locationD; // drop down button
@@ -90,7 +91,7 @@ public class GroupApptScheduler extends JDialog implements ActionListener,
 	private JComboBox sTimeMD; 
 	private JLabel eTimeMDL;
 	private JComboBox eTimeMD;
-	
+
 	// reminder UI
 	private JLabel yearReminderDL;
 	private JComboBox yearReminderD; 
@@ -102,7 +103,7 @@ public class GroupApptScheduler extends JDialog implements ActionListener,
 	private JComboBox timeReminderHD; 
 	private JLabel timeReminderMDL;
 	private JComboBox timeReminderMD; 
-	
+
 
 	private DefaultListModel model;
 	private JTextField titleField;
@@ -111,7 +112,7 @@ public class GroupApptScheduler extends JDialog implements ActionListener,
 	private JButton CancelBut;
 	private JButton inviteBut;
 	private JButton rejectBut;
-	
+
 	private Appt NewAppt;
 	private CalGrid parent;
 	private boolean isNew = true;
@@ -119,11 +120,11 @@ public class GroupApptScheduler extends JDialog implements ActionListener,
 	private boolean isJoint = false;
 
 	private JTextArea detailArea;
-	
+
 	private final String[] months = { "January", "Feburary", "March", "April",
 			"May", "June", "July", "August", "September", "October",
 			"November", "December" };
-	
+
 	// responsible for communication between scheduler events and the contoller
 	private EventController eventController;
 	private GroupController groupController;
@@ -131,36 +132,29 @@ public class GroupApptScheduler extends JDialog implements ActionListener,
 	private JSplitPane pDes;
 	JPanel detailPanel;
 
-//	private JTextField attendField;
-//	private JTextField rejectField;
-//	private JTextField waitingField;
-	
+	//	private JTextField attendField;
+	//	private JTextField rejectField;
+	//	private JTextField waitingField;
+
 	private int selectedApptId = -1;
-	
+
 	private LocationStorage ls; 
 	private boolean[] rowBool;
-	private TimeSpan suggest;
-	
+	private List<User> userList;
+	private List<TimeSpan> timeOptions;
 
-	private void commonConstructor(boolean[] rowval, String title, CalGrid cal, LocationStorage _ls, TimeSpan suggested) {
-		suggest = suggested;
-		int suggestSYear = suggest.StartTime().getYear();
-		int suggestSMonth = suggest.StartTime().getMonth();
-		int suggestSDate = suggest.StartTime().getDate();
-		int suggestSHour = suggest.StartTime().getHours();
-		int suggestSMin = suggest.StartTime().getMinutes();
-		int suggestEHour = suggest.EndTime().getHours();
-		int suggestEMin = suggest.EndTime().getMinutes();
-		
-		
+
+	private void commonConstructor(List<User> us, List<TimeSpan> timeOption, boolean[] rowval, String title, CalGrid cal, LocationStorage _ls) {
+		userList = us;
+		timeOptions = timeOption;
 		rowBool = rowval;
 		groupController = new GroupController(cal);
 		// set up the NoticationController & The LocationStorage
 		ls = _ls;
-		
+
 		// set up the event controller
 		eventController = new EventController(cal); 
-		
+
 		parent = cal;
 		this.setAlwaysOnTop(true);
 		setTitle(title);
@@ -168,67 +162,8 @@ public class GroupApptScheduler extends JDialog implements ActionListener,
 
 		Container contentPane;
 		contentPane = getContentPane();
-		
-		// Date Panel
-		JPanel pDate = new JPanel();
-		Border dateBorder = new TitledBorder(null, "DATE");
-		pDate.setBorder(dateBorder);
-		
-		// New Date
-		yearDL = new JLabel("YEAR: ");
-		pDate.add(yearDL);
-		yearD = new JComboBox();
-		yearD = loadYear("app");
-		yearD.setSelectedItem(suggestSYear);
-		pDate.add(yearD);
-		monthDL = new JLabel("MONTH: ");
-		pDate.add(monthDL);
-		monthD = new JComboBox();
-		monthD = loadMonth("app");
-		monthD.setSelectedItem(suggestSMonth);
-		pDate.add(monthD);
-		dayDL = new JLabel("DAY: ");
-		pDate.add(dayDL);
-		dayD = new JComboBox();
-		dayD = loadDay("app");
-		dayD.setSelectedItem(suggestSDate);
-		pDate.add(dayD);
-		
-		
-		// New StartTime
-		JPanel psTime = new JPanel();
-		Border stimeBorder = new TitledBorder(null, "START TIME");
-		psTime.setBorder(stimeBorder);
-		sTimeHDL = new JLabel("Hour");
-		psTime.add(sTimeHDL);
-		sTimeHD = new JComboBox();
-		sTimeHD = loadHour("app");
-		sTimeHD.setSelectedItem(suggestSHour);
-		psTime.add(sTimeHD);
-		sTimeMDL = new JLabel("Minute");
-		psTime.add(sTimeMDL);
-		sTimeMD = new JComboBox();
-		sTimeMD = loadMinutesInterval();
-		sTimeMD.setSelectedItem(suggestSMin);
-		psTime.add(sTimeMD);
 
-		// New Time End
-		JPanel peTime = new JPanel();
-		Border etimeBorder = new TitledBorder(null, "END TIME");
-		peTime.setBorder(etimeBorder);
-		eTimeHDL = new JLabel("Hour");
-		peTime.add(eTimeHDL);
-		eTimeHD = new JComboBox();
-		eTimeHD = loadHour("app");
-		eTimeHD.setSelectedItem(suggestEHour);
-		peTime.add(eTimeHD);
-		eTimeMDL = new JLabel("Minute");
-		peTime.add(eTimeMDL);
-		eTimeMD = new JComboBox();
-		eTimeMD = loadMinutesInterval();
-		eTimeMD.setSelectedItem(suggestEMin);
-		peTime.add(eTimeMD);
-		
+
 		// Location panel
 		JPanel pLocation = new JPanel();
 		Border locationBorder = new TitledBorder(null, "Location");
@@ -238,7 +173,7 @@ public class GroupApptScheduler extends JDialog implements ActionListener,
 		locationD = new JComboBox();
 		locationD = loadLocations();
 		pLocation.add(locationD);
-		
+
 		// Frequency panel
 		JPanel pFrequency = new JPanel();
 		Border frequencyBorder = new TitledBorder(null, "Frequency");
@@ -248,14 +183,14 @@ public class GroupApptScheduler extends JDialog implements ActionListener,
 		frequencyD = new JComboBox();
 		frequencyD = loadFrequency();
 		pFrequency.add(frequencyD);
-		
-		
-		
+
+
+
 		// Reminder Pannel
 		JPanel pReminder = new JPanel();
 		Border reminderBorder = new TitledBorder(null, "REMINDER");
 		pReminder.setBorder(reminderBorder);
-			// Reminder Date
+		// Reminder Date
 		yearReminderDL = new JLabel("YEAR: ");
 		pReminder.add(yearReminderDL);
 		yearReminderD = new JComboBox();
@@ -271,7 +206,7 @@ public class GroupApptScheduler extends JDialog implements ActionListener,
 		dayReminderD = new JComboBox();
 		dayReminderD = loadDay("rem");
 		pReminder.add(dayReminderD);
-			// Reminder Time
+		// Reminder Time
 		timeReminderHDL = new JLabel("Hour");
 		pReminder.add(timeReminderHDL);
 		timeReminderHD = new JComboBox();
@@ -283,11 +218,6 @@ public class GroupApptScheduler extends JDialog implements ActionListener,
 		timeReminderMD = loadMinutes();
 		pReminder.add(timeReminderMD);
 
-		JPanel pTime = new JPanel();
-		pTime.setLayout(new BorderLayout());
-		pTime.add("West", psTime);
-		pTime.add("East", peTime);
-		
 		JPanel pExtra = new JPanel();
 		pExtra.setLayout(new BorderLayout());
 		pExtra.add("West", pLocation);
@@ -296,24 +226,20 @@ public class GroupApptScheduler extends JDialog implements ActionListener,
 		JPanel top = new JPanel();
 		top.setLayout(new BorderLayout());
 		top.setBorder(new BevelBorder(BevelBorder.RAISED));
-		
+
 		JPanel innerTop = new JPanel();
-		
+
 		if (this.getTitle().equals("New Group Event")){
 			innerTop.setLayout(new BorderLayout());
 			innerTop.setBorder(new BevelBorder(BevelBorder.RAISED));
-			innerTop.add(pDate, BorderLayout.NORTH);
-			innerTop.add(pTime, BorderLayout.CENTER);
-			innerTop.add(pExtra, BorderLayout.SOUTH);
+			innerTop.add(pExtra, BorderLayout.NORTH);
 		}
 		else{
-		innerTop.setLayout(new BorderLayout());
-		innerTop.setBorder(new BevelBorder(BevelBorder.RAISED));
-		innerTop.add(pDate, BorderLayout.NORTH);
-		innerTop.add(pTime, BorderLayout.CENTER);
-		innerTop.add(pExtra, BorderLayout.SOUTH);
+			innerTop.setLayout(new BorderLayout());
+			innerTop.setBorder(new BevelBorder(BevelBorder.RAISED));
+			innerTop.add(pExtra, BorderLayout.NORTH);
 		}
-		
+
 		top.add("North", innerTop);
 		top.add("Center", pReminder);
 
@@ -330,7 +256,7 @@ public class GroupApptScheduler extends JDialog implements ActionListener,
 		Border detailBorder = new TitledBorder(null, "Appointment Description");
 		detailPanel.setBorder(detailBorder);
 		detailArea = new JTextArea(20, 30);
-		
+
 		detailArea.setEditable(true);
 		JScrollPane detailScroll = new JScrollPane(detailArea);
 		detailPanel.add(detailScroll);
@@ -344,14 +270,14 @@ public class GroupApptScheduler extends JDialog implements ActionListener,
 			detailArea.setText(NewAppt.getInfo());
 
 		}
-		
+
 		JPanel panel2 = new JPanel();
 		panel2.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-//		inviteBut = new JButton("Invite");
-//		inviteBut.addActionListener(this);
-//		panel2.add(inviteBut);
-		
+		//		inviteBut = new JButton("Invite");
+		//		inviteBut.addActionListener(this);
+		//		panel2.add(inviteBut);
+
 		saveBut = new JButton("Save");
 		saveBut.addActionListener(this);
 		panel2.add(saveBut);
@@ -393,10 +319,10 @@ public class GroupApptScheduler extends JDialog implements ActionListener,
 		int startM = s.StartTime().getMinutes();
 		int endH = s.EndTime().getHours();
 		int endM = s.EndTime().getMinutes();
-		
+
 		int startRow = (startH-8)*4+(startM/15);
 		int endRow = (endH-8)*4+(endM/15);
-		
+
 		for (int i = startRow; i <= endRow; i++){
 			if (rowBool[i] == false){
 				return false;
@@ -404,7 +330,7 @@ public class GroupApptScheduler extends JDialog implements ActionListener,
 		}
 		return true;
 	}
-	
+
 	private JComboBox loadDay(String _type) {
 		JComboBox temp = new JComboBox();
 		// make first null if reminder
@@ -415,10 +341,10 @@ public class GroupApptScheduler extends JDialog implements ActionListener,
 		for (int i = 1; i < 32; i++){
 			// format the days
 			String d = i < 10 ? "0" + Integer.toString(i) : Integer.toString(i);
-			
+
 			temp.addItem(d);
 		}
-		
+
 		return temp;
 	}
 
@@ -432,25 +358,25 @@ public class GroupApptScheduler extends JDialog implements ActionListener,
 			// format the minutes
 			int minutes = interval * i;
 			String m = minutes < 10 ? "0" + Integer.toString(minutes) : Integer.toString(minutes);
-			
+
 			temp.addItem(m);
 		}
-		
+
 		return temp;
 	}
-	
+
 	private JComboBox loadMinutes() {
 		JComboBox temp = new JComboBox();
 		// make first null bc reminder
 		temp.addItem(null);
-		
+
 		// Fill with locations
 		for (int i = 0; i < 60; i++){
 			// format the days
 			String m = i < 10 ? "0" + Integer.toString(i) : Integer.toString(i);
 			temp.addItem(m);
 		}
-		
+
 		return temp;
 	}
 
@@ -460,48 +386,48 @@ public class GroupApptScheduler extends JDialog implements ActionListener,
 		// make first null if reminder
 		if(_type == "rem")
 			temp.addItem(null);
-		
+
 		// Fill with months
 		for (int i = 1; i < 13; i++){
 			// format the months
 			String m = i < 10 ? "0" + Integer.toString(i) : Integer.toString(i);
 			temp.addItem(m);
 		}
-		
+
 		return temp;
 	}
 
 	private JComboBox loadYear(String _type) {
 		JComboBox temp = new JComboBox();
 		Date now = parent.mClock.getChangedTimeDate();
-		
+
 		// make first null if reminder
 		if(_type == "rem")
 			temp.addItem(null);
-		
+
 		// provide a 50 year range of picking 
 		int currentYear = now.getYear() + 1900;
 		// Fill with locations
 		for (int i = 0; i < 50; i++)
 			temp.addItem(currentYear + i);
-		
+
 		return temp;
 	}
-	
+
 	private JComboBox loadHour(String _type) {
 		JComboBox temp = new JComboBox();
-		
+
 		// make first null if reminder
 		if(_type == "rem")
 			temp.addItem(null);
-		
+
 		// Fill with locations
 		for (int i = 1; i < 25; i++){
 			// format hour
 			String h = i < 10 ? "0" + Integer.toString(i) : Integer.toString(i);
 			temp.addItem(h);
 		}
-	
+
 		return temp;
 	}
 
@@ -510,17 +436,17 @@ public class GroupApptScheduler extends JDialog implements ActionListener,
 		JComboBox temp = new JComboBox();
 		LocationList locations = new LocationList(ls);
 		List<String> locationList = locations.getCityList();
-		
+
 		// make first null
 		temp.addItem(null);
-		
+
 		// Fill with locations
 		for (int i = 0; i < locationList.size(); i++)
 			temp.addItem(locationList.get(i));
-		
+
 		return temp;
 	}
-	
+
 	// load the locations into the drop down
 	private JComboBox loadFrequency() {
 		JComboBox temp = new JComboBox();
@@ -528,23 +454,23 @@ public class GroupApptScheduler extends JDialog implements ActionListener,
 
 		// make first null
 		temp.addItem(null);
-	    // Get
-	    for (int i = 0; i < frequencies.length; i++) {
-	        temp.addItem(frequencies[i].name());
-	    }
-		
+		// Get
+		for (int i = 0; i < frequencies.length; i++) {
+			temp.addItem(frequencies[i].name());
+		}
+
 		return temp;
 	}
 
-	GroupApptScheduler(boolean[] row, String title, CalGrid cal, int selectedApptId, LocationStorage _ls, TimeSpan _s) {
+	GroupApptScheduler(List<User> u, List<TimeSpan> t, boolean[] row, String title, CalGrid cal, int selectedApptId, LocationStorage _ls) {
 		this.selectedApptId = selectedApptId;
-		commonConstructor(row, title, cal, _ls, _s);
+		commonConstructor(u, t, row, title, cal, _ls);
 	}
 
-	GroupApptScheduler(boolean[] row, String title, CalGrid cal, LocationStorage _ls,  TimeSpan _s) {
-		commonConstructor(row, title, cal, _ls, _s);
+	GroupApptScheduler(List<User> u, List<TimeSpan> t,boolean[] row, String title, CalGrid cal, LocationStorage _ls) {
+		commonConstructor(u, t,row, title, cal, _ls);
 	}
-	
+
 	public void actionPerformed(ActionEvent e) {
 
 		// distinguish which button is clicked and continue with require function
@@ -612,8 +538,8 @@ public class GroupApptScheduler extends JDialog implements ActionListener,
 		}
 		if (date[2] <= 0 || date[2] > monthDay) {
 			JOptionPane.showMessageDialog(this,
-			"Please input proper month day", "Input Error",
-			JOptionPane.ERROR_MESSAGE);
+					"Please input proper month day", "Input Error",
+					JOptionPane.ERROR_MESSAGE);
 			return null;
 		}
 		return date;
@@ -643,15 +569,15 @@ public class GroupApptScheduler extends JDialog implements ActionListener,
 					JOptionPane.ERROR_MESSAGE);
 			return null;
 		}
-		
+
 		if (!sTimeM.getText().equals("0") && !sTimeM.getText().equals("15") && !sTimeM.getText().equals("30") && !sTimeM.getText().equals("45") 
-			|| !eTimeM.getText().equals("0") && !eTimeM.getText().equals("15") && !eTimeM.getText().equals("30") && !eTimeM.getText().equals("45")){
+				|| !eTimeM.getText().equals("0") && !eTimeM.getText().equals("15") && !eTimeM.getText().equals("30") && !eTimeM.getText().equals("45")){
 			JOptionPane.showMessageDialog(this,
 					"Minute Must be 0, 15, 30, or 45 !", "Input Error",
 					JOptionPane.ERROR_MESSAGE);
 			return null;
 		}
-		
+
 		if (result[1] == -1 || result[0] == -1) {
 			JOptionPane.showMessageDialog(this, "Please check time",
 					"Input Error", JOptionPane.ERROR_MESSAGE);
@@ -678,13 +604,6 @@ public class GroupApptScheduler extends JDialog implements ActionListener,
 		System.out.println("YOU HAVE SAVED THE INFORMATION");
 		// Get all the fields from the form
 		// check if null before assignment
-		String _year = yearD.getSelectedItem() == null ? null : yearD.getSelectedItem().toString();
-		String _month = monthD.getSelectedItem() == null ? null : monthD.getSelectedItem().toString();
-		String _day = dayD.getSelectedItem() == null ? null : dayD.getSelectedItem().toString();
-		String _sTimeH = yearD.getSelectedItem() == null ? null : sTimeHD.getSelectedItem().toString();
-		String _sTimeM = sTimeMD.getSelectedItem() == null ? null : sTimeMD.getSelectedItem().toString();
-		String _eTimeH = eTimeHD.getSelectedItem() == null ? null : eTimeHD.getSelectedItem().toString();
-		String _eTimeM = eTimeMD.getSelectedItem() == null ? null : eTimeMD.getSelectedItem().toString();
 		String _detailArea = detailArea.getText() == null ? null : detailArea.getText();
 		String _titleField = titleField.getText() == null ? null : titleField.getText();
 		// Reminder
@@ -696,72 +615,63 @@ public class GroupApptScheduler extends JDialog implements ActionListener,
 		// Location & Frequency
 		String _location = locationD.getSelectedItem() == null ? null : locationD.getSelectedItem().toString();
 		String _frequency = frequencyD.getSelectedItem() == null ? null : frequencyD.getSelectedItem().toString();
-		
-		
-		int year = Integer.parseInt(_year);
-		int month = Integer.parseInt(_month);
-		int day = Integer.parseInt(_day);
-		int shour = Integer.parseInt(_sTimeH);
-		int sminute = Integer.parseInt(_sTimeM);
-		int ehour = Integer.parseInt(_eTimeH);
-		int eminute = Integer.parseInt(_eTimeM);
-		
-		Timestamp start = new Timestamp(year, month, day, shour, sminute, 0, 0);
-		Timestamp end = new Timestamp(year, month, day, ehour, eminute, 0, 0);
-		
-		TimeSpan attemptedAppt = new TimeSpan(start, end);
-		
+
+
+
 		EventReturnMessage returnMessage = EventReturnMessage.ERROR;
-		if (isTimeSpanAvailable(attemptedAppt)){
-			//create group event as a return message
-			
-		}
+		returnMessage = groupController.createGroupEvent(
+				_detailArea,  _titleField,
+				_timeReminderH,  _timeReminderM,
+				_yearReminder,  _monthReminder,  _dayReminder,
+				_frequency,  _location,  parent, userList,
+				timeOptions);
+
 		//
 		//SUCCESS, ERROR_TIME_FORMAT, ERROR_PAST_DATE, ERROR_UNFILLED_REQUIRED_FIELDS,
 		//ERROR_REMINDER, ERROR_EVENT_OVERLAP, ERROR_SECOND_DATE_PAST, ERROR
 		switch (returnMessage){
-			case SUCCESS :
-				setVisible(false);
-				dispose(); // remove
-				parent.repaint();
-				System.out.println("success");
-				break; 
-			case ERROR_TIME_FORMAT :
-				alertMessage("There is an error with the format of your time. Make sure it has the proper format");
-				break;
-			case ERROR_PAST_DATE :
-				alertMessage("You cannot create an event from a past date. Please resubmit the event.");
-				break;
-			case ERROR_UNFILLED_REQUIRED_FIELDS :
-				alertMessage("You have some unfilled required fields. Please check and fill out the required fields.");
-				break;
-			case ERROR_REMINDER :
-				alertMessage("There is problem with your reminder. Please ensure your reminder date is before the event and all fields are filled out.");
-				break;
-			case ERROR_EVENT_OVERLAP :
-				alertMessage("You already have an event at that time! Please find a new date for that event. ");
-				break;
-			case ERROR_SECOND_DATE_PAST :
-				alertMessage("Your end date can't be before your start date. Please resubmit. ");
-				break;
-			default : 
-				alertMessage("Something you did was not right. Review your event. ");
-				break;
+		case SUCCESS :
+			setVisible(false);
+			dispose(); // remove
+			parent.repaint();
+			System.out.println("success");
+			break; 
+		case ERROR_TIME_FORMAT :
+			alertMessage("There is an error with the format of your time. Make sure it has the proper format");
+			break;
+		case ERROR_PAST_DATE :
+			alertMessage("You cannot create an event from a past date. Please resubmit the event.");
+			break;
+		case ERROR_UNFILLED_REQUIRED_FIELDS :
+			alertMessage("You have some unfilled required fields. Please check and fill out the required fields.");
+			break;
+		case ERROR_REMINDER :
+			alertMessage("There is problem with your reminder. Please ensure your reminder date is before the event and all fields are filled out.");
+			break;
+		case ERROR_EVENT_OVERLAP :
+			alertMessage("You already have an event at that time! Please find a new date for that event. ");
+			break;
+		case ERROR_SECOND_DATE_PAST :
+			alertMessage("Your end date can't be before your start date. Please resubmit. ");
+			break;
+		default : 
+			alertMessage("Something you did was not right. Review your event. ");
+			break;
 		}
-		
-//		if(EventReturnMessage.SUCCESS == returnMessage){
-//			//close the window
-//			setVisible(false);
-//			dispose();
-//			parent.repaint();
-//			System.out.println("success");
-//		}else{
-//			// report back the erorr message
-//			System.out.println("error");
-//		}
-		
+
+		//		if(EventReturnMessage.SUCCESS == returnMessage){
+		//			//close the window
+		//			setVisible(false);
+		//			dispose();
+		//			parent.repaint();
+		//			System.out.println("success");
+		//		}else{
+		//			// report back the erorr message
+		//			System.out.println("error");
+		//		}
+
 	}
-	
+
 	private void alertMessage(String message){
 		JOptionPane.showMessageDialog(null, message);
 	}
@@ -777,16 +687,6 @@ public class GroupApptScheduler extends JDialog implements ActionListener,
 	}
 
 	public void updateSetApp(Appt appt) {
-		int i = appt.TimeSpan().StartTime().getMonth();
-		monthD.setSelectedIndex(i);
-		i = appt.TimeSpan().StartTime().getDate();
-		dayD.setSelectedIndex(i - 1);
-		i = appt.TimeSpan().StartTime().getHours();
-		sTimeHD.setSelectedIndex(i - 1);
-		eTimeHD.setSelectedIndex(i);
-		i = appt.TimeSpan().StartTime().getMinutes();
-		sTimeMD.setSelectedIndex(i/15);
-		eTimeMD.setSelectedIndex(i/15);
 	}
 
 	public void componentHidden(ComponentEvent e) {
@@ -809,12 +709,12 @@ public class GroupApptScheduler extends JDialog implements ActionListener,
 	public void componentShown(ComponentEvent e) {
 
 	}
-	
+
 	public String getCurrentUser()		// get the id of the current user
 	{
 		return this.parent.mCurrUser.getUsername();
 	}
-	
+
 	private void allDisableEdit(){
 		yearF.setEditable(false);
 		monthF.setEditable(false);

@@ -54,10 +54,11 @@ public class test {
 		ApptStorageSQLImpl sql = new ApptStorageSQLImpl(user);
 		ApptStorageControllerImpl as = new ApptStorageControllerImpl(sql);
 		CalGrid cal = new CalGrid(as);
+		cal.show(false);
 		
-		MultipleUserSchedule mus = new MultipleUserSchedule("Invitee", cal, userMap, dates);
-
-		
+		ChangeUserAccount ab = new ChangeUserAccount(cal, user);
+		ab.setLocationRelativeTo(null);
+		ab.show();
 		
 		
 	}

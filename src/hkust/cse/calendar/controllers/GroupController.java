@@ -7,6 +7,7 @@ import hkust.cse.calendar.gui.MultipleUserSchedule;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Event;
 import hkust.cse.calendar.unit.Appt.Frequency;
+import hkust.cse.calendar.unit.GroupEvent;
 import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
@@ -34,81 +35,18 @@ public class GroupController {
 	//		
 	//	}
 
-	public TimeSpan suggestedGroupEventTime(List<TimeSpan> list){   //deviates from the plan a little
-		if (list.size()>0){
-		List<TimeSpan> suggested = new LinkedList<TimeSpan>();
-		HashMap<TimeSpan, Integer> map = new HashMap<TimeSpan, Integer>();
-		
-		for (TimeSpan l: list){
-			int numOverlaps = 0;
-			for (TimeSpan k: list){
-				if (!(l.StartTime().getTime() > k.EndTime().getTime() || l.EndTime().getTime() > k.StartTime().getTime())){
-					numOverlaps++;
-				}
-			}
-			map.put(l, numOverlaps);
-		}
-		int k = 0;
-		for (TimeSpan l: map.keySet()){
-			if (map.get(l) != null){
-				if (map.get(l) > k){
-					suggested.add(l);
-					k=map.get(l);
-				}
-				if (map.get(l) == k){
-					suggested.add(l);
-				}
-			}
-		}
-		//suggested now has the TimeSpans that overlap with the most people
-		TimeSpan earliest = list.get(0);
-		if (suggested.size() > 0){
-		long n = suggested.get(0).StartTime().getTime();
-		for (TimeSpan i: suggested){
-			if (i.StartTime().getTime() < n){
-				earliest = i;
-				n = i.StartTime().getTime();
-			}
-		}
-		return earliest;
-		}
-		else return null;
-		}
-		else return null;
-	}
-
 	public EventReturnMessage createGroupEvent(
-			String _year, String _month, String _day,
-			String _sTimeH, String _sTimeM, String _eTimeH, String _eTimeM,
 			String _detailArea, String _titleField,
 			String _reminderTimeH, String _reminderTimeM,
 			String _reminderYear, String _reminderMonth, String _reminderDay,
-//			String _frequency, String _location, CalGrid parentGrid){
-			String _frequency, String _location, CalGrid parentGrid, List<User> userList){
+			String _frequency, String _location, CalGrid parentGrid, List<User> userList,
+			List<TimeSpan> tList){
 
 		// check if required fields were met
-		if(_year == null || _month == null || _day == null || _sTimeH == null
-				|| _sTimeM == null || _eTimeH == null || _eTimeM ==null || _frequency == null)
+		if( _frequency == null)
 			return EventReturnMessage.ERROR_UNFILLED_REQUIRED_FIELDS;
 
-		// format the start / endtime
-		Date startTimeDate = formatTime(_year, _month, _day, _sTimeH, _sTimeM);
-		Timestamp startTime = new java.sql.Timestamp(startTimeDate.getTime());
 
-		// check if startTiem correct
-		if(!checkStartTime(startTime))
-			return EventReturnMessage.ERROR_PAST_DATE;
-
-		// format the end time
-		Date endTimeDate = formatTime(_year, _month, _day, _eTimeH, _eTimeM);
-		Timestamp endTime = new java.sql.Timestamp(endTimeDate.getTime());
-
-
-		// check for end time that is before start time
-		if(!endTime.after(startTime))
-			return EventReturnMessage.ERROR_SECOND_DATE_PAST;
-
-		TimeSpan eventTime = new TimeSpan(startTime, endTime);
 
 		TimeSpan reminder = null;
 		// Create the reminder if reminder isn't null
@@ -117,9 +55,7 @@ public class GroupController {
 			Date noteTime = formatTime(_reminderYear, _reminderMonth, _reminderDay, _reminderTimeH, _reminderTimeM);
 			System.out.println("Y:" + _reminderYear + " M:" +_reminderMonth + " D:" +_reminderDay + " H:" +_reminderTimeH + " Min:" +_reminderTimeM);
 			// check that reminder is before the start time
-			if(startTime.before(noteTime))
-				return EventReturnMessage.ERROR_REMINDER;
-			reminder = new TimeSpan(new Timestamp(noteTime.getTime()), startTime);
+
 		}
 
 		// create the frequency
@@ -130,6 +66,14 @@ public class GroupController {
 		if(_location != null)
 			location = new Location(_location);
 
+		GroupEvent event = new GroupEvent(_titleField, _detailArea, location.getLocationID(),
+				reminder, "", frequency, tList);
+		
+		if (event.getID() != -1){
+			return EventReturnMessage.SUCCESS;
+		}
+		
+		// save event to database
 
 		return EventReturnMessage.ERROR;
 
