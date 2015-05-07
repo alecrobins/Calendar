@@ -1,30 +1,30 @@
 package hkust.cse.calendar.unit;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GroupResponse {
 	
-	private User intiator;
+	private int intiatorID;
 	private List<TimeSpan> proposedTimeslots;
 	private List<TimeSpan> selectedTimeslots;
 	boolean isRejected;
 	private int groupID; // points to the 
 	
 	public GroupResponse(){
-		intiator = null;
+		intiatorID = -1;
 		proposedTimeslots = null;
 		selectedTimeslots = null;
 		isRejected = false;
 		groupID = -1;
 	}
 	
-	public GroupResponse(User _intiator, List<TimeSpan> _proposedTimeslots, 
-						 List<TimeSpan> _selectedTimeslots, boolean _isRejected, int _groupID){
-		intiator = _intiator;
+	public GroupResponse(int _intiator, List<TimeSpan> _proposedTimeslots, int _groupID){
+		intiatorID = _intiator;
 		proposedTimeslots = _proposedTimeslots;
-		selectedTimeslots = _selectedTimeslots;
-		isRejected = _isRejected;
+		selectedTimeslots = new ArrayList<TimeSpan>();
+		isRejected = false;
 		groupID = _groupID;
 	}
 
@@ -36,12 +36,12 @@ public class GroupResponse {
 		isRejected = _isRejected;
 	}
 
-	public User getIntiator() {
-		return intiator;
+	public int getIntiatorID() {
+		return intiatorID;
 	}
 
-	public void setIntiator(User intiator) {
-		this.intiator = intiator;
+	public void setIntiatorID(int _initiatorID) {
+		this.intiatorID = _initiatorID;
 	}
 
 	public List<TimeSpan> getProposedTimeslots() {

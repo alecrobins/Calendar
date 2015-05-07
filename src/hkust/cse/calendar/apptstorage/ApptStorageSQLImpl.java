@@ -1744,15 +1744,20 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		// TODO: need to iterate all in teh group
 		ResultSet r = rs;
 		
-		int intiatorID = rs.getInt("intiatorID");
+		int intiatorID = rs.getInt("initiatorID");
 		int eventID = rs.getInt("eventID");
-		int groupID = rs.getInt("groupID");
 		Timestamp startTime = rs.getTimestamp("startTime");
 		Timestamp endTime = rs.getTimestamp("endTime");
-
-//		GroupResponse groupResponse = new GroupResponse();
 		
-		return null;
+		TimeSpan newTimeSlot = new TimeSpan(startTime, endTime);
+		
+		List<TimeSpan> tempTimeSlots = new ArrayList<TimeSpan>();
+		tempTimeSlots.add(newTimeSlot);
+		
+
+		GroupResponse groupResponse = new GroupResponse(intiatorID, tempTimeSlots, eventID);
+		
+		return groupResponse;
 	}
 	
 	
@@ -1832,7 +1837,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	}
 	
 	// Retrieve a list of groups you need to approve
-	public List<GroupResponse> getPurposedGroupEventTimeSlots(){
+	public List<GroupResponse> getPurposedGroupEventTimeSlots(User u){
 
 		Connection c = null;
 	    Statement stmt = null;
@@ -1849,12 +1854,12 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      stmt = c.createStatement();
 	      PreparedStatement query;
 	      
-	      query = c.prepareStatement("select initiatorID, groupID, startTime, endTime " +
+	      query = c.prepareStatement("select initiatorID, eventID, startTime, endTime " +
 	    		  					 "from groupUserTimeSlots " +
 	    		  					 "where userID = ? " + 
-	    		  					 "group by groupID; ");
+	    		  					 "group by eventID; ");
 	      
-	      query.setInt(1, defaultUser.getID());
+	      query.setInt(1, u.getID());
 	      
 	      ResultSet rs = query.executeQuery();
 

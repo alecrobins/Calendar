@@ -9,6 +9,7 @@ import java.util.List;
 
 import hkust.cse.calendar.apptstorage.ApptStorageSQLImpl;
 import hkust.cse.calendar.unit.GroupEvent;
+import hkust.cse.calendar.unit.GroupResponse;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.unit.Appt.Frequency;
@@ -84,18 +85,25 @@ public class GroupEventCreationTests {
 		
 		System.out.println("Here we go");
 		
-		try {
-			int groupID = db.createGroupEvent(_usersIDs, testGroupEvent);
-			testGroupEvent.setID(groupID);
-			db.createPurposedGroupEvent(testGroupEvent, _timeSlots, _users);
-
-		} catch (InvalidClassException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+////			int groupID = db.createGroupEvent(_usersIDs, testGroupEvent);
+////			testGroupEvent.setID(groupID);
+////			db.createPurposedGroupEvent(testGroupEvent, _timeSlots, _users);
+//
+////		} catch (InvalidClassException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 		System.out.println("Success");
-
+	}
+	
+	@Test
+	public void testGetPurposedGroupEventTimeSlots(){
+		User user2 = new User(6, "sallySue", "123", false);
+		System.out.println("Starting retrival . . .");
+		List<GroupResponse> responses = db.getPurposedGroupEventTimeSlots(user2);
+		System.out.println("RETRIEVED");
 		
 	}
 
