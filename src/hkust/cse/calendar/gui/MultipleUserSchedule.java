@@ -84,26 +84,49 @@ public class MultipleUserSchedule implements ActionListener{
 	//15 minutes = 900,000 milliseconds
 	
 	public boolean[] isRowAvailable(HashMap<User, List<Appt>> userMap, List<Timestamp> dates){
-		boolean[] rowVal = new boolean[(1+dates.size())*40];
+		boolean[] rowVal = new boolean[(dates.size())*40];
+		System.out.println("row boolean length = "+rowVal.length);
 		for (int i = 0; i < rowVal.length; i++){   //initialize to true
 			rowVal[i] = true;
 		}
+		System.out.println("numUsers found = "+userMap.size());
 		for (List<Appt> ap : userMap.values()){    //for each user
 			for (int i = 0; i < ap.size(); i++){   //for each appt in user's list
 				//System.out.println("appt start time = " +ap.get(i).TimeSpan().StartTime().getTime());
 				//System.out.println("appt end time = " +ap.get(i).TimeSpan().EndTime().getTime());
-				long rowStart = 0;
+				int dateCount=0;
+				long rowStart = dates.get(0).getTime();
+				System.out.println("INITIAL DATE START = "+rowStart);
 				long rowEnd = rowStart + 900000;
-				for (int j = 0; j < ((1+dates.size())*40); j++){   //for each row in rowVal
-					if (rowVal[j] == true){
-					if (!((ap.get(i).TimeSpan().EndTime().getTime() <= rowStart)
-							|| (ap.get(i).TimeSpan().StartTime().getTime() >= rowEnd))){  //if intersection
-						rowVal[j] = false;   
+				System.out.println("appt start time = "+ap.get(i).TimeSpan().StartTime().getTime());
+				System.out.println("appt end time = "+ap.get(i).TimeSpan().EndTime().getTime());
+				for (int j = 1; j < ((dates.size())*40)+1; j++){   //for each row in rowVal
+					if (!((ap.get(i).TimeSpan().EndTime().getTime() <= rowStart)||(ap.get(i).TimeSpan().StartTime().getTime()>=rowEnd))){
+						rowVal[j-1] = false;
 					}
-					}
+//					if (rowVal[j] == true){
+//						if (isHourOverlap(ap.get(i), new TimeSpan(new Timestamp(rowStart), new Timestamp(rowEnd)))){
+//							rowVal[j] = false;
+//						}
+//					}
 					//System.out.println("rowEnd "+j+" = "+rowEnd);
+					if (j == 1){
+						rowStart += 900000;
+						rowEnd += 900000;
+					}
+					else {
+					if (j%40 == 0){
+						dateCount++;
+						System.out.println("THIS IS THE DATECOUNT = "+ dateCount);
+						rowStart = dates.get(0).getTime() + 86400000*dateCount;
+						System.out.println("THIS IS THE NEW ROWSTART = "+ rowStart);
+						rowEnd = rowStart + 900000;
+					}
+					else{
 					rowStart += 900000;
 					rowEnd += 900000;
+					}
+					}
 				}
 			}
 		}
@@ -122,6 +145,29 @@ public class MultipleUserSchedule implements ActionListener{
 		commonConstructor(t, c, h, l);
 
 	}
+	
+	private boolean isHourOverlap(Appt appt, TimeSpan purposed){
+		TimeSpan eventTime = appt.getEventTime();
+//		
+		// check if starttime or end time of propossed is in between start or end time of event
+		if( inBetween(purposed.StartTime(), eventTime) || inBetween(purposed.EndTime(), eventTime))
+			return true;
+		else if( beforeAndAfter(purposed, eventTime))
+			return true;
+		
+		return false;
+	}
+	
+	// check if t1 is in between t1 or tw
+	private boolean inBetween(Timestamp t1, TimeSpan t2){
+		return t1.getTime() >= t2.StartTime().getTime() && t1.getTime() <= t2.EndTime().getTime();
+	}
+	
+	// check if the start time AND end of t1 start at before AND after t2
+	private boolean beforeAndAfter(TimeSpan t1, TimeSpan t2){
+		return t1.StartTime().getTime() <= t2.StartTime().getTime() && t1.EndTime().getTime() >= t2.EndTime().getTime();
+	}
+	
 	public void commonConstructor(String tit, CalGrid cal, HashMap<User, List<Appt>> userMa, List<Timestamp> dates){
 		userMap = userMa;
 		dateList = dates;
@@ -361,8 +407,8 @@ public class MultipleUserSchedule implements ActionListener{
 	}
 
 	public void getColumnTitles(int month, int date){
-		currentM = month;
-		firstM = month;
+		currentM = month+1;
+		firstM = month+1;
 		secondM = 20;
 		currentD = date;
 		firstD = date;

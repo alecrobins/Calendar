@@ -25,6 +25,7 @@ import java.awt.event.ComponentListener;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -513,12 +514,17 @@ ComponentListener {
 		String _day = dayD.getSelectedItem() == null ? null : dayD.getSelectedItem().toString();
 		String _numDays = numDays.getSelectedItem() == null ? null : numDays.getSelectedItem().toString();
 		
+		int year = Integer.parseInt(_year);
+		int month = Integer.parseInt(_month);
+		int day = Integer.parseInt(_day);
+		
 		List<String> inviteList = new LinkedList<String>();   //a list of all the selected username's
 		for (JCheckBox j: checkBoxList){
 			if (j.isSelected()){
 				inviteList.add(j.getLabel());
 			}
 		}
+		System.out.println("THIS IS WHO IS INVITED: " +inviteList.get(0));
 		
 		ApptStorageSQLImpl asql = new ApptStorageSQLImpl(parent.getCurrUser());
 		List<User> invitedUsers = new LinkedList<User>();
@@ -529,27 +535,33 @@ ComponentListener {
 			}
 		}
 		
-		
-		
-		
 		HashMap<User, List<Appt>> userMap = new HashMap<User, List<Appt>>();
 		for (User u: invitedUsers){
 			userMap.put(u, asql.getAllEvents(u.getID()));
 		}
-		userMap.put(parent.getCurrUser(), asql.getAllEvents(parent.getCurrUser().getID()));
-
-		Timestamp startDay = new Timestamp(Timestamp.UTC(Integer.parseInt(_year), Integer.parseInt(_month), Integer.parseInt(_day), 8, 0, 0));
+		System.out.println("YEAR SELECTED: "+year);
+		System.out.println("MONTH SELECTED: "+month);
+	
+		
+		
+		Timestamp startDay = new Timestamp(year-1900, month-1, day, 8, 0, 0, 0);
+	
+		System.out.println("TIMESTAMP OF SELECTED DATE = "+startDay.getTime());
 		dates = new LinkedList<Timestamp>();
 		for (int i = 0; i < Integer.parseInt(_numDays); i++){
 			dates.add(new Timestamp(startDay.getTime()+i*86400000));
 		}
 		setVisible(false);
 		
+		HashMap<User, List<Appt>> userMaps = new HashMap<User, List<Appt>>();
+		User poop = new User("poop","poop");
+		List<Appt> poopList = new LinkedList<Appt>();
+		poopList.add(new Appt(new TimeSpan(new Timestamp(startDay.getTime()), new Timestamp(startDay.getTime()+947000*5)), Appt.Frequency.ONETIME));
+		userMaps.put(poop, poopList);
+		
 		MultipleUserSchedule mus = new MultipleUserSchedule("Initiator Pre-Response", parent, userMap, dates);
-
-
-
 	}
+	
 
 	private void alertMessage(String message){
 		JOptionPane.showMessageDialog(null, message);
