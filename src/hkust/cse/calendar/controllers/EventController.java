@@ -420,8 +420,6 @@ public class EventController {
 		catch(Exception e){
 			System.out.println(e.getMessage());
 		} 
-		
-		if (hour == "12") timestamp.setHours(12);
 
 		return timestamp;
 
