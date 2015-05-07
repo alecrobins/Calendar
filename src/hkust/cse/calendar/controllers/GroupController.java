@@ -69,6 +69,8 @@ public class GroupController {
 		GroupEvent event = new GroupEvent(_titleField, _detailArea, location.getLocationID(),
 				reminder, "", frequency, tList);
 		
+		//send group event to the database
+		
 		if (event.getID() != -1){
 			return EventReturnMessage.SUCCESS;
 		}

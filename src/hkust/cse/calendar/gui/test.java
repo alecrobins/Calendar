@@ -3,6 +3,7 @@ package hkust.cse.calendar.gui;
 import hkust.cse.calendar.apptstorage.ApptStorageControllerImpl;
 import hkust.cse.calendar.apptstorage.ApptStorageSQLImpl;
 import hkust.cse.calendar.unit.Appt;
+import hkust.cse.calendar.unit.GroupEvent;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 
@@ -56,10 +57,9 @@ public class test {
 		CalGrid cal = new CalGrid(as);
 		cal.show(false);
 		
-		ChangeUserAccount ab = new ChangeUserAccount(cal, user);
-		ab.setLocationRelativeTo(null);
-		ab.show();
-		
+		GroupEvent gc = new GroupEvent();
+		InvitationDialog id = new InvitationDialog();
+		id.show();
 		
 	}
 }
