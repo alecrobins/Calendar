@@ -177,11 +177,13 @@ public class AppList extends JPanel implements ActionListener {
 		});
 
 		mi = (JMenuItem) pop.add(new JMenuItem("Modify"));
+		
 		mi.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				modify();
 			}
 		});
+		
 		pop.add(new JPopupMenu.Separator());
 		JMenuItem j = new JMenuItem("Details");
 		j.setFont(f);

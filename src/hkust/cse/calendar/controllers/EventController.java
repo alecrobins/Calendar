@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 import hkust.cse.calendar.apptstorage.ApptStorageSQLImpl;
 import hkust.cse.calendar.gui.CalGrid;
@@ -51,7 +52,7 @@ public class EventController {
 			String _detailArea, String _titleField,
 			String _reminderTimeH, String _reminderTimeM,
 			String _reminderYear, String _reminderMonth, String _reminderDay,
-			String _frequency, String _location, CalGrid parentGrid){
+			String _frequency, String _location, boolean isPub, CalGrid parentGrid){
 
 		// check if required fields were met
 		if(_year == null || _month == null || _day == null || _sTimeH == null
@@ -101,7 +102,7 @@ public class EventController {
 		// MAKE THE EVENT
 		// delay the saving of the id to the creation
 		Appt newEvent = new Appt(eventTime, _titleField, _titleField, location.getLocationID(), reminder, _detailArea, frequency);
-
+		newEvent.setIsPublic(isPub);
 		//TODO: need to check if an event is valid 
 		// Check for overlap
 		if(eventOverlap(newEvent, cal.controller.mApptStorage.getApptsMap()))
@@ -268,7 +269,7 @@ public class EventController {
 			purposedTime = e.getEventTime();
 			
 			// go through each event and check for overlapp with the purposed tiem
-			for (HashMap.Entry<Integer, Appt> entry : appts.entrySet())
+			for (Map.Entry<Integer, Appt> entry : appts.entrySet())
 			{
 				Appt currentAppt = entry.getValue();
 				if(isHourOverlap(currentAppt, purposedTime)){
@@ -286,7 +287,7 @@ public class EventController {
 			for (int i = 0; i < 53; i++)   { //1 years in weeks
 				
 				// go through each event and check for overlapp with the purposed tiem
-				for (HashMap.Entry<Integer, Appt> entry : appts.entrySet())
+				for (Map.Entry<Integer, Appt> entry : appts.entrySet())
 				{
 					Appt currentAppt = entry.getValue();
 					if(isHourOverlap(currentAppt, purposedTime)){
@@ -312,7 +313,7 @@ public class EventController {
 			for (int i = 0; i < 13; i++){   //1 years in groups of 4 weeks
 				
 				// go through each event and check for overlapp with the purposed tiem
-				for (HashMap.Entry<Integer, Appt> entry : appts.entrySet())
+				for (Map.Entry<Integer, Appt> entry : appts.entrySet())
 				{
 					Appt currentAppt = entry.getValue();
 					if(isHourOverlap(currentAppt, purposedTime)){
@@ -342,7 +343,7 @@ public class EventController {
 			for (int i = 0; i < 365; i++){
 
 				// go through each event and check for overlapp with the purposed tiem
-				for (HashMap.Entry<Integer, Appt> entry : appts.entrySet())
+				for (Map.Entry<Integer, Appt> entry : appts.entrySet())
 				{
 					Appt currentAppt = entry.getValue();
 					if(isHourOverlap(currentAppt, purposedTime)){
