@@ -135,6 +135,7 @@ public class MultipleUserSchedule implements ActionListener{
 		rowBool = rowVal;
 		return rowVal;
 	}
+	
 	MultipleUserSchedule(String t, CalGrid c, HashMap<User, List<Appt>> h, List<Timestamp> l){
 		this.dateList = null;
 		commonConstructor(t, c, h, l);

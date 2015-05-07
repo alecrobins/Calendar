@@ -36,12 +36,33 @@ public class GroupEvent extends Appt {
 		super(e.getEventTime(), e.getTitle(), e.getEventDescription(), e.getEventLocation(), e.getEventReminder(), 
 				"", e.getEventFrequency());
 		this.id = e.id;
+<<<<<<< HEAD
 
 		setConfirmed(false);
 		setApproved(false);
 
 	}
 
+=======
+		setConfirmed(false);
+		setApproved(false);
+		this.setIsGroup(true);
+		this.setIsPublic(true);
+		
+	}
+	
+	// Complete Constructor - without eventTime
+	public GroupEvent(String _title, String _eventDescription, int _eventLocationID,
+			TimeSpan _eventReminder, String _additionalEventDescription, Frequency _eventFrequency)
+	{
+		super(_title, _eventDescription, _eventLocationID, _eventReminder, _additionalEventDescription, _eventFrequency);
+		setConfirmed(false);
+		setApproved(false);
+		this.setIsGroup(true);
+		this.setIsPublic(true);
+	}
+	
+>>>>>>> ca12a07270399638ef206978eb552ece9efe87f8
 	// Complete Constructor
 	public GroupEvent(TimeSpan _eventTime, String _title, String _eventDescription, int _eventLocationID,
 			TimeSpan _eventReminder, String _additionalEventDescription, Frequency _eventFrequency, 
@@ -51,6 +72,8 @@ public class GroupEvent extends Appt {
 		this.timeOptions = timeOption;
 		setConfirmed(false);
 		setApproved(false);
+		this.setIsGroup(true);
+		this.setIsPublic(true);
 	}
 
 	public boolean isConfirmed() {

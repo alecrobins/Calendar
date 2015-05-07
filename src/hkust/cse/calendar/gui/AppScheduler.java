@@ -362,6 +362,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 	          }           
 	       });
 		panel2.add(publicCheck);
+
 		
 		saveBut = new JButton("Save");
 		saveBut.addActionListener(this);
@@ -379,6 +380,9 @@ public class AppScheduler extends JDialog implements ActionListener,
 		contentPane.add("South", panel2);
 		NewAppt = new Appt();
 
+		if (this.getTitle().equals("Modify") || this.getTitle().equals("Join Appointment Invitation")){
+			CancelBut.show(false);
+		}
 		if (this.getTitle().equals("Join Appointment Content Change") || this.getTitle().equals("Join Appointment Invitation")){
 			inviteBut.show(false);
 			rejectBut.show(true);
@@ -690,7 +694,6 @@ public class AppScheduler extends JDialog implements ActionListener,
 		String _location = locationD.getSelectedItem() == null ? null : locationD.getSelectedItem().toString();
 		String _frequency = frequencyD.getSelectedItem() == null ? null : frequencyD.getSelectedItem().toString();
 		boolean isPub = publicCheck.isSelected();
-		System.out.println("Creating event . . . ");
 		
 		// CREATE THE EVENT
 		// returns an EventReturnMessage - determines if successful or details an error
@@ -701,13 +704,15 @@ public class AppScheduler extends JDialog implements ActionListener,
 			
 		}
 		else{
-	returnMessage = eventController.createEvent(
+		
+	   returnMessage = eventController.createEvent(
 				_year, _month, _day,
 				_sTimeH, _sTimeM, _eTimeH, _eTimeM,
 				_detailArea, _titleField,
 				_timeReminderH, _timeReminderM, _yearReminder, _monthReminder, _dayReminder,
 				_frequency, _location, isPub, parent);
 		}
+		
 		//
 		//SUCCESS, ERROR_TIME_FORMAT, ERROR_PAST_DATE, ERROR_UNFILLED_REQUIRED_FIELDS,
 		//ERROR_REMINDER, ERROR_EVENT_OVERLAP, ERROR_SECOND_DATE_PAST, ERROR
@@ -741,17 +746,6 @@ public class AppScheduler extends JDialog implements ActionListener,
 				break;
 		}
 		
-//		if(EventReturnMessage.SUCCESS == returnMessage){
-//			//close the window
-//			setVisible(false);
-//			dispose();
-//			parent.repaint();
-//			System.out.println("success");
-//		}else{
-//			// report back the erorr message
-//			System.out.println("error");
-//		}
-		
 	}
 	
 	private void alertMessage(String message){
@@ -775,12 +769,49 @@ public class AppScheduler extends JDialog implements ActionListener,
 		dayD.setSelectedIndex(i - 1);
 		i = appt.TimeSpan().StartTime().getHours();
 		sTimeHD.setSelectedIndex(i - 1);
-		eTimeHD.setSelectedIndex(i);
+		i = appt.TimeSpan().EndTime().getHours();
+		eTimeHD.setSelectedIndex(i - 1);
 		i = appt.TimeSpan().StartTime().getMinutes();
 		sTimeMD.setSelectedIndex(i/15);
+		i = appt.TimeSpan().EndTime().getMinutes();
 		eTimeMD.setSelectedIndex(i/15);
 		
-//		eventController(appt);
+		if (appt.getNotification() != null) {
+			i = appt.getNotification().StartTime().getMonth();
+			monthReminderD.setSelectedIndex(i);
+			i = appt.getNotification().StartTime().getDate();
+			dayReminderD.setSelectedIndex(i - 1);
+			i = appt.getNotification().StartTime().getHours();
+			timeReminderHD.setSelectedIndex(i - 1);
+			i = appt.getNotification().StartTime().getMinutes();
+			timeReminderMD.setSelectedIndex(i/15);
+		}
+		
+		String s = appt.getTitle();
+		titleField.setText(s);
+				
+		locationD.setSelectedIndex(appt.getEventLocation());
+		
+		if (appt.getEventFrequency() != null){
+			switch (appt.getEventFrequency()) {
+			case ONETIME:
+				frequencyD.setSelectedIndex(1);
+				return;
+			case DAILY:
+				frequencyD.setSelectedIndex(2);
+				return;
+			case WEEKLY:
+				frequencyD.setSelectedIndex(3);
+				return;
+			case MONTHLY:
+				frequencyD.setSelectedIndex(4);
+				return;
+			}
+		}
+		
+		s = appt.getInfo();
+		if (s != null) detailArea.setText(s);
+
 	}
 
 	public void componentHidden(ComponentEvent e) {

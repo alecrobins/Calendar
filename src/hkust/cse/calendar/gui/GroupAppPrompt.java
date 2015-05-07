@@ -25,6 +25,8 @@ import java.awt.event.ComponentListener;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -132,13 +134,15 @@ ComponentListener {
 	private GroupController gc;
 	private List<User> userList;
 	private List<Timestamp> dates;
+	
+	private TimeSpan range;
 
 
 	private void commonConstructor(CalGrid cal, LocationStorage _ls) {
 		gc = new GroupController(cal);
 		// set up the NoticationController & The LocationStorage
 		ls = _ls;
-
+		
 		// set up the event controller
 		eventController = new EventController(cal); 
 
@@ -514,9 +518,21 @@ ComponentListener {
 		String _day = dayD.getSelectedItem() == null ? null : dayD.getSelectedItem().toString();
 		String _numDays = numDays.getSelectedItem() == null ? null : numDays.getSelectedItem().toString();
 		
+		
 		int year = Integer.parseInt(_year);
 		int month = Integer.parseInt(_month);
 		int day = Integer.parseInt(_day);
+		
+		long ONE_DAY_MILLISCONDS = 25 * 60 * 60 * 1000;
+		// create a new 
+		Timestamp startDay = new Timestamp(year-1900, month-1, day, 8, 0, 0, 0);
+		// create a new 
+		long calculateTimeDiff = startDay.getTime() + (Integer.parseInt(_numDays) * ONE_DAY_MILLISCONDS);
+		Timestamp endDay = new Timestamp(calculateTimeDiff);
+		endDay.setHours(23);
+		endDay.setMinutes(59);
+		// set the range of search
+		range = new TimeSpan(startDay, endDay);
 		
 		List<String> inviteList = new LinkedList<String>();   //a list of all the selected username's
 		for (JCheckBox j: checkBoxList){
@@ -536,23 +552,29 @@ ComponentListener {
 		}
 		
 		HashMap<User, List<Appt>> userMap = new HashMap<User, List<Appt>>();
+		
 		for (User u: invitedUsers){
-			userMap.put(u, asql.getAllEvents(u.getID()));
+			List<Appt> apptList =  asql.RetrieveApptsList(u, range);
+			List<Appt> appListGenerated = asql.generateList(apptList);
+			userMap.put(u, appListGenerated);
 		}
+
 		System.out.println("YEAR SELECTED: "+year);
 		System.out.println("MONTH SELECTED: "+month);
-	
 		
 		
-		Timestamp startDay = new Timestamp(year-1900, month-1, day, 8, 0, 0, 0);
-	
+//		Timestamp endTime = new Timestamp(year-1900, month-1, , 11, 59, 59, 59);
+		
 		System.out.println("TIMESTAMP OF SELECTED DATE = "+startDay.getTime());
+		
 		dates = new LinkedList<Timestamp>();
 		for (int i = 0; i < Integer.parseInt(_numDays); i++){
 			dates.add(new Timestamp(startDay.getTime()+i*86400000));
 		}
 		setVisible(false);
 		
+		
+		// TODO : NEED TO CHANGE
 		
 		MultipleUserSchedule mus = new MultipleUserSchedule("Initiator Pre-Response", parent, userMap, dates);
 		

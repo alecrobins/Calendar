@@ -243,15 +243,14 @@ ComponentListener {
 				
 				String newPass = new String(pass.getPassword());
 				
-				
 				if(newPass!=null){
-				User newUser=new User(userID,user.getUsername(),newPass,user.isAdmin());
+					User newUser=new User(userID,user.getUsername(),newPass,user.isAdmin());
+					newUser.setEmail(" ");
+
+					dataBase.modifyUser(newUser);
 				
-				dataBase.modifyUser(newUser);
-				
-				JOptionPane.showMessageDialog(null, "Password changed successfully.");
+					JOptionPane.showMessageDialog(null, "Password changed successfully.");
 				}
-				
 				else{
 					
 					JOptionPane.showMessageDialog(null, "Password can not be empty!");
