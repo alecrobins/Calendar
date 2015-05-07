@@ -704,13 +704,15 @@ public class AppScheduler extends JDialog implements ActionListener,
 			
 		}
 		else{
-	returnMessage = eventController.createEvent(
+		
+	   returnMessage = eventController.createEvent(
 				_year, _month, _day,
 				_sTimeH, _sTimeM, _eTimeH, _eTimeM,
 				_detailArea, _titleField,
 				_timeReminderH, _timeReminderM, _yearReminder, _monthReminder, _dayReminder,
 				_frequency, _location, isPub, parent);
 		}
+		
 		//
 		//SUCCESS, ERROR_TIME_FORMAT, ERROR_PAST_DATE, ERROR_UNFILLED_REQUIRED_FIELDS,
 		//ERROR_REMINDER, ERROR_EVENT_OVERLAP, ERROR_SECOND_DATE_PAST, ERROR
@@ -743,17 +745,6 @@ public class AppScheduler extends JDialog implements ActionListener,
 				alertMessage("Something you did was not right. Review your event. ");
 				break;
 		}
-		
-//		if(EventReturnMessage.SUCCESS == returnMessage){
-//			//close the window
-//			setVisible(false);
-//			dispose();
-//			parent.repaint();
-//			System.out.println("success");
-//		}else{
-//			// report back the erorr message
-//			System.out.println("error");
-//		}
 		
 	}
 	

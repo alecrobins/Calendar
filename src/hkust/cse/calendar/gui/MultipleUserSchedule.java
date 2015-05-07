@@ -133,6 +133,7 @@ public class MultipleUserSchedule implements ActionListener{
 		rowBool = rowVal;
 		return rowVal;
 	}
+	
 	MultipleUserSchedule(String t, CalGrid c, HashMap<User, List<Appt>> h, List<Timestamp> l){
 		this.suggest = null;
 		this.dateList = null;
@@ -179,7 +180,7 @@ public class MultipleUserSchedule implements ActionListener{
 		previousCol = 0;
 		currentRow = 0;
 		currentCol = 0;
-	numDays = dates.size();
+		numDays = dates.size();
 		final boolean[] rowVals = isRowAvailable(userMap, dates);
 		int startMonth = dates.get(0).getMonth();
 		int startDate = dates.get(0).getDate();

@@ -5,6 +5,8 @@ import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Clock;
 import hkust.cse.calendar.unit.Event;
 import hkust.cse.calendar.unit.GroupEvent;
+import hkust.cse.calendar.unit.GroupResponse;
+import hkust.cse.calendar.unit.Invite;
 import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
@@ -165,6 +167,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		return locations;
 	}
 	
+	
 	@Override
 	// returns the appt id
 	public int SaveAppt(Appt _event) {
@@ -241,9 +244,12 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	public Appt[] RetrieveAppts(TimeSpan d) {
 		return RetrieveAppts(defaultUser, d);
 	}
-
 	@Override
 	public Appt[] RetrieveAppts(User entity, TimeSpan time) {
+		return null;
+	}
+
+	public List<Appt> RetrieveApptsList(User entity, TimeSpan time) {
 		Connection c = null;
 	    Statement stmt = null;
 	    
@@ -298,8 +304,118 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
 	      System.exit(0);
 	    }
-	    	    
-		return (Appt[]) events.toArray();
+	    	   
+		return events;
+	}
+	
+	// generate a list so that all appts get created based on teh frequency
+	public List<Appt> generateList(List<Appt> appts){
+		List<Appt> generatedList = new ArrayList<Appt>();
+		
+		// add all generated appts
+		for(int i = 0; i < appts.size(); ++i){
+			generatedList.addAll(generateEvents(appts.get(i)));
+		}
+		
+		return generatedList;
+		
+	}
+	
+
+	public List<Appt> generateEvents(Appt e){
+		List<Appt> appts = new ArrayList<Appt>();
+		
+		// Add notification in to notification array
+		int time = -1;
+		Appt pastEvent = null;
+		switch (e.getEventFrequency()){
+		case ONETIME:		
+			appts.add(e);
+			break;
+		case WEEKLY:
+			appts.add(e);
+			
+			pastEvent = e;
+			
+			for (int i = 0; i < 52; i++)   { //1 years in weeks
+				
+				// Set teh current tim 
+				TimeSpan curr = pastEvent.getEventTime();
+				Timestamp start = new Timestamp(curr.StartTime().getTime()+604800000);
+				Timestamp fin = new Timestamp(curr.EndTime().getTime()+604800000);
+				
+				// generate the new event
+				Appt eNew = formatEvent(start, fin, e);
+				appts.add(eNew);
+
+				// set past event
+				pastEvent = eNew;
+				
+			}
+			break;
+		case MONTHLY:
+			// save the first event
+			appts.add(e);
+
+			pastEvent = e;
+
+			for (int i = 0; i < 13; i++){   //1 years in groups of 4 weeks
+				TimeSpan curr = pastEvent.getEventTime();
+				
+				Timestamp start = curr.StartTime(); 
+				Timestamp end = curr.EndTime();
+				
+				start.setMonth(curr.StartTime().getMonth()+1);
+				end.setMonth(curr.EndTime().getMonth()+1);
+				
+				// generate the new event
+				Appt eNew = formatEvent(start, end, e);
+				appts.add(eNew);
+						
+				// set past event
+				pastEvent = eNew;
+			}
+			break;
+		case DAILY:
+			// save the first event
+			appts.add(e);
+	
+			pastEvent = e;
+			
+			for (int i = 0; i < 365; i++){
+				TimeSpan curr = pastEvent.getEventTime();
+				Timestamp start = new Timestamp(curr.StartTime().getTime()+86400000);
+				Timestamp end = new Timestamp(curr.EndTime().getTime()+86400000);
+				// save to db
+				
+				// generate the new event
+				Appt eNew = formatEvent(start, end, e);
+				appts.add(eNew);
+								
+				// set past event
+				pastEvent = eNew;
+			}
+			break;
+		}
+		
+		return appts;
+		
+	}
+	
+	private Appt formatEvent(Timestamp start, Timestamp end, Appt e){
+		Appt eNew = new Appt() ;
+		
+		// get information for new event
+		eNew.setEventFrequency(e.getEventFrequency());
+		eNew.setEventTime(new TimeSpan(start, end));
+		eNew.setTitle(e.getTitle());
+		eNew.setInfo(e.getInfo());
+		eNew.setEventLocation(e.getEventLocationID());
+		eNew.setIsGroup(e.getIsGroup());
+		eNew.setIsPublic(e.getIsPublic());
+		eNew.setID(e.getEventID());
+		
+		return eNew;
 	}
 
 	@Override
@@ -714,8 +830,13 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		for(int i = 0; i < groupIDs.size(); ++i){
 			int groupID = groupIDs.get(i);
 			GroupEvent groupEvent = getGroupEvent(groupID);
-			// push the group event into the group
-			groupEvents.add(groupEvent);
+			
+			// NOTE: only add confimred events
+			if(groupEvent.isConfirmed()){
+				// push the group event into the group
+				groupEvents.add(groupEvent);	
+			}
+			
 		}
 		
 		return groupEvents;
@@ -1578,22 +1699,22 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	}
 	
 	private GroupEvent formatGroupEvent(ResultSet rs) throws SQLException {
-		
-		int initiatorID = rs.getInt("initiator");
-		boolean confirmed = rs.getBoolean("confirmed");
-		
-		Appt returnedEvent = formatEvent(rs);
-		GroupEvent ge = new GroupEvent(returnedEvent);
-		
-		ge.setInitiatorID(initiatorID);
-		ge.setConfirmed(confirmed);
-		
-		// get the list of users of the group
-		List<Integer> userIDs = getGroupUserIDs(ge.getID());
-		// set the users
-		ge.setUsers(userIDs);
-		
-		return ge;
+//		
+//		int initiatorID = rs.getInt("initiator");
+//		boolean confirmed = rs.getBoolean("confirmed");
+//		
+//		Appt returnedEvent = formatEvent(rs);
+//		GroupEvent ge = new GroupEvent(returnedEvent);
+//		
+//		ge.setInitiatorID(initiatorID);
+//		ge.setConfirmed(confirmed);
+//		
+//		// get the list of users of the group
+//		List<Integer> userIDs = getGroupUserIDs(ge.getID());
+//		// set the users
+//		ge.setUsers(userIDs);
+//		n
+		return null;
 		
 	}
 	
@@ -1606,6 +1727,17 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		newLocation.setLocationID(id);
 		
 		return newLocation;
+	}
+	
+	private GroupResponse formatGroupResponse(ResultSet rs) throws SQLException {
+		int id = rs.getInt("id");
+		String name = rs.getString("name");
+		boolean isGroup = rs.getBoolean("isGroupFacility");
+		
+		Location newLocation = new Location(name, isGroup);
+		newLocation.setLocationID(id);
+		
+		return null;
 	}
 	
 	
@@ -1623,6 +1755,119 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	public boolean isApptValid(Appt appt) {
 		return false;
 	}
+	
+	// Group Event Information
+	// create the purposed group event
+		// assume that the default user is the initiator of the group
+		// assume that GroupEvent was saved to DB before as not confirmed
+	public void createPurposedGroupEvent(GroupEvent _event, List<TimeSpan> _timeSlots, List<User> _users){
+		int groupID = _event.getEventID();
+		
+		Connection c = null;
+	    Statement stmt = null;
+		
+		try {
+		      Class.forName("org.sqlite.JDBC");
+		      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+		      c.setAutoCommit(false);
+		      System.out.println("Opened database successfully");
+		      
+		      stmt = c.createStatement();
+		      PreparedStatement query;
+		      // save all the proposed time slots
+		      for(int i = 0; i < _timeSlots.size(); ++i){
+		    	  
+		    	  TimeSpan currentTimeSlot = _timeSlots.get(i);
+		    	  
+		    	  // save the groupUserTimeSlot
+			      query = c.prepareStatement("insert into groupUserTimeSlot (userID, eventID, startTime, endTime) " +
+			    		  					 "values (?, ?, ?, ?)");
+			      // save the time slot
+			      query.setInt(1, defaultUser.getID());
+			      query.setInt(2, groupID);
+			      query.setTimestamp(3, currentTimeSlot.StartTime());
+			      query.setTimestamp(4, currentTimeSlot.EndTime());
+			      
+			      query.execute();
+			      
+			      // commit
+			      c.commit();
+			      query.close();
+			      
+			      // connect the proposed time slot with the users
+			     for(int j = 0; j < _users.size(); ++i){
+			    	 query = c.prepareStatement("insert into groupUserTimeSlotsSelected (initiatorID, userID, eventID, startTime, endTime) " +
+		  					 "values (?, ?, ?, ?, ?)");
+  
+					// save the time slot with the user
+					  query.setInt(1, defaultUser.getID());
+					  query.setInt(2, _users.get(i).getID());
+					  query.setInt(3, groupID);
+					  query.setTimestamp(4, currentTimeSlot.StartTime());
+					  query.setTimestamp(5, currentTimeSlot.EndTime());
 
+					  query.execute();
+					  
 
+					  // commit
+				      c.commit();
+				      query.close();
+				    } // end of inner for loop
+				      
+			     } // end of outer for loop
+		      
+		      stmt.close();
+		      c.close();
+			    
+		    } catch ( Exception e1 ) {
+		      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+		      System.exit(0);
+		    }
+		
+	}
+	
+	// Retrieve a list of groups you need to approve
+	public List<GroupResponse> getPurposedGroupEventTimeSlots(){
+
+		Connection c = null;
+	    Statement stmt = null;
+	    
+	    List<GroupResponse> responses = new ArrayList<GroupResponse>();
+		
+		try {
+
+		  Class.forName("org.sqlite.JDBC");
+	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	      c.setAutoCommit(false);
+	      System.out.println("Opened database successfully");
+	      
+	      stmt = c.createStatement();
+	      PreparedStatement query;
+	      
+	      query = c.prepareStatement("select initiatorID, userID, groupID, startTime, endTime " +
+	    		  					 "from groupUserTimeSlotsSelected " +
+	    		  					 "where userID = ? " + 
+	    		  					 "group by groupID; ");
+	      
+	      query.setInt(1, defaultUser.getID());
+	      
+	      ResultSet rs = query.executeQuery();
+
+	      // go through results
+	      while ( rs.next() ) {
+	    	 GroupResponse groupResponse = formatGroupResponse(rs);
+//	    	 responses(groupResponse);
+	      }
+	      
+	      stmt.close();
+	      c.close();
+		    
+	    } catch ( Exception e1 ) {
+	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+	      System.exit(0);
+	    }
+		
+		return null;
+	}
+	
 }
