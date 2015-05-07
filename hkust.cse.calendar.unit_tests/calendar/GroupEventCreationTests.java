@@ -19,11 +19,14 @@ import org.junit.Test;
 public class GroupEventCreationTests {
 	private ApptStorageSQLImpl db;
 
-	private User dummyUser = new User(4, "alecrobins", "1", true);
+	private User dummyUser = new User(5, "sallySue", "123", true);
 	
 	public GroupEventCreationTests(){
 		db = new ApptStorageSQLImpl(dummyUser);
 	}
+	
+	
+	// EVERYTHING PASSED
 	
 	@Test
 	public void testCreatePurposedGroupEvent(){
@@ -84,13 +87,13 @@ public class GroupEventCreationTests {
 		assert(_timeSlots != null);
 		
 		System.out.println("Here we go");
-		
+//		
 //		try {
-////			int groupID = db.createGroupEvent(_usersIDs, testGroupEvent);
-////			testGroupEvent.setID(groupID);
-////			db.createPurposedGroupEvent(testGroupEvent, _timeSlots, _users);
+//			int groupID = db.createGroupEvent(_usersIDs, testGroupEvent);
+//			testGroupEvent.setID(groupID);
+//			db.createPurposedGroupEvent(testGroupEvent, _timeSlots, _users);
 //
-////		} catch (InvalidClassException e) {
+//		} catch (InvalidClassException e) {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
@@ -104,6 +107,37 @@ public class GroupEventCreationTests {
 		System.out.println("Starting retrival . . .");
 		List<GroupResponse> responses = db.getPurposedGroupEventTimeSlots(user2);
 		System.out.println("RETRIEVED");
+		
+	}
+	
+//	@Test
+//	public void testRespondToPurposedGroupEventTimeSlots(){
+//		int groupID = 4;
+//		int intiatorID = 4;
+//		List<TimeSpan> _timeSlots = new ArrayList<TimeSpan>();
+//		
+//		Timestamp r1 = new Timestamp(4281400);
+//		Timestamp r2 = new Timestamp(4283400);
+//		TimeSpan slot1 = new TimeSpan(r1, r2);
+//		
+//		Timestamp r3 = new Timestamp(3181400);
+//		Timestamp r4 = new Timestamp(3183400);
+//		TimeSpan slot2 = new TimeSpan(r3, r4);
+//		
+//		
+//		_timeSlots.add(slot1);
+//		_timeSlots.add(slot2);
+//		
+//		// approve the first two slots
+//		
+//		db.respondToPurposedGroupEventTimeSlots(groupID, intiatorID, _timeSlots);
+//		
+//	}
+	
+	@Test
+	public void testCancelPurposedGroupEventTimeSlots(){
+		
+		db.cancelPurposedGroupEventTimeSlots(4);
 		
 	}
 

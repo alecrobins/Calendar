@@ -1856,18 +1856,33 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      
 	      query = c.prepareStatement("select initiatorID, eventID, startTime, endTime " +
 	    		  					 "from groupUserTimeSlots " +
-	    		  					 "where userID = ? " + 
-	    		  					 "group by eventID; ");
+	    		  					 "where userID = ? ");
 	      
 	      query.setInt(1, u.getID());
 	      
 	      ResultSet rs = query.executeQuery();
-
+	      
+  		  List<TimeSpan> tempTimeSlots = new ArrayList<TimeSpan>();
+  		  int intiatorID = -1;
+  		  int eventID = -1;
 	      // go through results
 	      while ( rs.next() ) {
-	    	 GroupResponse groupResponse = formatGroupResponse(rs);
-	    	 responses.add(groupResponse);
+//	    	 GroupResponse groupResponse = formatGroupResponse(rs);
+	    		// TODO: need to iterate all in teh group
+	  		
+	    	intiatorID = rs.getInt("initiatorID");
+	  		eventID = rs.getInt("eventID");
+	  		Timestamp startTime = rs.getTimestamp("startTime");
+	  		Timestamp endTime = rs.getTimestamp("endTime");
+	  		
+	  		TimeSpan newTimeSlot = new TimeSpan(startTime, endTime);
+	  		
+	  		tempTimeSlots.add(newTimeSlot);
 	      }
+	      
+	  		GroupResponse groupResponse = new GroupResponse(intiatorID, tempTimeSlots, eventID);
+	  		// TODO: need to filter the responses before creating them through a hash
+	  		responses.add(groupResponse);
 	      
 	      stmt.close();
 	      c.close();
@@ -1967,15 +1982,9 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      if(confirmed){
 
 	    	  // get the minimum timespan
-		      query = c.prepareStatement("select startTime, endTime " +
-		    		  					 "from groupUserTimeSlotsSelected " +
-		    		  					 "where eventID = ? AND startTime = ( " +
-		    		  					 "select min(startTime) " +
-		    		  					 "from groupUserTimeSlotsSelected "+
-		    		  					 "where eventID = ?);");
+		      query = c.prepareStatement("select distinct g.startTime, g.endTime from groupUserTimeSlotsSelected g where startTime = ( select min(startTime) from groupUserTimeSlotsSelected where eventID = ?);");
 		      
 		      query.setInt(1, _groupID);
-		      query.setInt(2, _groupID);
 		      
 		      rs = query.executeQuery();
 		      
@@ -1996,13 +2005,17 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    	  
 	    	  // set the time of the event
 	    	  query = c.prepareStatement("update event set startTime = ?, endTime = ? " +
-	  					 "where eventID = ? ");
-	    	  query.setInt(1, _groupID);
+	  					 "where id = ? ");
+	    	  query.setTimestamp(1, startTime);
+	    	  query.setTimestamp(2, endTime);
+	    	  query.setInt(3, _groupID);
 	    	  
 	    	  query.execute();
 			
 	    	  // commit
 	    	  c.commit();
+	    	  
+	    	  deleteGroupProposedEvent(_groupID);
 	    	  
 	      }
 	      
@@ -2018,10 +2031,15 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	}
 	
 	// cancel the group proposal and clean up data
-	public void cancelPurposedGroupEventTimeSlots(int groupID, int intiatorID){
+	public void cancelPurposedGroupEventTimeSlots(int groupID){
 	
 		deleteGroupEvent(groupID);
+		deleteGroupProposedEvent(groupID);
 		
+	}
+	
+	public void deleteGroupProposedEvent(int groupID){
+
 		Connection c = null;
 	    Statement stmt = null;
 
@@ -2060,7 +2078,6 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
 	      System.exit(0);
 	    }
-		
 	}
 	
 	
