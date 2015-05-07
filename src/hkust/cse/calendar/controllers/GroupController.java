@@ -66,13 +66,13 @@ public class GroupController {
 		if(_location != null)
 			location = new Location(_location);
 
-//		GroupEvent event = new GroupEvent(_titleField, _detailArea, location.getLocationID(),
-//				reminder, "", frequency, tList);
-//		
-//		if (event.getID() != -1){
-//			return EventReturnMessage.SUCCESS;
-//		}
-//		
+		GroupEvent event = new GroupEvent(_titleField, _detailArea, location.getLocationID(),
+				reminder, "", frequency, tList);
+		
+		if (event.getID() != -1){
+			return EventReturnMessage.SUCCESS;
+		}
+		
 		// save event to database
 
 		return EventReturnMessage.ERROR;

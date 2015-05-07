@@ -3,6 +3,7 @@ package hkust.cse.calendar.gui;
 import hkust.cse.calendar.apptstorage.ApptStorageControllerImpl;
 import hkust.cse.calendar.apptstorage.ApptStorageSQLImpl;
 import hkust.cse.calendar.apptstorage.LocationStorage;
+import hkust.cse.calendar.unit.GroupEvent;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 
@@ -31,9 +32,10 @@ ComponentListener {
 	private JButton acceptBut;
 	private JButton rejectBut;
 
-	private void commonConstructor(LinkedList<TimeSpan> tList) {
+	private void commonConstructor(GroupEvent event) {
 
 		tCheckList = new LinkedList<JCheckBox>();
+		List<TimeSpan> tList = event.getTList();
 		if (tList.isEmpty()) {tCheckList.clear();}
 		else {
 			for (TimeSpan ts : tList) {
@@ -41,7 +43,7 @@ ComponentListener {
 				a = a + Integer.toString(ts.StartTime().getHours()) + ":" + Integer.toString(ts.StartTime().getMinutes());
 				a = a + " - " + Integer.toString(ts.EndTime().getHours()) + ":" + Integer.toString(ts.EndTime().getMinutes());
 
-				JCheckBox c = new JCheckBox("a");
+				JCheckBox c = new JCheckBox(a);
 				tCheckList.add(c);
 			}
 		}
