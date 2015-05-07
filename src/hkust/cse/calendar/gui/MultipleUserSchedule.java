@@ -96,12 +96,13 @@ public class MultipleUserSchedule implements ActionListener{
 				//System.out.println("appt end time = " +ap.get(i).TimeSpan().EndTime().getTime());
 				int dateCount=0;
 				long rowStart = dates.get(0).getTime();
+				System.out.println("INITIAL DATE START = "+rowStart);
 				long rowEnd = rowStart + 900000;
 				System.out.println("appt start time = "+ap.get(i).TimeSpan().StartTime().getTime());
 				System.out.println("appt end time = "+ap.get(i).TimeSpan().EndTime().getTime());
-				for (int j = 0; j < ((dates.size())*40); j++){   //for each row in rowVal
+				for (int j = 1; j < ((dates.size())*40)+1; j++){   //for each row in rowVal
 					if (!((ap.get(i).TimeSpan().EndTime().getTime() <= rowStart)||(ap.get(i).TimeSpan().StartTime().getTime()>=rowEnd))){
-						rowVal[j] = false;
+						rowVal[j-1] = false;
 					}
 //					if (rowVal[j] == true){
 //						if (isHourOverlap(ap.get(i), new TimeSpan(new Timestamp(rowStart), new Timestamp(rowEnd)))){
@@ -109,16 +110,15 @@ public class MultipleUserSchedule implements ActionListener{
 //						}
 //					}
 					//System.out.println("rowEnd "+j+" = "+rowEnd);
-					System.out.println();
-					if (j == 0){
+					if (j == 1){
 						rowStart += 900000;
 						rowEnd += 900000;
 					}
-					if (j!=0){
-					if (j%39 == 0){
+					else {
+					if (j%40 == 0){
 						dateCount++;
 						System.out.println("THIS IS THE DATECOUNT = "+ dateCount);
-						rowStart = dates.get(0).getTime() + 86400000*dateCount+900000;
+						rowStart = dates.get(0).getTime() + 86400000*dateCount;
 						System.out.println("THIS IS THE NEW ROWSTART = "+ rowStart);
 						rowEnd = rowStart + 900000;
 					}
