@@ -22,6 +22,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Vector;
 
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -72,7 +73,7 @@ public class CalGrid extends JFrame implements ActionListener {
 	private JComboBox month;
 
 	private final Object[][] data = new Object[6][7];
-	//private final Vector[][] apptMarker = new Vector[6][7];
+	private final Vector[][] apptMarker = new Vector[6][7];
 	private final String[] names = { "Sunday", "Monday", "Tuesday",
 			"Wednesday", "Thursday", "Friday", "Saturday" };
 	private final String[] months = { "January", "Feburary", "March", "April",
@@ -211,14 +212,15 @@ public class CalGrid extends JFrame implements ActionListener {
 								&& today.get(today.MONTH) + 1 == currentM
 								&& today.get(today.DAY_OF_MONTH) == Integer
 										.parseInt(tem)) {
-							return new CalCellRenderer(today);
+							
+							return new CalCellRenderer(today, apptMarker[row][col]);
 						}
 					} catch (Throwable e) {
 						System.exit(1);
 					}
 
 				}
-				return new CalCellRenderer(null);
+				return new CalCellRenderer(null, apptMarker[row][col]);
 			}
 		};
 
@@ -598,9 +600,27 @@ public class CalGrid extends JFrame implements ActionListener {
 			Appt[] monthAppts = null;
 			GetMonthAppts();
 
-//			for (int i = 0; i < 6; i++)
-//				for (int j = 0; j < 7; j++)
-//					apptMarker[i][j] = new Vector(10, 1);
+			for (int i = 0; i < 6; i++){
+				for (int j = 0; j < 7; j++){
+					apptMarker[i][j] = new Vector(100);
+					if(((String)data[i][j]).equals("")){
+						apptMarker[i][j].clear();
+						continue;
+					}
+					Appt[] temp = GetApptOnN(Integer.parseInt((String)data[i][j]));
+					if(temp == null){
+						apptMarker[i][j].clear();
+						continue;
+					}
+					for(int k = 0; k < temp.length; k++){
+						if(apptMarker[i][j].isEmpty()){
+							if(temp[k].getIsPublic() == true)
+								apptMarker[i][j].add(2);
+							else apptMarker[i][j].add(1);
+						}
+					}
+				}
+			}
 
 			TableModel t = prepareTableModel();
 			this.tableView.setModel(t);
@@ -611,15 +631,15 @@ public class CalGrid extends JFrame implements ActionListener {
 	
 	
 
-//	public void clear() {
-//		for (int i = 0; i < 6; i++)
-//			for (int j = 0; j < 7; j++)
-//				apptMarker[i][j] = new Vector(10, 1);
-//		TableModel t = prepareTableModel();
-//		tableView.setModel(t);
-//		tableView.repaint();
-//		applist.clear();
-//	}
+	public void clear() {
+		for (int i = 0; i < 6; i++)
+			for (int j = 0; j < 7; j++)
+				apptMarker[i][j] = new Vector(10, 1);
+		TableModel t = prepareTableModel();
+		tableView.setModel(t);
+		tableView.repaint();
+		applist.clear();
+	}
 
 	private Appt[] GetMonthAppts() {
 		Timestamp start = new Timestamp(0);
@@ -698,6 +718,29 @@ public class CalGrid extends JFrame implements ActionListener {
 		return true;
 	}
 
+	public Appt[] GetApptOnN(int n) {
+		Integer temp;
+		temp = new Integer(currentD);
+		Timestamp start = new Timestamp(0);
+		start.setYear(currentY);
+		start.setMonth(currentM-1);
+		start.setDate(n);
+		start.setHours(0);
+		start.setMinutes(0);
+		start.setSeconds(0);
+		
+		Timestamp end = new Timestamp(0);
+		end.setYear(currentY);
+		end.setMonth(currentM-1);
+		end.setDate(n);
+		end.setHours(23);
+		end.setMinutes(59);
+		end.setSeconds(59);
+		
+		TimeSpan period = new TimeSpan(start, end);
+		return controller.RetrieveAppts(mCurrUser, period);
+	}
+	
 	public Appt[] GetTodayAppt() {
 		Integer temp;
 		temp = new Integer(currentD);

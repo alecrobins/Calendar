@@ -113,7 +113,7 @@ public class EventController {
 		saveEvent(newEvent);
 		
 		
-		
+		cal.UpdateCal();
 		cal.updateAppList();
 
 		System.out.println(newEvent.toString());
