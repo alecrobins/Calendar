@@ -115,7 +115,7 @@ ComponentListener {
 		} 
 		
 		else if (e.getSource() == rejectBut) {
-			
+			db.cancelPurposedGroupEventTimeSlots(groupID);
 		}
 	}
 	
