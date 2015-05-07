@@ -103,6 +103,7 @@ public class EventController {
 		// delay the saving of the id to the creation
 		Appt newEvent = new Appt(eventTime, _titleField, _titleField, location.getLocationID(), reminder, _detailArea, frequency);
 		newEvent.setIsPublic(isPub);
+		
 		//TODO: need to check if an event is valid 
 		// Check for overlap
 		if(eventOverlap(newEvent, cal.controller.mApptStorage.getApptsMap()))
@@ -137,9 +138,12 @@ public class EventController {
 			// save to hash map
 			cal.controller.mApptStorage.SaveAppt(e);
 			
-			// Add notification in to notification array
-			cal.controller.addNotification(e.getNotification());
-			System.out.println("Notification added successfully");
+			if(e.getEventReminder() != null){
+				// Add notification in to notification array
+				cal.controller.addNotification(e.getNotification());
+				System.out.println("Notification added successfully");
+			}
+			
 					
 			break;
 		case WEEKLY:
@@ -149,10 +153,11 @@ public class EventController {
 			// save to hash map
 			cal.controller.mApptStorage.SaveAppt(e);
 			
-			// Add notification in to notification array
-			cal.controller.addNotification(e.getNotification());
-			System.out.println("Notification added successfully");
-			
+			if(e.getEventReminder() != null){
+				// Add notification in to notification array
+				cal.controller.addNotification(e.getNotification());
+				System.out.println("Notification added successfully");
+			}			
 			pastEvent = e;
 			
 			for (int i = 0; i < 52; i++)   { //1 years in weeks
@@ -180,9 +185,11 @@ public class EventController {
 			
 			cal.controller.mApptStorage.SaveAppt(e);
 			
-			// Add notification in to notification array
-			cal.controller.addNotification(e.getNotification());
-			System.out.println("Notification added successfully");
+			if(e.getEventReminder() != null){
+				// Add notification in to notification array
+				cal.controller.addNotification(e.getNotification());
+				System.out.println("Notification added successfully");
+			}
 			
 			pastEvent = e;
 			
@@ -211,11 +218,13 @@ public class EventController {
 			e.setEventID(eventID);
 			
 			cal.controller.mApptStorage.SaveAppt(e);
-			
-			// Add notification in to notification array
-			cal.controller.addNotification(e.getNotification());
-			System.out.println("Notification added successfully");
 
+			if(e.getEventReminder() != null){
+				// Add notification in to notification array
+				cal.controller.addNotification(e.getNotification());
+				System.out.println("Notification added successfully");
+			}
+			
 			pastEvent = e;
 			
 			for (int i = 0; i < 365; i++){
