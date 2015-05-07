@@ -5,16 +5,27 @@ import java.util.List;
 
 public class GroupResponse {
 	
-	private List<User> userList;
-	private List<Timestamp> dates;
-	private List<TimeSpan> responses;
+	private User intiator;
+	private List<TimeSpan> proposedTimeslots;
+	private List<TimeSpan> selectedTimeslots;
 	boolean isRejected;
+	private int groupID; // points to the 
 	
-	public GroupResponse(List<User> _userList, List<Timestamp> _dates, List<TimeSpan> _responses, boolean _isRejected){
-		setUserList(_userList);
-		setDates(_dates);
-		setResponses(_responses);
+	public GroupResponse(){
+		intiator = null;
+		proposedTimeslots = null;
+		selectedTimeslots = null;
+		isRejected = false;
+		groupID = -1;
+	}
+	
+	public GroupResponse(User _intiator, List<TimeSpan> _proposedTimeslots, 
+						 List<TimeSpan> _selectedTimeslots, boolean _isRejected, int _groupID){
+		intiator = _intiator;
+		proposedTimeslots = _proposedTimeslots;
+		selectedTimeslots = _selectedTimeslots;
 		isRejected = _isRejected;
+		groupID = _groupID;
 	}
 
 	public boolean getIsRegjected(){
@@ -24,28 +35,37 @@ public class GroupResponse {
 	public void setIsRejected(boolean _isRejected){
 		isRejected = _isRejected;
 	}
+
+	public User getIntiator() {
+		return intiator;
+	}
+
+	public void setIntiator(User intiator) {
+		this.intiator = intiator;
+	}
+
+	public List<TimeSpan> getProposedTimeslots() {
+		return proposedTimeslots;
+	}
+
+	public void setProposedTimeslots(List<TimeSpan> proposedTimeslots) {
+		this.proposedTimeslots = proposedTimeslots;
+	}
+
+	public List<TimeSpan> getSelectedTimeslots() {
+		return selectedTimeslots;
+	}
+
+	public void setSelectedTimeslots(List<TimeSpan> selectedTimeslots) {
+		this.selectedTimeslots = selectedTimeslots;
+	}
+
+	public int getGroupID() {
+		return groupID;
+	}
+
+	public void setGroupID(int groupID) {
+		this.groupID = groupID;
+	}
 	
-	public List<User> getUserList() {
-		return userList;
-	}
-
-	public void setUserList(List<User> userList) {
-		this.userList = userList;
-	}
-
-	public List<Timestamp> getDates() {
-		return dates;
-	}
-
-	public void setDates(List<Timestamp> dates) {
-		this.dates = dates;
-	}
-
-	public List<TimeSpan> getResponses() {
-		return responses;
-	}
-
-	public void setResponses(List<TimeSpan> responses) {
-		this.responses = responses;
-	}
 }
