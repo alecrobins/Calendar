@@ -408,26 +408,20 @@ public class EventController {
 
 	private Date formatTime(String year, String month, String day, String hour, String minute){
 
-		Date d = new Date(0);
-		
-		int i = Integer.parseInt(year);
-		d.setYear(i - 1900);
-		
-		i = Integer.parseInt(month);
-		d.setMonth(i);
-		
-		i = Integer.parseInt(day);
-		d.setDate(i);
-		
-		i = Integer.parseInt(hour);
-		d.setHours(i);
-		
-		i = Integer.parseInt(minute);
-		d.setMinutes(i);
-		
+		String time = year + "-" + month + "-" + day + " " + hour + ":" + minute + ":00.0";
 
+		Timestamp timestamp = null;
 
-		return d;
+		try {
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+			return dateFormat.parse(time);
+
+		}
+		catch(Exception e){
+			System.out.println(e.getMessage());
+		} 
+
+		return timestamp;
 
 	}
 }
