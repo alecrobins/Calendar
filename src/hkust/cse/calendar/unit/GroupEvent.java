@@ -4,7 +4,7 @@ import java.util.List;
 
 import hkust.cse.calendar.unit.Appt.Frequency;
 
-public class GroupEvent extends Event {
+public class GroupEvent extends Appt {
 	
 	// which user initiaed the group event
 	private int initiatorID;
@@ -23,15 +23,15 @@ public class GroupEvent extends Event {
 	}
 	
 	// Partial Constructor (the minimally required information)
-	public GroupEvent(TimeSpan _eventTime, Frequency _eventFrequency)
-	{
-		super(_eventTime, _eventFrequency);
-		setConfirmed(false);
-		setApproved(false);
-	}
+//	public GroupEvent(TimeSpan _eventTime, Frequency _eventFrequency)
+//	{
+//		super(_eventTime, _eventFrequency);
+//		setConfirmed(false);
+//		setApproved(false);
+//	}
 	
 	public GroupEvent(Appt e){
-		super(e.getEventTime(), e.getTitle(), e.getEventDescription(), e.getEventLocationID(), e.getEventReminder(), 
+		super(e.getEventTime(), e.getTitle(), e.getEventDescription(), e.getEventLocation(), e.getEventReminder(), 
 				"", e.getEventFrequency());
 		this.id = e.id;
 		
