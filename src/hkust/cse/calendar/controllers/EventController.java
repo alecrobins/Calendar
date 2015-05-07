@@ -95,9 +95,12 @@ public class EventController {
 
 		Location location = null;
 		// create the location if not null
-		if(_location != null)
+		if(_location != null){
 			location = db.getLocationByName(_location);
+		}else{
+			return EventReturnMessage.ERROR_UNFILLED_REQUIRED_FIELDS;
 
+		}
 
 		// MAKE THE EVENT
 		// delay the saving of the id to the creation
