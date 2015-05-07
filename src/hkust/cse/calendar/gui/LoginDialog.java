@@ -5,6 +5,7 @@ import hkust.cse.calendar.apptstorage.ApptStorageNullImpl;
 import hkust.cse.calendar.apptstorage.ApptStorageSQLImpl;
 import hkust.cse.calendar.controllers.GroupController;
 import hkust.cse.calendar.unit.Appt;
+import hkust.cse.calendar.unit.GroupResponse;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 
@@ -26,6 +27,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.xml.ws.Response;
 
 
 public class LoginDialog extends JFrame implements ActionListener
@@ -35,6 +37,8 @@ public class LoginDialog extends JFrame implements ActionListener
 	private JButton button;
 	private JButton closeButton;
 	private JButton signupButton;
+	
+	private ApptStorageSQLImpl db;
 
 	public LoginDialog()		// Create a dialog to log in
 	{
@@ -123,7 +127,19 @@ public class LoginDialog extends JFrame implements ActionListener
 				CalGrid grid = new CalGrid(new ApptStorageControllerImpl(new ApptStorageSQLImpl(user)));
 				grid.setCurrUser(user);
 				setVisible( false );
-						
+				
+				db = new ApptStorageSQLImpl(user);
+				
+				 List<GroupResponse> responses = db.getPurposedGroupEventTimeSlots(user);
+				
+				 for(int j = 0; j < responses.size(); ++j){
+					 List<TimeSpan> slots = responses.get(j).getProposedTimeslots();
+					 int groupID = responses.get(j).getGroupID();
+					 int intiatorID = responses.get(j).getIntiatorID();
+					 InvitationDialog dialog = new InvitationDialog(slots, groupID, intiatorID, user); 
+
+				 }
+				 
 			}
 			else{
 			System.out.println("Please register first");

@@ -13,6 +13,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,15 +33,35 @@ ComponentListener {
 	private List<JCheckBox> tCheckList;
 	private JButton acceptBut;
 	private JButton rejectBut;
+	
+	private ApptStorageSQLImpl db;
+	private int groupID;
+	private int intiatorID;
+	
+	private HashMap<String, TimeSpan> timeSlotMap; 
+	
+	public InvitationDialog(List<TimeSpan> _slots, int _groupID, int _intiatorID, User currentUser){
+		db = new ApptStorageSQLImpl(currentUser);
+		groupID = _groupID;
+		timeSlotMap = new HashMap<String, TimeSpan>();
+		intiatorID = _intiatorID;
+		commonConstructor(_slots);
 
-	private void commonConstructor(GroupEvent event) {
+	}
+
+	private void commonConstructor(List<TimeSpan> _timeSlots) {
 
 		tCheckList = new LinkedList<JCheckBox>();
+<<<<<<< HEAD
 		List<TimeSpan> tList = event.getTList();
 		
 		if (tList.isEmpty()) {
 			tCheckList.clear();
 		}
+=======
+		List<TimeSpan> tList = _timeSlots;
+		if (tList.isEmpty()) {tCheckList.clear();}
+>>>>>>> 4b2005fc66cdb4b31fb07a45f8a7dc2b44dae149
 		else {
 			for (TimeSpan ts : tList) {
 				String a = Integer.toString(ts.StartTime().getMonth()) + "/" + Integer.toString(ts.StartTime().getDate()) + "  ";
@@ -48,6 +70,8 @@ ComponentListener {
 
 				JCheckBox c = new JCheckBox(a);
 				tCheckList.add(c);
+				
+				timeSlotMap.put(a, ts);
 			}
 		}
 		
@@ -88,12 +112,29 @@ ComponentListener {
 	}
 
 	public void actionPerformed(ActionEvent e){
+<<<<<<< HEAD
 		if (e.getSource() == "acceptBut") {
 
 		} 
 
 		else if (e.getSource() == "rejectBut") {
 
+=======
+//		String test = e.getActionCommand();
+		if (e.getSource() == acceptBut) {
+			List<TimeSpan> selectedTimes = new ArrayList<TimeSpan>();
+			for(JCheckBox j : tCheckList){
+				if(j.isSelected()){
+					TimeSpan ts = timeSlotMap.get(j.getText());
+					selectedTimes.add(ts);
+				}
+			}
+			db.respondToPurposedGroupEventTimeSlots(groupID, intiatorID, selectedTimes);
+		} 
+		
+		else if (e.getSource() == rejectBut) {
+			db.cancelPurposedGroupEventTimeSlots(groupID);
+>>>>>>> 4b2005fc66cdb4b31fb07a45f8a7dc2b44dae149
 		}
 	}
 

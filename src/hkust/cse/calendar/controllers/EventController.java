@@ -95,9 +95,11 @@ public class EventController {
 
 		Location location = null;
 		// create the location if not null
-		if(_location != null)
+		if(_location != null){
 			location = db.getLocationByName(_location);
-
+		}else{
+			return EventReturnMessage.ERROR_UNFILLED_REQUIRED_FIELDS;
+		}
 
 		// MAKE THE EVENT
 		// delay the saving of the id to the creation
@@ -391,7 +393,7 @@ public class EventController {
 	
 	// check if t1 is in between t1 or tw
 	private boolean inBetween(Timestamp t1, TimeSpan t2){
-		return t1.getTime() >= t2.StartTime().getTime() && t1.getTime() <= t2.EndTime().getTime();
+		return t1.getTime() > t2.StartTime().getTime() && t1.getTime() < t2.EndTime().getTime();
 	}
 	
 	// check if the start time AND end of t1 start at before AND after t2

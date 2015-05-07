@@ -626,6 +626,7 @@ ComponentListener {
 				_frequency,  _location,  parent, userList,
 				timeOptions);
 
+		List<TimeSpan> test = timeOptions;
 		//
 		//SUCCESS, ERROR_TIME_FORMAT, ERROR_PAST_DATE, ERROR_UNFILLED_REQUIRED_FIELDS,
 		//ERROR_REMINDER, ERROR_EVENT_OVERLAP, ERROR_SECOND_DATE_PAST, ERROR
