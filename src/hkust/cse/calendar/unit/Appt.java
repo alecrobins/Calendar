@@ -53,7 +53,8 @@ public class Appt implements Serializable {
 	// the id of the event
 	protected int id;
 	
-	public Appt() {								// A default constructor used to set all the attribute to default values
+	public Appt() {			
+		super(); // A default constructor used to set all the attribute to default values
 		mApptID = 0; 
 		mTimeSpan = null;
 		mTitle = "Untitled";
@@ -63,6 +64,10 @@ public class Appt implements Serializable {
 		reject = new LinkedList<String>();
 		waiting = new LinkedList<String>();
 		joinApptID = -1;
+		eventLocationID = 0;
+		eventReminder = null;
+		id = 0;
+//		additionalEventDescription = null;
 	}
 	// Partial Constructor (the minimally required information)
 	public Appt(TimeSpan _eventTime, Frequency _eventFrequency)
@@ -118,7 +123,7 @@ public class Appt implements Serializable {
 
 	// Getter of the appointment id
 	public int getID() {
-		return mApptID;
+		return id;
 	}
 	
 	// Getter of the join appointment id
@@ -252,8 +257,9 @@ public class Appt implements Serializable {
 	}
 
 	// Setter if the appointment id
-	public void setID(int id) {
-		mApptID = id;
+	public void setID(int _id) {
+		mApptID = _id;
+		id = _id;
 	}
 	
 	// check whether this is a joint appointment

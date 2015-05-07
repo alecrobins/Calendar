@@ -454,6 +454,7 @@ public class AppList extends JPanel implements ActionListener {
 		parent.controller.mApptStorage.RemoveAppt(apptTitle);
 		// TODO: need to check if the appt is a group event
 		db.RemoveAppt(apptTitle);
+		
 		parent.updateAppList();
 		
 	}

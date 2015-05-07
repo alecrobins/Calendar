@@ -109,7 +109,9 @@ public class EventController {
 
 		// save the event in apptStorage
 		saveEvent(newEvent);
-
+		
+		
+		
 		cal.updateAppList();
 
 		System.out.println(newEvent.toString());
@@ -152,7 +154,7 @@ public class EventController {
 				// generate the new event
 				Appt eNew = formatEvent(start, fin, e);
 				// save to db
-				eNew.setEventID(e.getEventID());
+				eNew.setEventID(eventID);
 				
 				cal.controller.mApptStorage.SaveAppt(eNew);
 				// save to db
@@ -169,16 +171,6 @@ public class EventController {
 			pastEvent = e;
 			
 			for (int i = 0; i < 13; i++){   //1 years in groups of 4 weeks
-//				Appt eNew2 = new Appt(e.getEventTime(), e.getEventFrequency()) ;
-//				cal.controller.mApptStorage.SaveAppt(eNew2);
-//				TimeSpan curr = e.getEventTime();
-//				curr.StartTime().setMonth(curr.StartTime().getMonth()+1);
-//				curr.EndTime().setMonth(curr.EndTime().getMonth()+1);
-//				Timestamp star = curr.StartTime();
-//				Timestamp fi = curr.EndTime();
-//				eNew2.setEventTime(new TimeSpan(star, fi));
-//				// save to db
-//				db.SaveAppt(eNew2);
 				
 				curr = pastEvent.getEventTime();
 				
@@ -191,7 +183,7 @@ public class EventController {
 				// generate the new event
 				Appt eNew = formatEvent(start, end, e);
 				// save to db
-				eNew.setEventID(e.getEventID());
+				eNew.setEventID(eventID);
 				cal.controller.mApptStorage.SaveAppt(eNew);
 				
 				// set past event
@@ -206,14 +198,7 @@ public class EventController {
 			pastEvent = e;
 			
 			for (int i = 0; i < 365; i++){
-//				Event eNew3 = new Event(eNew2.getEventTime(), eNew2.getEventFrequency()) ;
-//				cal.controller.mApptStorage.SaveAppt(eNew3);
-//				TimeSpan curr = eNew2.getEventTime();
-//				Timestamp start1 = new Timestamp(curr.StartTime().getTime()+86400000);
-//				Timestamp fin = new Timestamp(curr.EndTime().getTime()+86400000);
-//				eNew2.setEventTime(new TimeSpan(start1, fin));
-//				// save to db
-//				db.SaveAppt(eNew3);
+
 				curr = pastEvent.getEventTime();
 				Timestamp start = new Timestamp(curr.StartTime().getTime()+86400000);
 				Timestamp end = new Timestamp(curr.EndTime().getTime()+86400000);
@@ -222,7 +207,7 @@ public class EventController {
 				// generate the new event
 				Appt eNew = formatEvent(start, end, e);
 				// save to db
-				eNew.setEventID(e.getEventID());
+				eNew.setEventID(eventID);
 				cal.controller.mApptStorage.SaveAppt(eNew);
 				// set past event
 				pastEvent = eNew;
