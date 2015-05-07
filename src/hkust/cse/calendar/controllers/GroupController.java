@@ -12,8 +12,10 @@ import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 
+import java.io.InvalidClassException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -26,9 +28,11 @@ import javax.swing.JLabel;
 public class GroupController {
 
 	private CalGrid cal;
+	private ApptStorageSQLImpl db; 
 
 	public GroupController(CalGrid _cal) {
 		cal = _cal;
+		db = new ApptStorageSQLImpl(cal.getCurrUser());
 	}
 
 	//	public HashMap<User, List<Appt>> getUserMap(){
@@ -45,8 +49,6 @@ public class GroupController {
 		// check if required fields were met
 		if( _frequency == null)
 			return EventReturnMessage.ERROR_UNFILLED_REQUIRED_FIELDS;
-
-
 
 		TimeSpan reminder = null;
 		// Create the reminder if reminder isn't null
@@ -68,6 +70,23 @@ public class GroupController {
 
 		GroupEvent event = new GroupEvent(_titleField, _detailArea, location.getLocationID(),
 				reminder, "", frequency, tList);
+		
+		List<Integer> userIDs = new ArrayList<Integer>();
+		for(int j = 0; j < userList.size(); ++j){
+			userIDs.add(userList.get(j).getID());
+		}
+		
+		int groupID;
+		
+		try {
+			groupID = db.createGroupEvent(userIDs, event);
+			event.setID(groupID);
+			db.createPurposedGroupEvent(event, tList, userList);
+		
+		} catch (InvalidClassException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		if (event.getID() != -1){
 			return EventReturnMessage.SUCCESS;

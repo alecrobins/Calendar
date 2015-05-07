@@ -99,7 +99,6 @@ public class EventController {
 			location = db.getLocationByName(_location);
 		}else{
 			return EventReturnMessage.ERROR_UNFILLED_REQUIRED_FIELDS;
-
 		}
 
 		// MAKE THE EVENT

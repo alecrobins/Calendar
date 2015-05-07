@@ -1692,7 +1692,11 @@ public class ApptStorageSQLImpl extends ApptStorage {
         boolean isGroup = rs.getBoolean("isGroup");
         boolean isPublic = rs.getBoolean("isPublic");
         
-        TimeSpan eventTime = new TimeSpan(startTime, endTime);
+        TimeSpan eventTime = null;
+        
+        if(startTime != null && endTime != null){
+        	eventTime = new TimeSpan(startTime, endTime);
+        }
         
         // set the reminder
         TimeSpan reminder = null;
@@ -1709,22 +1713,22 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	}
 	
 	private GroupEvent formatGroupEvent(ResultSet rs) throws SQLException {
-//		
-//		int initiatorID = rs.getInt("initiator");
-//		boolean confirmed = rs.getBoolean("confirmed");
-//		
-//		Appt returnedEvent = formatEvent(rs);
-//		GroupEvent ge = new GroupEvent(returnedEvent);
-//		
-//		ge.setInitiatorID(initiatorID);
-//		ge.setConfirmed(confirmed);
-//		
-//		// get the list of users of the group
-//		List<Integer> userIDs = getGroupUserIDs(ge.getID());
-//		// set the users
-//		ge.setUsers(userIDs);
-//		n
-		return null;
+		
+		int initiatorID = rs.getInt("initiator");
+		boolean confirmed = rs.getBoolean("confirmed");
+		
+		Appt returnedEvent = formatEvent(rs);
+		GroupEvent ge = new GroupEvent(returnedEvent);
+		
+		ge.setInitiatorID(initiatorID);
+		ge.setConfirmed(confirmed);
+		
+		// get the list of users of the group
+		List<Integer> userIDs = getGroupUserIDs(ge.getID());
+		// set the users
+		ge.setUsers(userIDs);
+		
+		return ge;
 		
 	}
 	
