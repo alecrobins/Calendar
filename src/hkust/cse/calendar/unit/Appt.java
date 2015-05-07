@@ -81,7 +81,23 @@ public class Appt implements Serializable {
 //		additionalEventDescription = null;
 		eventFrequency = _eventFrequency;
 	}
-
+	
+	// Complete Constructor -- without event time
+	public Appt(String _title, String _eventDescription, int _eventLocationID,
+			TimeSpan _eventReminder, String _additionalEventDescription, Frequency _eventFrequency)
+	{
+		super();
+		mTitle = _title;
+//				eventLocation = _eventLocation;
+		eventLocationID = _eventLocationID;
+		eventReminder = _eventReminder;
+		mInfo = _additionalEventDescription;
+		eventFrequency = _eventFrequency;
+		
+		// update the apt values
+		mTitle = _title;
+		mInfo = _eventDescription;
+	}
 	
 	// Complete Constructor
 	public Appt(TimeSpan _eventTime, String _title, String _eventDescription, int _eventLocationID,

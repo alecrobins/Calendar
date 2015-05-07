@@ -41,6 +41,17 @@ public class GroupEvent extends Appt {
 		
 	}
 	
+	// Complete Constructor - without eventTime
+	public GroupEvent(String _title, String _eventDescription, int _eventLocationID,
+			TimeSpan _eventReminder, String _additionalEventDescription, Frequency _eventFrequency)
+	{
+		super(_title, _eventDescription, _eventLocationID, _eventReminder, _additionalEventDescription, _eventFrequency);
+		setConfirmed(false);
+		setApproved(false);
+		this.setIsGroup(true);
+		this.setIsPublic(true);
+	}
+	
 	// Complete Constructor
 	public GroupEvent(TimeSpan _eventTime, String _title, String _eventDescription, int _eventLocationID,
 			TimeSpan _eventReminder, String _additionalEventDescription, Frequency _eventFrequency)
