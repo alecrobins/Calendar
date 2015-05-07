@@ -19,6 +19,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -34,6 +36,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -105,6 +108,10 @@ public class AppScheduler extends JDialog implements ActionListener,
 
 	private DefaultListModel model;
 	private JTextField titleField;
+	
+	// check box for public/private
+	private JCheckBox privateCheck;
+	private JCheckBox publicCheck;
 
 	private JButton saveBut;
 	private JButton CancelBut;
@@ -336,6 +343,25 @@ public class AppScheduler extends JDialog implements ActionListener,
 //		inviteBut = new JButton("Invite");
 //		inviteBut.addActionListener(this);
 //		panel2.add(inviteBut);
+		
+		privateCheck = new JCheckBox("private");
+		privateCheck.addItemListener(new ItemListener() {
+	         public void itemStateChanged(ItemEvent e) {         
+	             if (privateCheck.isSelected())  publicCheck.setSelected(false);
+	             else publicCheck.setSelected(true);
+	          }           
+	       });
+		panel2.add(privateCheck);
+		
+		
+		publicCheck = new JCheckBox("public");
+		publicCheck.addItemListener(new ItemListener() {
+	         public void itemStateChanged(ItemEvent e) {         
+	             if (publicCheck.isSelected())  privateCheck.setSelected(false);
+	             else privateCheck.setSelected(true);
+	          }           
+	       });
+		panel2.add(publicCheck);
 		
 		saveBut = new JButton("Save");
 		saveBut.addActionListener(this);
@@ -663,7 +689,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 		// Location & Frequency
 		String _location = locationD.getSelectedItem() == null ? null : locationD.getSelectedItem().toString();
 		String _frequency = frequencyD.getSelectedItem() == null ? null : frequencyD.getSelectedItem().toString();
-		
+		boolean isPub = publicCheck.isSelected();
 		System.out.println("Creating event . . . ");
 		
 		// CREATE THE EVENT
@@ -680,7 +706,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 				_sTimeH, _sTimeM, _eTimeH, _eTimeM,
 				_detailArea, _titleField,
 				_timeReminderH, _timeReminderM, _yearReminder, _monthReminder, _dayReminder,
-				_frequency, _location, parent);
+				_frequency, _location, isPub, parent);
 		}
 		//
 		//SUCCESS, ERROR_TIME_FORMAT, ERROR_PAST_DATE, ERROR_UNFILLED_REQUIRED_FIELDS,

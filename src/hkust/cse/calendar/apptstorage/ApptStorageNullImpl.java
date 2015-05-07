@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Event;
@@ -200,7 +201,7 @@ public class ApptStorageNullImpl extends ApptStorage {
 		long start = d.StartTime().getTime();
 		long end = d.EndTime().getTime();
 		
-		for (HashMap.Entry<Integer, Appt> entry : this.mAppts.entrySet())
+		for (Map.Entry<Integer, Appt> entry : this.mAppts.entrySet())
 		{
 			Appt currentAppt = entry.getValue();
 			long startTime = currentAppt.getEventTime().StartTime().getTime();
