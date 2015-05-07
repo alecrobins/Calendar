@@ -169,10 +169,10 @@ public class ApptSQLTests {
 		int eventLocationID = 1; 
 		Frequency f = Frequency.WEEKLY;
 		
-		Event testEvent = new Event(eventTime, title, description, eventLocationID,
+	   Appt testEvent = new Appt(eventTime, title, description, eventLocationID,
 				eventReminder, addDescription, f);
 		
-		testEvent.setID(13);
+		testEvent.setID(181);
 		
 //		db.RemoveAppt(testEvent);
 		

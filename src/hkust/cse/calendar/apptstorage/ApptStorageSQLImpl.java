@@ -378,10 +378,11 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      
 	      // delete from userEvent
 	      query = c.prepareStatement("delete from userEvent " +
-					 "where id = ?");
+					 "where eventID = ? AND userID = ?");
 
 	      // assign variables
 	      query.setInt(1, _event.getID());
+	      query.setInt(2, defaultUser.getID());
 		
 	      done = query.execute();
 	      

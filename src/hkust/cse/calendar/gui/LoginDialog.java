@@ -121,6 +121,7 @@ public class LoginDialog extends JFrame implements ActionListener
 				System.out.println("oley");
 				
 				CalGrid grid = new CalGrid(new ApptStorageControllerImpl(new ApptStorageSQLImpl(user)));
+				grid.setCurrUser(user);
 				setVisible( false );
 						
 			}

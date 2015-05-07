@@ -726,6 +726,10 @@ public class CalGrid extends JFrame implements ActionListener {
 		return mCurrUser;
 	}
 	
+	public void setCurrUser(User u){
+		mCurrUser = u;
+	}
+	
 	// check for any invite or update from join appointment
 	public void checkUpdateJoinAppt(){
 		// Fix Me!

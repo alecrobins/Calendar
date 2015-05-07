@@ -213,64 +213,149 @@ public class ApptStorageNullImpl extends ApptStorage {
 	}
 
 	@Override
-	public void RemoveAppt(Appt appt) {
-		//mAppts.put(appt.getID(), null);
-
-		int apptId = appt.getID();
-		// try to remove the appt from the db
-		try{
-			deleteNotification(appt.getNotification());
-			if (appt.getEventFrequency() != Appt.Frequency.DAILY) deleteNotification(appt.getNextNotification());
-							
-			switch (appt.getEventFrequency()){
-			case ONETIME:
-				mAppts.remove(apptId);
-				break;
-			case WEEKLY:
-				Event eNew = (Event) appt;
-				for (int i = 0; i < 52; i++)   { //1 years in weeks
-					Event eNew1 = new Event(eNew.getEventTime(), eNew.getEventFrequency()) ;
-					eNew1.generateID();
-					apptId = eNew1.getID();
-					mAppts.remove(apptId);
-					TimeSpan curr = eNew.getEventTime();
-					Timestamp start = new Timestamp(curr.StartTime().getTime()+604800000);
-					Timestamp fin = new Timestamp(curr.EndTime().getTime()+604800000);
-					eNew.setEventTime(new TimeSpan(start, fin));
-				}
-				break;
-			case MONTHLY:
-				Event eNew1 = (Event) appt;
-				for (int i = 0; i < 13; i++){   //1 years in groups of 4 weeks
-					Event eNew2 = new Event(eNew1.getEventTime(), eNew1.getEventFrequency()) ;
-					eNew2.generateID();
-					apptId = eNew2.getID();
-					mAppts.remove(apptId);
-					TimeSpan curr = eNew1.getEventTime();
-					curr.StartTime().setMonth(curr.StartTime().getMonth()+1);
-					curr.EndTime().setMonth(curr.EndTime().getMonth()+1);
-					Timestamp star = curr.StartTime();
-					Timestamp fi = curr.EndTime();
-					eNew1.setEventTime(new TimeSpan(star, fi));
-				}
-				break;
-			case DAILY:
-				Event eNew2 = (Event) appt;
-				for (int i = 0; i < 365; i++){
-					Event eNew3 = new Event(eNew2.getEventTime(), eNew2.getEventFrequency()) ;
-					eNew3.generateID();
-					apptId = eNew3.getID();
-					mAppts.remove(apptId);
-					TimeSpan curr = eNew2.getEventTime();
-					Timestamp start1 = new Timestamp(curr.StartTime().getTime()+86400000);
-					Timestamp fin = new Timestamp(curr.EndTime().getTime()+86400000);
-					eNew2.setEventTime(new TimeSpan(start1, fin));
-				}
-				break;
+	public void RemoveAppt(Appt e) {
+//		//mAppts.put(appt.getID(), null);
+//
+//		int apptId = appt.getID();
+//		// try to remove the appt from the db
+//		try{
+//			deleteNotification(appt.getNotification());
+//			if (appt.getEventFrequency() != Appt.Frequency.DAILY) deleteNotification(appt.getNextNotification());
+//							
+//			switch (appt.getEventFrequency()){
+//			case ONETIME:
+//				mAppts.remove(apptId);
+//				break;
+//			case WEEKLY:
+//				Event eNew = (Event) appt;
+//				for (int i = 0; i < 52; i++)   { //1 years in weeks
+//					Event eNew1 = new Event(eNew.getEventTime(), eNew.getEventFrequency()) ;
+//					eNew1.generateID();
+//					apptId = eNew1.getID();
+//					mAppts.remove(apptId);
+//					TimeSpan curr = eNew.getEventTime();
+//					Timestamp start = new Timestamp(curr.StartTime().getTime()+604800000);
+//					Timestamp fin = new Timestamp(curr.EndTime().getTime()+604800000);
+//					eNew.setEventTime(new TimeSpan(start, fin));
+//				}
+//				break;
+//			case MONTHLY:
+//				Event eNew1 = (Event) appt;
+//				for (int i = 0; i < 13; i++){   //1 years in groups of 4 weeks
+//					Event eNew2 = new Event(eNew1.getEventTime(), eNew1.getEventFrequency()) ;
+//					eNew2.generateID();
+//					apptId = eNew2.getID();
+//					mAppts.remove(apptId);
+//					TimeSpan curr = eNew1.getEventTime();
+//					curr.StartTime().setMonth(curr.StartTime().getMonth()+1);
+//					curr.EndTime().setMonth(curr.EndTime().getMonth()+1);
+//					Timestamp star = curr.StartTime();
+//					Timestamp fi = curr.EndTime();
+//					eNew1.setEventTime(new TimeSpan(star, fi));
+//				}
+//				break;
+//			case DAILY:
+//				Event eNew2 = (Event) appt;
+//				for (int i = 0; i < 365; i++){
+//					Event eNew3 = new Event(eNew2.getEventTime(), eNew2.getEventFrequency()) ;
+//					eNew3.generateID();
+//					apptId = eNew3.getID();
+//					mAppts.remove(apptId);
+//					TimeSpan curr = eNew2.getEventTime();
+//					Timestamp start1 = new Timestamp(curr.StartTime().getTime()+86400000);
+//					Timestamp fin = new Timestamp(curr.EndTime().getTime()+86400000);
+//					eNew2.setEventTime(new TimeSpan(start1, fin));
+//				}
+//				break;
+//			}
+//		}catch(Exception e){
+//			System.out.println("ERROR");
+//			System.out.println(e.getMessage());
+//		}
+		
+		int time = -1;
+		Appt pastEvent = null;
+		switch (e.getEventFrequency()){
+		case ONETIME:
+			// save to db
+			time = (int) e.getEventTime().StartTime().getTime();
+			this.mAppts.remove(time);
+			break;
+		case WEEKLY:
+			
+			// save the first event
+			time = (int) e.getEventTime().StartTime().getTime();
+			this.mAppts.remove(time);
+			
+			pastEvent = e;
+			
+			for (int i = 0; i < 52; i++)   { //1 years in weeks
+				
+				// Set teh current tim 
+				TimeSpan curr = pastEvent.getEventTime();
+				Timestamp start = new Timestamp(curr.StartTime().getTime()+604800000);
+				Timestamp fin = new Timestamp(curr.EndTime().getTime()+604800000);
+				
+				// generate the new event
+				Appt eNew = formatEvent(start, fin, e);
+				time = (int) eNew.getEventTime().StartTime().getTime();
+				// put into hashmap
+				this.mAppts.remove(time);
+				
+				// set past event
+				pastEvent = eNew;
+				
 			}
-		}catch(Exception e){
-			System.out.println("ERROR");
-			System.out.println(e.getMessage());
+			break;
+		case MONTHLY:
+			// save the first event
+			time = (int) e.getEventTime().StartTime().getTime();
+			this.mAppts.remove(time);
+			
+			pastEvent = e;
+
+			for (int i = 0; i < 13; i++){   //1 years in groups of 4 weeks
+				TimeSpan curr = pastEvent.getEventTime();
+				
+				Timestamp start = curr.StartTime(); 
+				Timestamp end = curr.EndTime();
+				
+				start.setMonth(curr.StartTime().getMonth()+1);
+				end.setMonth(curr.EndTime().getMonth()+1);
+				
+				// generate the new event
+				Appt eNew = formatEvent(start, end, e);
+				time = (int) eNew.getEventTime().StartTime().getTime();
+				// put into hashmap
+				this.mAppts.remove(time);
+				
+				// set past event
+				pastEvent = eNew;
+			}
+			break;
+		case DAILY:
+			// save the first event
+			time = (int) e.getEventTime().StartTime().getTime();
+			this.mAppts.remove(time);
+			
+			pastEvent = e;
+			
+			for (int i = 0; i < 365; i++){
+				TimeSpan curr = pastEvent.getEventTime();
+				Timestamp start = new Timestamp(curr.StartTime().getTime()+86400000);
+				Timestamp end = new Timestamp(curr.EndTime().getTime()+86400000);
+				// save to db
+				
+				// generate the new event
+				Appt eNew = formatEvent(start, end, e);
+				time = (int) eNew.getEventTime().StartTime().getTime();
+				// put into hashmap
+				this.mAppts.remove(time);
+				
+				// set past event
+				pastEvent = eNew;
+			}
+			break;
 		}
 	}
 

@@ -1,8 +1,10 @@
 package hkust.cse.calendar.gui;
 
 import hkust.cse.calendar.apptstorage.ApptStorageControllerImpl;
+import hkust.cse.calendar.apptstorage.ApptStorageSQLImpl;
 import hkust.cse.calendar.apptstorage.LocationStorage;
 import hkust.cse.calendar.unit.Appt;
+import hkust.cse.calendar.unit.User;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -47,7 +49,9 @@ class AppCellRenderer extends DefaultTableCellRenderer {
 
 	public AppCellRenderer(Object value, boolean override, int row, int col,
 			int colorCMD, Color currColor) {
-
+		
+		
+		
 		Font f1 = new Font("Helvetica", Font.ITALIC, 11);
 		if (override) {
 			if (row % 2 == 0)
@@ -127,10 +131,14 @@ public class AppList extends JPanel implements ActionListener {
 	private Color[][] cellColor = new Color[20][2];
 	public Appt selectedAppt = null;
 	private MouseEvent tempe;
+	
+	private ApptStorageSQLImpl db;
+
 	public AppList() {
 		setLayout(new BorderLayout());
 		currentRow = 0;
 		currentCol = 0;
+		
 		
 		TitledBorder b = BorderFactory
 				.createTitledBorder("Appointment Contents");
@@ -444,6 +452,8 @@ public class AppList extends JPanel implements ActionListener {
 			return;
 
 		parent.controller.mApptStorage.RemoveAppt(apptTitle);
+		// TODO: need to check if the appt is a group event
+		db.RemoveAppt(apptTitle);
 		parent.updateAppList();
 		
 	}
@@ -577,6 +587,10 @@ public class AppList extends JPanel implements ActionListener {
 	public void setParent(CalGrid grid) {
 		parent = grid;
 		parentLS = parent.locationStorage;
+		
+		User u = parent.controller.getDefaultUser();
+		// set the db connection
+		db = new ApptStorageSQLImpl(u);
 	}
 
 	public void actionPerformed(ActionEvent e) {
