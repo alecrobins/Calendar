@@ -207,48 +207,48 @@ public class ApptSQLTests {
 		}
 		
 	}
-	
-	@Test
-	public void testCreateGroupEvent() {
-		Timestamp t1 = new Timestamp(4284400);
-		Timestamp t2 = new Timestamp(4289600);
-		TimeSpan eventTime = new TimeSpan(t1, t2);
-		
-		Timestamp r1 = new Timestamp(4281400);
-		Timestamp r2 = new Timestamp(4283400);
-		TimeSpan eventReminder = new TimeSpan(r1, r2);
-		
-		String title = "Third new Group Event";
-		String description = " Second Group event Description ";
-		String addDescription = "additional goes here . . ";
-		int eventLocationID = 3; 
-		Frequency f = Frequency.ONETIME;
-		
-		GroupEvent testGroupEvent = new GroupEvent(eventTime, title, description, eventLocationID,
-				eventReminder, addDescription, f);
-		
-		// set the group specific parameters
-		testGroupEvent.setIsPublic(true);
-		testGroupEvent.setIsGroup(true);
-		testGroupEvent.setConfirmed(false);
-		testGroupEvent.setApproved(false);
-		
-		List<Integer> testUsers = new ArrayList<Integer>();
-		testUsers.add(5);
-		testUsers.add(6);
-		testUsers.add(7);
+//	
+//	@Test
+//	public void testCreateGroupEvent() {
+//		Timestamp t1 = new Timestamp(4284400);
+//		Timestamp t2 = new Timestamp(4289600);
+//		TimeSpan eventTime = new TimeSpan(t1, t2);
 //		
-		// save the dummy group event
-//		try {
-//			db.createGroupEvent(testUsers, testGroupEvent);
-//			System.out.println("GROUP EVENT SAVED");
-//		} catch (InvalidClassException e) {
-//			e.printStackTrace();
-//		}
-		
-		// WORKED ! 
-		
-	}
+//		Timestamp r1 = new Timestamp(4281400);
+//		Timestamp r2 = new Timestamp(4283400);
+//		TimeSpan eventReminder = new TimeSpan(r1, r2);
+//		
+//		String title = "Third new Group Event";
+//		String description = " Second Group event Description ";
+//		String addDescription = "additional goes here . . ";
+//		int eventLocationID = 3; 
+//		Frequency f = Frequency.ONETIME;
+//		
+//		GroupEvent testGroupEvent = new GroupEvent(eventTime, title, description, eventLocationID,
+//				eventReminder, addDescription, f);
+//		
+//		// set the group specific parameters
+//		testGroupEvent.setIsPublic(true);
+//		testGroupEvent.setIsGroup(true);
+//		testGroupEvent.setConfirmed(false);
+//		testGroupEvent.setApproved(false);
+//		
+//		List<Integer> testUsers = new ArrayList<Integer>();
+//		testUsers.add(5);
+//		testUsers.add(6);
+//		testUsers.add(7);
+////		
+//		// save the dummy group event
+////		try {
+////			db.createGroupEvent(testUsers, testGroupEvent);
+////			System.out.println("GROUP EVENT SAVED");
+////		} catch (InvalidClassException e) {
+////			e.printStackTrace();
+////		}
+//		
+//		// WORKED ! 
+//		
+//	}
 	
 	@Test
 	public void testGetGroupEventsForUser() {

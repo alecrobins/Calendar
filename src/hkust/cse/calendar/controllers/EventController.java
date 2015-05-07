@@ -391,7 +391,7 @@ public class EventController {
 	
 	// check if t1 is in between t1 or tw
 	private boolean inBetween(Timestamp t1, TimeSpan t2){
-		return t1.getTime() >= t2.StartTime().getTime() && t1.getTime() <= t2.EndTime().getTime();
+		return t1.getTime() > t2.StartTime().getTime() && t1.getTime() < t2.EndTime().getTime();
 	}
 	
 	// check if the start time AND end of t1 start at before AND after t2
@@ -408,20 +408,26 @@ public class EventController {
 
 	private Date formatTime(String year, String month, String day, String hour, String minute){
 
-		String time = year + "-" + month + "-" + day + " " + hour + ":" + minute + ":00.0";
+		Date d = new Date(0);
+		
+		int i = Integer.parseInt(year);
+		d.setYear(i - 1900);
+		
+		i = Integer.parseInt(month);
+		d.setMonth(i);
+		
+		i = Integer.parseInt(day);
+		d.setDate(i);
+		
+		i = Integer.parseInt(hour);
+		d.setHours(i);
+		
+		i = Integer.parseInt(minute);
+		d.setMinutes(i);
+		
 
-		Timestamp timestamp = null;
 
-		try {
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
-			return dateFormat.parse(time);
-
-		}
-		catch(Exception e){
-			System.out.println(e.getMessage());
-		} 
-
-		return timestamp;
+		return d;
 
 	}
 }
