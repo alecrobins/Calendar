@@ -2,10 +2,12 @@ package hkust.cse.calendar.gui;
 
 import javax.swing.JDialog;
 
+import hkust.cse.calendar.apptstorage.ApptStorageSQLImpl;
 import hkust.cse.calendar.apptstorage.LocationStorage;
 import hkust.cse.calendar.gui.AppScheduler;
 import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.LocationList;
+import hkust.cse.calendar.unit.User;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -35,6 +37,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
@@ -58,7 +61,7 @@ ComponentListener {
 	private Object [][] data = new Object[20][1];
 	
 	private JTextField userName;
-	private JTextField pass;
+	private JPasswordField pass;
 	
 	private JLabel labelName;
 	private JLabel labelPass;
@@ -95,7 +98,7 @@ ComponentListener {
 		
 		JPanel passPanel=new JPanel();
 		labelPass = new JLabel("Password:");
-		pass = new JTextField(15);
+		pass = new JPasswordField(15);
 		passPanel.add(labelPass);
 		passPanel.add(pass);
 		
@@ -149,11 +152,6 @@ ComponentListener {
 		return dataModel;
 	}
 	
-	
-   
-	    
-	    
-	
 	@Override
 	public void componentResized(ComponentEvent e) {
 		// TODO Auto-generated method stub
@@ -178,30 +176,52 @@ ComponentListener {
 		
 	}
 
+	@SuppressWarnings("unused")
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		/*if(e.getSource() == addBut){
-			if(ls.addLocation(locationT.getText())){
-				JOptionPane.showMessageDialog(null, "Location added successfully.");
+		
+		User user=parent.getCurrUser();  //who is this user
+		int userID=user.getID();         //what is his/her ID
+		ApptStorageSQLImpl dataBase= new ApptStorageSQLImpl(); //connecting to database
+		
+		if(e.getSource() == changeNameBut){
+			if(userName.getText().trim()!=null && dataBase.isUserNameAvailable(userName.getText().trim())){
+				
+				User newUser=new User(userID,userName.getText().trim(),user.Password(),user.isAdmin());
+				newUser.setEmail(" ");
+				dataBase.modifyUser(newUser);
+				
+				JOptionPane.showMessageDialog(null, "UserName changed successfully.");
 			} else{
-				JOptionPane.showMessageDialog(null, "The location is already existed.");
+				JOptionPane.showMessageDialog(null, "UserName is already exist!");
 			}
-			locationT.setText(null);
 			
-		} else if(e.getSource() == deleteBut){
-			if(ls.deleteLocation(locationT.getText())){
-				JOptionPane.showMessageDialog(null, "Location deleted successfully.");
-			} else {
-				JOptionPane.showMessageDialog(null, "The location is not in the list.");
-			}
-			locationT.setText(null);
-			
+		} else if(e.getSource() == changePassBut){
+				
+				String newPass = new String(pass.getPassword());
+				
+				
+				if(newPass!=null){
+				User newUser=new User(userID,user.getUsername(),newPass,user.isAdmin());
+				
+				dataBase.modifyUser(newUser);
+				
+				JOptionPane.showMessageDialog(null, "Password changed successfully.");
+				}
+				
+				else{
+					
+					JOptionPane.showMessageDialog(null, "Password can not be empty!");
+				}
+				
+		
 		} else if(e.getSource() == finishBut){
 			setVisible(false);
 			dispose();
 			
-		}*/
+		}
+		
+		
 	}
 
 	

@@ -119,7 +119,7 @@ public class RegistrationDialog extends JFrame implements ActionListener {
 				isAdmin=true;
 			}
 			 
-			if(dataBase.isUserNameAvailable(name)){
+			if((name!=null)&& (pass!=null) && (dataBase.isUserNameAvailable(name))){
 				
 				User newUser = new User(name,pass,null,null," ",isAdmin);
 				
