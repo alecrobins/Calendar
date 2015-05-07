@@ -457,6 +457,7 @@ public class AppList extends JPanel implements ActionListener {
 		// TODO: need to check if the appt is a group event
 		db.RemoveAppt(apptTitle);
 		
+		parent.UpdateCal();
 		parent.updateAppList();
 		
 	}
@@ -466,7 +467,7 @@ public class AppList extends JPanel implements ActionListener {
 		if (apptTitle == null)
 			return;
 		AppScheduler setAppDial = new AppScheduler("Modify", parent, apptTitle.getID(), parentLS);
-
+		
 		delete();
 		
 		setAppDial.updateSetApp(apptTitle);
