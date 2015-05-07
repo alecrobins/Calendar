@@ -115,8 +115,10 @@ public class ApptStorageNullImpl extends ApptStorage {
 				// put into hashmap
 				this.mAppts.put(time, eNew);
 				
+				TimeSpan reminder = eNew.getEventReminder();
+				
 				// add a notification for the reminder if it exists
-				if(eNew.getEventReminder() != null){
+				if(reminder != null){
 					// Add notification in to notification array
 					addNotification(eNew.getNotification());
 					System.out.println("Notification added successfully");

@@ -2,6 +2,7 @@
 
 import hkust.cse.calendar.apptstorage.ApptStorage;
 import hkust.cse.calendar.unit.Appt;
+import hkust.cse.calendar.unit.Clock;
 import hkust.cse.calendar.unit.Event;
 import hkust.cse.calendar.unit.GroupEvent;
 import hkust.cse.calendar.unit.Location;
@@ -502,6 +503,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		return event;
 	}
 	
+	// NOTE: this class will return all events past the current date (what ever is set in clock)
 	public List<Appt> getAllRegularEvents(int userID){
 		Connection c = null;
 	    Statement stmt = null;
@@ -517,6 +519,9 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      stmt = c.createStatement();
 	      PreparedStatement query;
 	      
+	      Clock clock = new Clock();
+	      long currentTime = clock.getChangedTime().getTime().getTime();
+	      
 	      query = c.prepareStatement( 
 	    		  "select distinct e.id as 'id', e.startTime as 'startTime', e.endTime as 'endTime', " +
 	    		  "e.eventTitle as 'title', e.eventDescription as 'description', " +
@@ -525,9 +530,10 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    		  "e.isGroup as 'isGroup', e.isPublic as 'isPublic' " +
 	    		  "from event e, userEvent ue " +
 	    		  "where ue.userID = ? "+
-	    		  "and e.id = ue.eventID;");
+	    		  "and e.id = ue.eventID and e.startTime >= ?;");
 	      
 	      query.setInt(1, userID); 
+	      query.setInt(2, (int) currentTime);
 	      
 	      ResultSet rs = query.executeQuery();
 	      
