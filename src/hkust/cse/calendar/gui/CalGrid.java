@@ -251,6 +251,7 @@ public class CalGrid extends JFrame implements ActionListener {
 
 		
 		initializeSystem(); // for you to add.
+		
 		//mCurrUser = getCurrUser(); // totally meaningless code
 		Appmenu.setEnabled(true);
 		Clockmenu.setEnabled(true);
@@ -274,11 +275,13 @@ public class CalGrid extends JFrame implements ActionListener {
 	// A function to trigger reminder
 	private void triggerReminder(){
 		refreshTime();
+		
 		TimeSpan note = controller.getNotification();
 		if (note == null) return;
 		if (note.StartTime().compareTo(mClock.getChangedTimeDate()) <= 0) {
-
-			DetailsDialog info = new DetailsDialog(controller.getAppt(note.EndTime()), "Notification");
+			Timestamp startTime = note.EndTime();
+			Appt noti = controller.getAppt(startTime);
+			DetailsDialog info = new DetailsDialog(noti, "Notification");
 			info.setVisible(true);
 			
 			controller.deleteNotification(note);

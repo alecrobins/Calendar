@@ -180,7 +180,9 @@ public class ApptStorageNullImpl extends ApptStorage {
 	
 	@Override
 	public Appt getAppt(Timestamp t) {
-		return mAppts.get((int) t.getTime());
+		int time = (int) t.getTime();
+		Appt newAppt = mAppts.get(time);
+		return newAppt;
 	}
 	
 	@Override
@@ -397,7 +399,9 @@ public class ApptStorageNullImpl extends ApptStorage {
 	@Override
 	public TimeSpan getNotification() {
 		// TODO Auto-generated method stub
-		if(isNotificationEmpty())return null;
+		if(isNotificationEmpty())
+			return null;
+		
 		return mNotifications.get(0);
 	}
 
