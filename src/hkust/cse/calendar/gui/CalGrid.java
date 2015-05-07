@@ -607,11 +607,12 @@ public class CalGrid extends JFrame implements ActionListener {
 						apptMarker[i][j].clear();
 						continue;
 					}
-					Appt[] temp = GetApptOnN((int)data[i][j]);
+					Appt[] temp = GetApptOnN(Integer.parseInt((String)data[i][j]));
 					if(temp == null){
 						apptMarker[i][j].clear();
 						continue;
 					}
+					System.out.println("find it");
 					for(int k = 0; k < temp.length; k++){
 						if(apptMarker[i][j].isEmpty()){
 							if(temp[k].getIsGroup() == true)
