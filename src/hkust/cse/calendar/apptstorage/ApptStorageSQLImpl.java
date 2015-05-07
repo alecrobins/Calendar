@@ -1730,12 +1730,17 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	}
 	
 	private GroupResponse formatGroupResponse(ResultSet rs) throws SQLException {
-		int id = rs.getInt("id");
-		String name = rs.getString("name");
-		boolean isGroup = rs.getBoolean("isGroupFacility");
+	
+		// TODO: need to iterate all in teh group
+		ResultSet r = rs;
 		
-		Location newLocation = new Location(name, isGroup);
-		newLocation.setLocationID(id);
+		int intiatorID = rs.getInt("intiatorID");
+		int eventID = rs.getInt("eventID");
+		int groupID = rs.getInt("groupID");
+		Timestamp startTime = rs.getTimestamp("startTime");
+		Timestamp endTime = rs.getTimestamp("endTime");
+
+//		GroupResponse groupResponse = new GroupResponse();
 		
 		return null;
 	}
@@ -1776,49 +1781,39 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		      PreparedStatement query;
 		      // save all the proposed time slots
 		      for(int i = 0; i < _timeSlots.size(); ++i){
+		    	  // connect the proposed time slot with the users
+				  for(int j = 0; j < _users.size(); ++j){
 		    	  
-		    	  TimeSpan currentTimeSlot = _timeSlots.get(i);
+		    	  TimeSpan currentTimeSlot = _timeSlots.get(j);
 		    	  
 		    	  // save the groupUserTimeSlot
-			      query = c.prepareStatement("insert into groupUserTimeSlot (userID, eventID, startTime, endTime) " +
-			    		  					 "values (?, ?, ?, ?)");
+			      query = c.prepareStatement("insert into groupUserTimeSlot (initiatorID, userID, eventID, startTime, endTime) " +
+			    		  					 "values (?, ?, ?, ?, ?)");
 			      // save the time slot
 			      query.setInt(1, defaultUser.getID());
-			      query.setInt(2, groupID);
-			      query.setTimestamp(3, currentTimeSlot.StartTime());
-			      query.setTimestamp(4, currentTimeSlot.EndTime());
+				  query.setInt(2, _users.get(j).getID());
+			      query.setInt(3, groupID);
+			      query.setTimestamp(4, currentTimeSlot.StartTime());
+			      query.setTimestamp(5, currentTimeSlot.EndTime());
 			      
 			      query.execute();
 			      
 			      // commit
 			      c.commit();
 			      query.close();
-			      
-			      // connect the proposed time slot with the users
-			     for(int j = 0; j < _users.size(); ++i){
-			    	 query = c.prepareStatement("insert into groupUserTimeSlotsSelected (initiatorID, userID, eventID, startTime, endTime) " +
-		  					 "values (?, ?, ?, ?, ?)");
-  
-					// save the time slot with the user
-					  query.setInt(1, defaultUser.getID());
-					  query.setInt(2, _users.get(i).getID());
-					  query.setInt(3, groupID);
-					  query.setTimestamp(4, currentTimeSlot.StartTime());
-					  query.setTimestamp(5, currentTimeSlot.EndTime());
-
-					  query.execute();
-					  
-
-					  // commit
-				      c.commit();
-				      query.close();
-				    } // end of inner for loop
+				 }
+		      }
+		      // connect the proposed time slot with the users
+			  for(int k = 0; k < _users.size(); ++k){
+				  // save all the users as a groupUser
+				  query = c.prepareStatement("insert into groupUser (eventID, userID, approved) " +
+		    		  					 "values (?, ?, ?)");
+				  query.setInt(1, groupID);
+				  query.setInt(2, _users.get(k).getID());
+				  query.setBoolean(3, false);
+			  }
 				      
-			     } // end of outer for loop
-		      
-		      stmt.close();
-		      c.close();
-			    
+			     
 		    } catch ( Exception e1 ) {
 		      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
 		      System.exit(0);
@@ -1844,8 +1839,8 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      stmt = c.createStatement();
 	      PreparedStatement query;
 	      
-	      query = c.prepareStatement("select initiatorID, userID, groupID, startTime, endTime " +
-	    		  					 "from groupUserTimeSlotsSelected " +
+	      query = c.prepareStatement("select initiatorID, groupID, startTime, endTime " +
+	    		  					 "from groupUserTimeSlots " +
 	    		  					 "where userID = ? " + 
 	    		  					 "group by groupID; ");
 	      
@@ -1856,7 +1851,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      // go through results
 	      while ( rs.next() ) {
 	    	 GroupResponse groupResponse = formatGroupResponse(rs);
-//	    	 responses(groupResponse);
+	    	 responses.add(groupResponse);
 	      }
 	      
 	      stmt.close();
@@ -1867,7 +1862,182 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      System.exit(0);
 	    }
 		
-		return null;
+		return responses;
 	}
+	
+	// Respone to the retrival of events but 
+	// NOTE: by sending this response the user is approving to the group
+	public void respondToPurposedGroupEventTimeSlots(int groupID, int intiatorID, List<TimeSpan> _timeSlots){
+		Connection c = null;
+	    Statement stmt = null;
+	    
+		try {
+
+		  Class.forName("org.sqlite.JDBC");
+	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	      c.setAutoCommit(false);
+	      System.out.println("Opened database successfully");
+	      
+	      stmt = c.createStatement();
+	      PreparedStatement query;
+	      
+	      for(int i = 0; i < _timeSlots.size(); ++i){
+	    	  query = c.prepareStatement("insert into groupUserTimeSlotsSelected (initiatorID, userID, eventID, startTime, endTime) " +
+			    		  					 "values (?, ?, ?, ?, ?)");	    	  
+	    	// save the time slot
+		      query.setInt(1, intiatorID);
+			  query.setInt(2, defaultUser.getID());
+		      query.setInt(3, groupID);
+		      query.setTimestamp(4, _timeSlots.get(i).StartTime());
+		      query.setTimestamp(5, _timeSlots.get(i).EndTime());
+	    	  
+		      query.execute();
+		      
+		      // commit
+		      c.commit();
+		      query.close();
+	  
+	      }
+	      
+	      // approve the group event
+	      approveGroupEvent(groupID, defaultUser.getID());
+		    
+	    } catch ( Exception e1 ) {
+	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+	      System.exit(0);
+	    }
+		
+		// need to check if event is confirmed
+		checkIfEventConfirmed(groupID);
+		
+	}
+	
+	// check if group event is confirmed and if it is then make event confirmed
+	public void checkIfEventConfirmed(int _groupID){
+
+		Connection c = null;
+	    Statement stmt = null;
+	    
+	    boolean confirmed = true;
+	    
+		try {
+
+		  Class.forName("org.sqlite.JDBC");
+	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	      c.setAutoCommit(false);
+	      System.out.println("Opened database successfully");
+	      
+	      stmt = c.createStatement();
+	      PreparedStatement query;
+	      
+	      query = c.prepareStatement("select approved " +
+	    		  					 "from groupUser " +
+	    		  					 "where eventID = ? ");
+	      
+	      query.setInt(1, _groupID);
+	      
+	      ResultSet rs = query.executeQuery();
+
+	      // go through results
+	      while ( rs.next() ) {
+	    	 boolean isApproved = rs.getBoolean("approved");
+	    	 if(!isApproved){
+	    		 confirmed = false;
+	    		 break;
+	    	 }
+	      }
+	      
+	      if(confirmed){
+
+	    	  // get the minimum timespan
+		      query = c.prepareStatement("select approved " +
+		    		  					 "from groupUser " +
+		    		  					 "where eventID = ? ");
+		      
+		      query.setInt(1, _groupID);
+		      
+		      ResultSet rs = query.executeQuery();
+
+		      // go through results
+		      while ( rs.next() ) {
+		    	 boolean isApproved = rs.getBoolean("approved");
+		    	 if(!isApproved){
+		    		 confirmed = false;
+		    		 break;
+		    	 }
+		      }
+		      
+	    	  // set teh groupEvent to confirmed
+	    	  query = c.prepareStatement("update groupEvent set confirmed = 1 " +
+	  					 "where eventID = ? ");
+	    	  query.setInt(1, _groupID);
+	    	  
+	    	  query.execute();
+			
+	    	  // commit
+	    	  c.commit();
+	    	  
+	      }
+	      
+	      query.close();
+	      stmt.close();
+	      c.close();
+		    
+	    } catch ( Exception e1 ) {
+	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+	      System.exit(0);
+	    }
+		
+	}
+	
+	// cancel the group proposal and clean up data
+	public void cancelPurposedGroupEventTimeSlots(int groupID, int intiatorID){
+	
+		deleteGroupEvent(groupID);
+		
+		Connection c = null;
+	    Statement stmt = null;
+
+	    try {
+	      Class.forName("org.sqlite.JDBC");
+	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	      c.setAutoCommit(false);
+	      System.out.println("Opened database successfully");
+	      
+	      stmt = c.createStatement();
+	      PreparedStatement query;
+	      
+	      query = c.prepareStatement("delete from groupUserTimeSlots " +
+		    		"where eventID = ?;");
+	      
+	      query.setInt(1, groupID);
+	      
+	      boolean done = query.execute();
+   	   
+	      // remove from group event
+	      query = c.prepareStatement("delete from groupUserTimeSlotsSelected " +
+		    		"where eventID = ?");
+
+	      query.setInt(1, groupID);
+	      
+	      done = query.execute();
+
+	      // commit
+	      c.commit();
+	      
+	      query.close();
+	      stmt.close();
+	      c.close();
+		    
+	    } catch ( Exception e1 ) {
+	      System.err.println( e1.getClass().getName() + ": " + e1.getMessage() );
+	      System.exit(0);
+	    }
+	    
+		
+		
+	}
+	
+	
 	
 }

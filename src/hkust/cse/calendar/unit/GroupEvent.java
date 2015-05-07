@@ -34,9 +34,10 @@ public class GroupEvent extends Appt {
 		super(e.getEventTime(), e.getTitle(), e.getEventDescription(), e.getEventLocation(), e.getEventReminder(), 
 				"", e.getEventFrequency());
 		this.id = e.id;
-		
 		setConfirmed(false);
 		setApproved(false);
+		this.setIsGroup(true);
+		this.setIsPublic(true);
 		
 	}
 	
@@ -47,6 +48,8 @@ public class GroupEvent extends Appt {
 		super(_eventTime, _title, _eventDescription, _eventLocationID, _eventReminder, _additionalEventDescription, _eventFrequency);
 		setConfirmed(false);
 		setApproved(false);
+		this.setIsGroup(true);
+		this.setIsPublic(true);
 	}
 
 	public boolean isConfirmed() {
