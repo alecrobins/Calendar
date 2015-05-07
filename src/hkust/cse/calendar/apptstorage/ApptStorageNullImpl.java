@@ -50,6 +50,14 @@ public class ApptStorageNullImpl extends ApptStorage {
 			// save to db
 			time = (int) e.getEventTime().StartTime().getTime();
 			this.mAppts.put(time, e);
+			
+			// add a notification for the reminder if it exists
+			if(e.getEventReminder() != null){
+				// Add notification in to notification array
+				addNotification(e.getNotification());
+				System.out.println("Notification added successfully");
+			}
+			
 			break;
 		case WEEKLY:
 			
@@ -71,6 +79,13 @@ public class ApptStorageNullImpl extends ApptStorage {
 				time = (int) eNew.getEventTime().StartTime().getTime();
 				// put into hashmap
 				this.mAppts.put(time, eNew);
+				
+				// add a notification for the reminder if it exists
+				if(eNew.getEventReminder() != null){
+					// Add notification in to notification array
+					addNotification(eNew.getNotification());
+					System.out.println("Notification added successfully");
+				}
 				
 				// set past event
 				pastEvent = eNew;
@@ -99,6 +114,13 @@ public class ApptStorageNullImpl extends ApptStorage {
 				// put into hashmap
 				this.mAppts.put(time, eNew);
 				
+				// add a notification for the reminder if it exists
+				if(eNew.getEventReminder() != null){
+					// Add notification in to notification array
+					addNotification(eNew.getNotification());
+					System.out.println("Notification added successfully");
+				}
+				
 				// set past event
 				pastEvent = eNew;
 			}
@@ -121,6 +143,13 @@ public class ApptStorageNullImpl extends ApptStorage {
 				time = (int) eNew.getEventTime().StartTime().getTime();
 				// put into hashmap
 				this.mAppts.put(time, eNew);
+				
+				// add a notification for the reminder if it exists
+				if(eNew.getEventReminder() != null){
+					// Add notification in to notification array
+					addNotification(eNew.getNotification());
+					System.out.println("Notification added successfully");
+				}
 				
 				// set past event
 				pastEvent = eNew;

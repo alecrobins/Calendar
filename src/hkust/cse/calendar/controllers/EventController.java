@@ -120,9 +120,6 @@ public class EventController {
 	}
 
 	public void saveEvent(Appt e){
-		// Add notification in to notification array
-		cal.controller.addNotification(e.getNotification());
-		System.out.println("Notification added successfully");
 		
 		int eventID = -1;
 		Appt pastEvent = null;
@@ -135,12 +132,25 @@ public class EventController {
 			// save to db
 			eventID = db.SaveAppt(e);
 			e.setEventID(eventID);
+		
+			// save to hash map
 			cal.controller.mApptStorage.SaveAppt(e);
+			
+			// Add notification in to notification array
+			cal.controller.addNotification(e.getNotification());
+			System.out.println("Notification added successfully");
+					
 			break;
 		case WEEKLY:
 			eventID = db.SaveAppt(e);
 			e.setEventID(eventID);
+			
+			// save to hash map
 			cal.controller.mApptStorage.SaveAppt(e);
+			
+			// Add notification in to notification array
+			cal.controller.addNotification(e.getNotification());
+			System.out.println("Notification added successfully");
 			
 			pastEvent = e;
 			
@@ -166,7 +176,12 @@ public class EventController {
 		case MONTHLY:
 			eventID = db.SaveAppt(e);
 			e.setEventID(eventID);
+			
 			cal.controller.mApptStorage.SaveAppt(e);
+			
+			// Add notification in to notification array
+			cal.controller.addNotification(e.getNotification());
+			System.out.println("Notification added successfully");
 			
 			pastEvent = e;
 			
@@ -193,8 +208,13 @@ public class EventController {
 		case DAILY:
 			eventID = db.SaveAppt(e);
 			e.setEventID(eventID);
+			
 			cal.controller.mApptStorage.SaveAppt(e);
 			
+			// Add notification in to notification array
+			cal.controller.addNotification(e.getNotification());
+			System.out.println("Notification added successfully");
+
 			pastEvent = e;
 			
 			for (int i = 0; i < 365; i++){
@@ -238,42 +258,9 @@ public class EventController {
 
 	// Returns true if there is overlap with other appts
 	public boolean eventOverlap(Appt e, HashMap<Integer, Appt> appts) {
-//		for (Appt existing: as.values()){
-//			Appt exist = existing;
-//			if (existing.TimeSpan().EndTime().getTime() > e.TimeSpan().StartTime().getTime()){
-//			switch(e.getEventFrequency()){
-//			case ONETIME:
-//				if (!isEventValid(e, exist, "absTime")){
-//					return true;
-//				}
-//				break;
-//			case MONTHLY:
-//				if (!isEventValid(e, exist, "date")){
-//					if (!isEventValid(e, exist, "time")){
-//						return true;
-//					}
-//				}
-//				break;
-//			case WEEKLY:
-//				if (!isEventValid(e, exist, "day")){
-//					if (!isEventValid(e, exist, "time")){
-//						return true;
-//					}
-//				}
-//				break;
-//			case DAILY:
-//				if (!isEventValid(e, exist, "time")){
-//					return true;
-//				}
-//			}
-//			break;
-//		}
-//		}
-//		return false;
 		
 		boolean overlap = false;
 		
-		int time = -1;
 		TimeSpan purposedTime = null;
 		switch (e.getEventFrequency()){
 		case ONETIME:
@@ -381,21 +368,6 @@ public class EventController {
 	
 	// determine if there is overlap with the purposed time and in the passed in event
 	private boolean isHourOverlap(Appt appt, TimeSpan purposed){
-//		if (appt.getEventTime().StartTime().getHours() < purposed.StartTime().getHours()
-//				|| appt.TimeSpan().StartTime().getHours() > purposed.EndTime().getHours()){
-//			return true;  //no overlap in hours
-//		}
-//		else if (appt.TimeSpan().EndTime().getHours() == purposed.StartTime().getHours()){
-//			if (appt.TimeSpan().EndTime().getMinutes() < purposed.StartTime().getMinutes()){
-//				return true;  //no overlap in mins
-//			}
-//		}
-//		else if (appt.TimeSpan().StartTime().getHours() == purposed.EndTime().getHours()){
-//			if (appt.TimeSpan().StartTime().getMinutes() > purposed.EndTime().getMinutes()){
-//				return true;   //no overlap in mins
-//			}
-//		}
-		
 		TimeSpan eventTime = appt.getEventTime();
 //		
 		// check if starttime or end time of propossed is in between start or end time of event
@@ -416,58 +388,6 @@ public class EventController {
 	private boolean beforeAndAfter(TimeSpan t1, TimeSpan t2){
 		return t1.StartTime().getTime() <= t2.StartTime().getTime() && t1.EndTime().getTime() >= t2.EndTime().getTime();
 	}
-
-	@SuppressWarnings("deprecation")
-	public boolean isEventValid(Appt given, Appt existing, String compare){
-		switch(compare){
-		case "absTime":
-			if (given.TimeSpan().EndTime().getTime() < existing.TimeSpan().StartTime().getTime()
-					|| given.TimeSpan().StartTime().getTime() > existing.TimeSpan().EndTime().getTime()){
-				return true;  //no overlap in absolute time
-			}
-			break;
-		case "date":
-			if (given.TimeSpan().EndTime().getDate() < existing.TimeSpan().StartTime().getDate()
-					|| given.TimeSpan().StartTime().getDate() > existing.TimeSpan().EndTime().getDate()){
-				return true;  //no overlap in date
-			}
-			break;
-		case "day":
-			if (given.TimeSpan().EndTime().getDay() < existing.TimeSpan().StartTime().getDay()
-					|| given.TimeSpan().StartTime().getDay() > existing.TimeSpan().EndTime().getDay()){
-				return true;  //no overlap in day
-			}
-			break;
-		case "time":
-			if (given.TimeSpan().EndTime().getHours() < existing.TimeSpan().StartTime().getHours()
-					|| given.TimeSpan().StartTime().getHours() > existing.TimeSpan().EndTime().getHours()){
-				return true;  //no overlap in hours
-			}
-
-			else if (given.TimeSpan().EndTime().getHours() == existing.TimeSpan().StartTime().getHours()){
-				if (given.TimeSpan().EndTime().getMinutes() < existing.TimeSpan().StartTime().getMinutes()){
-					return true;  //no overlap in mins
-				}
-			}
-			else if (given.TimeSpan().StartTime().getHours() == existing.TimeSpan().EndTime().getHours()){
-				if (given.TimeSpan().StartTime().getMinutes() > existing.TimeSpan().EndTime().getMinutes()){
-					return true;   //no overlap in mins
-				}
-			}
-			break;
-		default :
-			return false;
-		}
-		return false;
-	}
-
-
-
-
-	//	private boolean checkEventOverlap(TimeSpan eventTime, Frequency _frequency) {
-	//		// TODO Auto-generated method stub
-	//		return true;
-	//	}
 
 	private boolean checkStartTime(Timestamp startTime) {
 		// current date
