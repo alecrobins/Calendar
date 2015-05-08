@@ -106,8 +106,6 @@ public class LoginDialog extends JFrame implements ActionListener
 		// TODO Auto-generated method stub
 		if(e.getSource() == button)
 		{
-
-		
 			String name= userName.getText().trim();   //getting the username
 //			String pass= password.getPassword().toString();  // getting the password
 			String pass = new String(password.getPassword());
@@ -131,13 +129,13 @@ public class LoginDialog extends JFrame implements ActionListener
 				db = new ApptStorageSQLImpl(user);
 				
 				 List<GroupResponse> responses = db.getPurposedGroupEventTimeSlots(user);
-				
+				if (responses.size()>1){
 				 for(int j = 0; j < responses.size(); ++j){
 					 List<TimeSpan> slots = responses.get(j).getProposedTimeslots();
 					 int groupID = responses.get(j).getGroupID();
 					 int intiatorID = responses.get(j).getIntiatorID();
 					 InvitationDialog dialog = new InvitationDialog(slots, groupID, intiatorID, user); 
-
+				 }
 				 }
 				 
 			}
