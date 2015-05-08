@@ -117,12 +117,14 @@ ComponentListener {
 		else if (e.getSource() == rejectBut) {
 			db.cancelPurposedGroupEventTimeSlots(groupID);
 		}
+		
+		setVisible(false);	
+
 	}
 	
 	@Override
 	public void componentResized(ComponentEvent e) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
