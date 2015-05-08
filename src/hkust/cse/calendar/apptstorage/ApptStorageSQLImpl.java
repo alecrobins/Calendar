@@ -32,6 +32,8 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	private int interval = 60;
 	private User defaultUser = null;
 	
+	private boolean useOnline = false;
+	
 	public ApptStorageSQLImpl( User user )
 	{
 		defaultUser = user;
@@ -45,6 +47,22 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	public void setDefaultUser(User u){
 		defaultUser = u;
 	}
+	
+	private Connection getConnectionToDB() throws ClassNotFoundException, SQLException{
+		// return onlien DB connection if online
+		if(useOnline){
+			 System.out.println("ONLINE");
+			 Class.forName("com.mysql.jdbc.Driver");
+	         String url ="jdbc:mysql://104.236.104.212:3306/calendar";
+	         String _u="user";
+	         String _p="root";
+	         return DriverManager.getConnection(url, _u, _p);
+		}else{
+			Class.forName("org.sqlite.JDBC");
+			return DriverManager.getConnection("jdbc:sqlite:calendar.db");
+		}
+		
+	}
 
 	@Override
 	public Appt getAppt(Timestamp t) {
@@ -57,7 +75,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    Appt event = null;
 	    
 	    try {
-	      Class.forName("org.sqlite.JDBC");
+	      c = getConnectionToDB();
 	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
 	      c.setAutoCommit(false);
 	      System.out.println("Opened database successfully");
@@ -103,8 +121,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    Location location = null;
 	    
 	    try {
-	      Class.forName("org.sqlite.JDBC");
-	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	     c = getConnectionToDB();
 	      c.setAutoCommit(false);
 	      System.out.println("Opened database successfully");
 	      
@@ -140,8 +157,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    List<Location> locations = new ArrayList<Location>();
 	    
 	    try {
-	      Class.forName("org.sqlite.JDBC");
-	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	     c = getConnectionToDB();
 	      c.setAutoCommit(false);
 	      System.out.println("Opened database successfully");
 	      
@@ -178,8 +194,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    int eventID = -1;
 
 	    try {
-	      Class.forName("org.sqlite.JDBC");
-	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	     c = getConnectionToDB();
 	      c.setAutoCommit(false);
 	      System.out.println("Opened database successfully");
 	      
@@ -269,8 +284,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    List<Appt> events = new ArrayList<Appt>();
 	    
 	    try {
-	      Class.forName("org.sqlite.JDBC");
-	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	     c = getConnectionToDB();
 	      c.setAutoCommit(false);
 	      System.out.println("Opened database successfully");
 	      
@@ -436,8 +450,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    Appt _event = appt;
 	    
 	    try {
-	      Class.forName("org.sqlite.JDBC");
-	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	     c = getConnectionToDB();
 	      c.setAutoCommit(false);
 	      System.out.println("Opened database successfully");
 	      
@@ -486,8 +499,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    Appt _event = appt;
 	    
 	    try {
-	      Class.forName("org.sqlite.JDBC");
-	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	     c = getConnectionToDB();
 	      c.setAutoCommit(false);
 	      System.out.println("Opened database successfully");
 	      
@@ -592,8 +604,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    Appt event = null;
 	    
 	    try {
-	      Class.forName("org.sqlite.JDBC");
-	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	     c = getConnectionToDB();
 	      c.setAutoCommit(false);
 	      System.out.println("Opened database successfully");
 	      
@@ -636,8 +647,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    List<Appt> events = new ArrayList<Appt>();
 	    
 	    try {
-	      Class.forName("org.sqlite.JDBC");
-	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	     c = getConnectionToDB();
 	      c.setAutoCommit(false);
 	      System.out.println("Opened database successfully");
 	      
@@ -693,8 +703,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    List<Appt> events = new ArrayList<Appt>();
 	    
 	    try {
-	      Class.forName("org.sqlite.JDBC");
-	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	     c = getConnectionToDB();
 	      c.setAutoCommit(false);
 	      System.out.println("Opened database successfully");
 	      
@@ -748,8 +757,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    List<Integer> groupIDs = new ArrayList<Integer>();
 	    
 	    try {
-	      Class.forName("org.sqlite.JDBC");
-	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	     c = getConnectionToDB();
 	      c.setAutoCommit(false);
 	      System.out.println("Opened database successfully");
 	      
@@ -787,8 +795,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    GroupEvent event = null;
 
 	    try {
-	      Class.forName("org.sqlite.JDBC");
-	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	     c = getConnectionToDB();
 	      c.setAutoCommit(false);
 	      System.out.println("Opened database successfully");
 	      
@@ -858,8 +865,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    List<Integer> userIDs = new ArrayList<Integer>();
 
 	    try {
-	      Class.forName("org.sqlite.JDBC");
-	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	     c = getConnectionToDB();
 	      c.setAutoCommit(false);
 	      System.out.println("Opened database successfully");
 	      
@@ -908,8 +914,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    Statement stmt = null;
 
 	    try {
-	      Class.forName("org.sqlite.JDBC");
-	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	     c = getConnectionToDB();
 	      c.setAutoCommit(false);
 	      System.out.println("Opened database successfully");
 	      
@@ -968,8 +973,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    boolean success = false;
 	    String userPassword = "";
 	    try {
-	      Class.forName("org.sqlite.JDBC");
-	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	     c = getConnectionToDB();
 	      c.setAutoCommit(false);
 	      System.out.println("Opened database successfully");
 	      
@@ -1011,8 +1015,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    List<User> users = new ArrayList<User>();
 
 	    try {
-	      Class.forName("org.sqlite.JDBC");
-	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	     c = getConnectionToDB();
 	      c.setAutoCommit(false);
 	      System.out.println("Opened database successfully");
 	      
@@ -1051,8 +1054,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    boolean available = true;
 
 	    try {
-	      Class.forName("org.sqlite.JDBC");
-	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	     c = getConnectionToDB();
 	      c.setAutoCommit(false);
 	      System.out.println("Opened database successfully");
 	      
@@ -1096,8 +1098,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    int userID = -1;
 
 	    try {
-	      Class.forName("org.sqlite.JDBC");
-	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	     c = getConnectionToDB();
 	      c.setAutoCommit(false);
 	      System.out.println("Opened database successfully");
 	      
@@ -1147,8 +1148,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    User user = null;
 
 	    try {
-	      Class.forName("org.sqlite.JDBC");
-	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	     c = getConnectionToDB();
 	      c.setAutoCommit(false);
 	      System.out.println("Opened database successfully");
 	      
@@ -1188,8 +1188,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    Statement stmt = null;
 
 	    try {
-	      Class.forName("org.sqlite.JDBC");
-	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	     c = getConnectionToDB();
 	      c.setAutoCommit(false);
 	      System.out.println("Opened database successfully");
 	      
@@ -1382,8 +1381,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    Statement stmt = null;
 
 	    try {
-	      Class.forName("org.sqlite.JDBC");
-	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	     c = getConnectionToDB();
 	      c.setAutoCommit(false);
 	      System.out.println("Opened database successfully");
 	      
@@ -1850,8 +1848,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 		
 		try {
 
-		  Class.forName("org.sqlite.JDBC");
-	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+		 c = getConnectionToDB();
 	      c.setAutoCommit(false);
 	      System.out.println("Opened database successfully");
 	      
@@ -1907,8 +1904,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    
 		try {
 
-		  Class.forName("org.sqlite.JDBC");
-	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+		 c = getConnectionToDB();
 	      c.setAutoCommit(false);
 	      System.out.println("Opened database successfully");
 	      
@@ -1956,8 +1952,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    
 		try {
 
-		  Class.forName("org.sqlite.JDBC");
-	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+		 c = getConnectionToDB();
 	      c.setAutoCommit(false);
 	      System.out.println("Opened database successfully");
 	      
@@ -2048,8 +2043,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    Statement stmt = null;
 
 	    try {
-	      Class.forName("org.sqlite.JDBC");
-	      c = DriverManager.getConnection("jdbc:sqlite:calendar.db");
+	     c = getConnectionToDB();
 	      c.setAutoCommit(false);
 	      System.out.println("Opened database successfully");
 	      
