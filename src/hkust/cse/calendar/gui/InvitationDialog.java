@@ -53,6 +53,10 @@ ComponentListener {
 
 		tCheckList = new LinkedList<JCheckBox>();
 		List<TimeSpan> tList = _timeSlots;
+		
+		if (tList.isEmpty()) {
+			tCheckList.clear();
+		}
 		if (tList.isEmpty()) {tCheckList.clear();}
 		else {
 			for (TimeSpan ts : tList) {
@@ -66,6 +70,7 @@ ComponentListener {
 				timeSlotMap.put(a, ts);
 			}
 		}
+		
 		this.setAlwaysOnTop(true);
 		setTitle("Invitation");
 		setModal(false);
@@ -77,25 +82,26 @@ ComponentListener {
 		Border dateBorder = new TitledBorder(null, "Select your preference");
 		timeP.setBorder(dateBorder);
 		timeP.setLayout(new BoxLayout(timeP, BoxLayout.Y_AXIS));
+		
 		for (JCheckBox c : tCheckList) {
 			timeP.add(c);
 		}
-		
+
 		contentPane.add("North", timeP);
-		
+
 		JPanel butP = new JPanel();
 		butP.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
 		acceptBut = new JButton("Accept");
 		acceptBut.addActionListener(this);
 		butP.add(acceptBut);
-		
+
 		rejectBut = new JButton("Reject");
 		rejectBut.addActionListener(this);
 		butP.add(rejectBut);
-		
+
 		contentPane.add("South", butP);
-		
+
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);	
@@ -112,16 +118,18 @@ ComponentListener {
 				}
 			}
 			db.respondToPurposedGroupEventTimeSlots(groupID, intiatorID, selectedTimes);
+			setVisible(false);
 		} 
 		
 		else if (e.getSource() == rejectBut) {
 			db.cancelPurposedGroupEventTimeSlots(groupID);
+			setVisible(false);
 		}
 		
 		setVisible(false);	
 
 	}
-	
+
 	@Override
 	public void componentResized(ComponentEvent e) {
 		// TODO Auto-generated method stub
