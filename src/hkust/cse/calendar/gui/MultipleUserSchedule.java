@@ -72,6 +72,7 @@ public class MultipleUserSchedule implements ActionListener{
 	private User currUs;
 	private JButton reject;
 	private ApptStorageSQLImpl asql;
+	private JFrame frame;
 
 	//public static final int[] monthDays = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 	//january, march, may, jul, aug, october, dec --31
@@ -229,7 +230,7 @@ public class MultipleUserSchedule implements ActionListener{
 			}
 		});
 
-		JFrame frame = new JFrame();
+		frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JScrollPane scrollPane = new JScrollPane(tableView);
@@ -298,6 +299,7 @@ public class MultipleUserSchedule implements ActionListener{
 			mi.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {				
 					ScheduleGroupEvent();
+					frame.setVisible(false);
 				}
 			});
 		}
@@ -320,6 +322,7 @@ public class MultipleUserSchedule implements ActionListener{
 		GroupApptScheduler gas = new GroupApptScheduler(userList, timeOptions, rowBool, "Add Group Event Details", parent, parentLS);
 		gas.setLocationRelativeTo(null);
 		gas.show();
+		
 	}
 	private void pickSlot() {
 		GroupSlotPicker gsp = new GroupSlotPicker(this, "Add Possible Group Event Time", rowBool, parent, parentLS);

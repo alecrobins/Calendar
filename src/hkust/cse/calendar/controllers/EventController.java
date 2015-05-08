@@ -58,6 +58,7 @@ public class EventController {
 		if(_year == null || _month == null || _day == null || _sTimeH == null
 				|| _sTimeM == null || _eTimeH == null || _eTimeM ==null || _frequency == null)
 			return EventReturnMessage.ERROR_UNFILLED_REQUIRED_FIELDS;
+		
 
 		// format the start / endtime
 		Date startTimeDate = formatTime(_year, _month, _day, _sTimeH, _sTimeM);
@@ -69,6 +70,9 @@ public class EventController {
 
 		// format the end time
 		Date endTimeDate = formatTime(_year, _month, _day, _eTimeH, _eTimeM);
+		if (endTimeDate.getHours() == 0){
+			endTimeDate.setTime(endTimeDate.getTime()+43200000);
+		}
 		Timestamp endTime = new java.sql.Timestamp(endTimeDate.getTime());
 
 
@@ -409,6 +413,7 @@ public class EventController {
 	}
 
 	private Date formatTime(String year, String month, String day, String hour, String minute){
+	
 
 		String time = year + "-" + month + "-" + day + " " + hour + ":" + minute + ":00.0";
 
