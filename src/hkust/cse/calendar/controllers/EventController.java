@@ -105,10 +105,10 @@ public class EventController {
 		// delay the saving of the id to the creation
 		Appt newEvent = new Appt(eventTime, _titleField, _titleField, location.getLocationID(), reminder, _detailArea, frequency);
 		newEvent.setIsPublic(isPub);
-		
+		Appt copyEvent = newEvent;
 		//TODO: need to check if an event is valid 
 		// Check for overlap
-		if(eventOverlap(newEvent, cal.controller.mApptStorage.getApptsMap()))
+		if(eventOverlap(copyEvent, cal.controller.mApptStorage.getApptsMap()))
 			return EventReturnMessage.ERROR_EVENT_OVERLAP;
 
 		// save the event in apptStorage
@@ -337,8 +337,8 @@ public class EventController {
 				if(overlap) break;
 				
 				// reset purposed time
-				Timestamp start = purposedTime.StartTime(); 
-				Timestamp end = purposedTime.EndTime();
+				Timestamp start = new Timestamp( purposedTime.StartTime().getTime() ); 
+				Timestamp end = new Timestamp( purposedTime.EndTime().getTime());
 				
 				start.setMonth(purposedTime.StartTime().getMonth()+1);
 				end.setMonth(purposedTime.EndTime().getMonth()+1);

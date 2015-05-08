@@ -27,17 +27,17 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-public class ApptStorageSQLImpl extends ApptStorage {
+public class ApptStorageSQLImplLocal extends ApptStorage {
 	
 	private int interval = 60;
 	private User defaultUser = null;
 	
-	public ApptStorageSQLImpl( User user )
+	public ApptStorageSQLImplLocal( User user )
 	{
 		defaultUser = user;
 	}
 	
-	public ApptStorageSQLImpl(){
+	public ApptStorageSQLImplLocal(){
 		super();
 	}
 	
