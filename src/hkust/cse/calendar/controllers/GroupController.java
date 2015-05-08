@@ -71,9 +71,6 @@ public class GroupController {
 		GroupEvent event = new GroupEvent(_titleField, _detailArea, location.getLocationID(),
 				reminder, "", frequency, tList);
 		
-<<<<<<< HEAD
-		//send group event to the database
-=======
 		List<Integer> userIDs = new ArrayList<Integer>();
 		for(int j = 0; j < userList.size(); ++j){
 			userIDs.add(userList.get(j).getID());
@@ -90,7 +87,6 @@ public class GroupController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
->>>>>>> 4b2005fc66cdb4b31fb07a45f8a7dc2b44dae149
 		
 		if (event.getID() != -1){
 			return EventReturnMessage.SUCCESS;

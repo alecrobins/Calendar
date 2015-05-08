@@ -52,16 +52,12 @@ ComponentListener {
 	private void commonConstructor(List<TimeSpan> _timeSlots) {
 
 		tCheckList = new LinkedList<JCheckBox>();
-<<<<<<< HEAD
-		List<TimeSpan> tList = event.getTList();
+		List<TimeSpan> tList = _timeSlots;
 		
 		if (tList.isEmpty()) {
 			tCheckList.clear();
 		}
-=======
-		List<TimeSpan> tList = _timeSlots;
 		if (tList.isEmpty()) {tCheckList.clear();}
->>>>>>> 4b2005fc66cdb4b31fb07a45f8a7dc2b44dae149
 		else {
 			for (TimeSpan ts : tList) {
 				String a = Integer.toString(ts.StartTime().getMonth()) + "/" + Integer.toString(ts.StartTime().getDate()) + "  ";
@@ -112,14 +108,6 @@ ComponentListener {
 	}
 
 	public void actionPerformed(ActionEvent e){
-<<<<<<< HEAD
-		if (e.getSource() == "acceptBut") {
-
-		} 
-
-		else if (e.getSource() == "rejectBut") {
-
-=======
 //		String test = e.getActionCommand();
 		if (e.getSource() == acceptBut) {
 			List<TimeSpan> selectedTimes = new ArrayList<TimeSpan>();
@@ -134,7 +122,6 @@ ComponentListener {
 		
 		else if (e.getSource() == rejectBut) {
 			db.cancelPurposedGroupEventTimeSlots(groupID);
->>>>>>> 4b2005fc66cdb4b31fb07a45f8a7dc2b44dae149
 		}
 	}
 
