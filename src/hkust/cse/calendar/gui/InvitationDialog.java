@@ -112,10 +112,12 @@ ComponentListener {
 				}
 			}
 			db.respondToPurposedGroupEventTimeSlots(groupID, intiatorID, selectedTimes);
+			setVisible(false);
 		} 
 		
 		else if (e.getSource() == rejectBut) {
 			db.cancelPurposedGroupEventTimeSlots(groupID);
+			setVisible(false);
 		}
 	}
 	
