@@ -1,5 +1,6 @@
 package hkust.cse.calendar.gui;
 
+import hkust.cse.calendar.apptstorage.ApptStorageNullImpl;
 import hkust.cse.calendar.apptstorage.ApptStorageSQLImpl;
 import hkust.cse.calendar.apptstorage.LocationStorage;
 import hkust.cse.calendar.controllers.GroupController;
@@ -68,8 +69,10 @@ public class MultipleUserSchedule implements ActionListener{
 	private HashMap<User, List<Appt>> userMap;
 	private List<Timestamp> dateList;
 	private GroupController gc;
-
+	private User currUs;
 	private JButton reject;
+	private ApptStorageSQLImpl asql;
+	private JFrame frame;
 
 	//public static final int[] monthDays = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 	//january, march, may, jul, aug, october, dec --31
@@ -87,6 +90,8 @@ public class MultipleUserSchedule implements ActionListener{
 
 	public boolean[] isRowAvailable(HashMap<User, List<Appt>> userMap, List<Timestamp> dates){
 		boolean[] rowVal = new boolean[(dates.size())*40];
+		List<Appt> currUserAppts = asql.getAllEvents(currUs.getID());
+		userMap.put(currUs, currUserAppts);
 		System.out.println("row boolean length = "+rowVal.length);
 		for (int i = 0; i < rowVal.length; i++){   //initialize to true
 			rowVal[i] = true;
@@ -174,6 +179,8 @@ public class MultipleUserSchedule implements ActionListener{
 	}
 
 	public void commonConstructor(String tit, CalGrid cal, HashMap<User, List<Appt>> userMa, List<Timestamp> dates){
+		currUs = cal.getCurrUser();
+		asql = new ApptStorageSQLImpl(currUs);
 		timeOptions = new LinkedList<TimeSpan>();
 		userMap = userMa;
 		dateList = dates;
@@ -223,7 +230,7 @@ public class MultipleUserSchedule implements ActionListener{
 			}
 		});
 
-		JFrame frame = new JFrame();
+		frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JScrollPane scrollPane = new JScrollPane(tableView);
@@ -292,6 +299,7 @@ public class MultipleUserSchedule implements ActionListener{
 			mi.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {				
 					ScheduleGroupEvent();
+					frame.setVisible(false);
 				}
 			});
 		}
@@ -314,6 +322,7 @@ public class MultipleUserSchedule implements ActionListener{
 		GroupApptScheduler gas = new GroupApptScheduler(userList, timeOptions, rowBool, "Add Group Event Details", parent, parentLS);
 		gas.setLocationRelativeTo(null);
 		gas.show();
+		
 	}
 	private void pickSlot() {
 		GroupSlotPicker gsp = new GroupSlotPicker(this, "Add Possible Group Event Time", rowBool, parent, parentLS);

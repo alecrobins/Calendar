@@ -58,6 +58,7 @@ public class EventController {
 		if(_year == null || _month == null || _day == null || _sTimeH == null
 				|| _sTimeM == null || _eTimeH == null || _eTimeM ==null || _frequency == null)
 			return EventReturnMessage.ERROR_UNFILLED_REQUIRED_FIELDS;
+		
 
 		// format the start / endtime
 		Date startTimeDate = formatTime(_year, _month, _day, _sTimeH, _sTimeM);
@@ -69,6 +70,9 @@ public class EventController {
 
 		// format the end time
 		Date endTimeDate = formatTime(_year, _month, _day, _eTimeH, _eTimeM);
+		if (endTimeDate.getHours() == 0){
+			endTimeDate.setTime(endTimeDate.getTime()+43200000);
+		}
 		Timestamp endTime = new java.sql.Timestamp(endTimeDate.getTime());
 
 
@@ -95,18 +99,20 @@ public class EventController {
 
 		Location location = null;
 		// create the location if not null
-		if(_location != null)
+		if(_location != null){
 			location = db.getLocationByName(_location);
-
+		}else{
+			return EventReturnMessage.ERROR_UNFILLED_REQUIRED_FIELDS;
+		}
 
 		// MAKE THE EVENT
 		// delay the saving of the id to the creation
 		Appt newEvent = new Appt(eventTime, _titleField, _titleField, location.getLocationID(), reminder, _detailArea, frequency);
 		newEvent.setIsPublic(isPub);
-		
+		Appt copyEvent = newEvent;
 		//TODO: need to check if an event is valid 
 		// Check for overlap
-		if(eventOverlap(newEvent, cal.controller.mApptStorage.getApptsMap()))
+		if(eventOverlap(copyEvent, cal.controller.mApptStorage.getApptsMap()))
 			return EventReturnMessage.ERROR_EVENT_OVERLAP;
 
 		// save the event in apptStorage
@@ -335,8 +341,8 @@ public class EventController {
 				if(overlap) break;
 				
 				// reset purposed time
-				Timestamp start = purposedTime.StartTime(); 
-				Timestamp end = purposedTime.EndTime();
+				Timestamp start = new Timestamp( purposedTime.StartTime().getTime() ); 
+				Timestamp end = new Timestamp( purposedTime.EndTime().getTime());
 				
 				start.setMonth(purposedTime.StartTime().getMonth()+1);
 				end.setMonth(purposedTime.EndTime().getMonth()+1);
@@ -391,7 +397,7 @@ public class EventController {
 	
 	// check if t1 is in between t1 or tw
 	private boolean inBetween(Timestamp t1, TimeSpan t2){
-		return t1.getTime() >= t2.StartTime().getTime() && t1.getTime() <= t2.EndTime().getTime();
+		return t1.getTime() > t2.StartTime().getTime() && t1.getTime() < t2.EndTime().getTime();
 	}
 	
 	// check if the start time AND end of t1 start at before AND after t2
@@ -407,6 +413,7 @@ public class EventController {
 	}
 
 	private Date formatTime(String year, String month, String day, String hour, String minute){
+	
 
 		String time = year + "-" + month + "-" + day + " " + hour + ":" + minute + ":00.0";
 

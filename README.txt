@@ -1,0 +1,3 @@
+README:  Group11
+
+For our bonus feature, we used a SQL database to manage our data online.  Alec created a SQLite database in order to persist the data. Once the SQLite database was working, he was able to move the local storage to a server online using the website DigitalOcean. The calendar can now be accessed from anywhere in the world with users having the ability to share live data with each other. You can see the created tables in the root of the calendar folder. Alec used MySQL on a server that was running on Ubuntu. You can select to use the online or off-line version of the code in the isOnline setting in the ApptStorageSQLImpl class.

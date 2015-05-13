@@ -272,6 +272,8 @@ public class CalGrid extends JFrame implements ActionListener {
 		pack();				// sized the window to a preferred size
 		setVisible(true);	//set the window to be visible
 		
+		
+		
 	}
 
 	// A function to trigger reminder
