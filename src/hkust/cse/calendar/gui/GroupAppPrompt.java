@@ -167,7 +167,7 @@ ComponentListener {
 		checkBoxList = new LinkedList<JCheckBox>();
 		//for (User u: userList){
 			
-		for (int i=0; i<userList.size(); i=i+2){
+		for (int i=0; i<userList.size(); ++i){
 			JCheckBox j = new JCheckBox(userList.get(i).getUsername());
 			checkBoxList.add(j);
 			j.addActionListener(this);
