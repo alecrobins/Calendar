@@ -28,6 +28,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -540,6 +541,7 @@ ComponentListener {
 				inviteList.add(j.getLabel());
 			}
 		}
+		
 		System.out.println("THIS IS WHO IS INVITED: " +inviteList.get(0));
 		
 		ApptStorageSQLImpl asql = new ApptStorageSQLImpl(parent.getCurrUser());
@@ -554,9 +556,18 @@ ComponentListener {
 		HashMap<User, List<Appt>> userMap = new HashMap<User, List<Appt>>();
 		
 		for (User u: invitedUsers){
-			List<Appt> apptList =  asql.RetrieveApptsList(u, range);
-			List<Appt> appListGenerated = asql.generateList(apptList);
-			userMap.put(u, appListGenerated);
+//			List<Appt> apptList =  asql.RetrieveApptsList(u, range);
+//			List<Appt> appListGenerated = asql.generateList(apptList);
+//			userMap.put(u, appListGenerated);
+			
+			parent.setCurrUser(u);
+			Collection<Appt> apps = parent.controller.mApptStorage.mAppts.values();
+			List<Appt> apptList = new LinkedList<Appt>();
+			for (Appt a: apps){
+				apptList.add(a);
+			}
+			userMap.put(u, apptList);
+			
 		}
 
 		System.out.println("YEAR SELECTED: "+year);

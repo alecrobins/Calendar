@@ -75,13 +75,18 @@ public class RegistrationDialog extends JFrame implements ActionListener {
 		
 		
 		JPanel adminPanel = new JPanel();
+		
 		adminPanel.add(new JLabel("Account Type:"));
+		
 		setAdmin = new JComboBox();
 		setAdmin.addActionListener(this);
 		setAdmin.setPreferredSize(new Dimension(100, 20));
+		
 		for (int cnt = 0; cnt <2; cnt++)
 			setAdmin.addItem(makeAdmin[cnt]);
+		
 		setAdmin.setSelectedIndex(0);
+		
 		adminPanel.add(setAdmin);
 		
 		top.add(adminPanel);
@@ -114,9 +119,8 @@ public class RegistrationDialog extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		 if (e.getSource() == registerButton) {
 			// Save the user to the DataBase
-
 			 
-			 ApptStorageSQLImpl dataBase= new ApptStorageSQLImpl();
+			ApptStorageSQLImpl dataBase= new ApptStorageSQLImpl();
 			 
 			Boolean isAdmin = false;
 
@@ -128,12 +132,12 @@ public class RegistrationDialog extends JFrame implements ActionListener {
 				isAdmin=true;
 			}
 			 
-			if((name!=null)&& (pass!=null) && (dataBase.isUserNameAvailable(name))){
+			if( (name != null) && ( pass != null) && ( dataBase.isUserNameAvailable(name))){
 				
 				User newUser = new User(name,pass,null,null, " ",    //mail
 						isAdmin);
 				
-				int userID=dataBase.createUser(newUser);
+				int userID = dataBase.createUser(newUser);
 				
 				newUser.setID(userID);
 				

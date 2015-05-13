@@ -1098,7 +1098,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	    int userID = -1;
 
 	    try {
-	     c = getConnectionToDB();
+	      c = getConnectionToDB();
 	      c.setAutoCommit(false);
 	      System.out.println("Opened database successfully");
 	      
@@ -1116,15 +1116,13 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	      query.setString(5, u.getEmail());
 	      query.setBoolean(6, u.isAdmin());
 	      
-	      boolean done = query.execute();
+	      query.execute();
 	      
 		  // Get the generated key from the event creation
-	      ResultSet rs = stmt.getGeneratedKeys();
+	      ResultSet rs = query.getGeneratedKeys();
 		  rs.next();
 		  userID = rs.getInt(1);
-		 
-		  done = query.execute();
-    	   
+		    	   
 	      // commit
 	      c.commit();
 	      
