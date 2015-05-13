@@ -165,8 +165,10 @@ ComponentListener {
 		userList = new LinkedList<User>();
 		userList = this.parent.getController().getDatabase().getListOfAllUsers();
 		checkBoxList = new LinkedList<JCheckBox>();
-		for (User u: userList){
-			JCheckBox j = new JCheckBox(u.getUsername());
+		//for (User u: userList){
+			
+		for (int i=0; i<userList.size(); i=i+2){
+			JCheckBox j = new JCheckBox(userList.get(i).getUsername());
 			checkBoxList.add(j);
 			j.addActionListener(this);
 			pUsers.add(j);
