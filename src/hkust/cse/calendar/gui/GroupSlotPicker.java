@@ -543,6 +543,7 @@ public class GroupSlotPicker extends JDialog implements ActionListener,
 		String _eTimeM = eTimeMD.getSelectedItem() == null ? null : eTimeMD.getSelectedItem().toString();
 
 		int month =  Integer.parseInt(_month);
+		month = month - 1; // month are 0 - 11 not 1 - 12
 		int day =  Integer.parseInt(_day);
 		
 		int startH = Integer.parseInt(_sTimeH);

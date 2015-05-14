@@ -60,7 +60,9 @@ ComponentListener {
 		if (tList.isEmpty()) {tCheckList.clear();}
 		else {
 			for (TimeSpan ts : tList) {
-				String a = Integer.toString(ts.StartTime().getMonth()) + "/" + Integer.toString(ts.StartTime().getDate()) + "  ";
+				int startMonth = ts.StartTime().getMonth() + 1;
+				
+				String a = Integer.toString(startMonth) + "/" + Integer.toString(ts.StartTime().getDate()) + "  ";
 				a = a + Integer.toString(ts.StartTime().getHours()) + ":" + Integer.toString(ts.StartTime().getMinutes());
 				a = a + " - " + Integer.toString(ts.EndTime().getHours()) + ":" + Integer.toString(ts.EndTime().getMinutes());
 
