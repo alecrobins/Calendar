@@ -137,6 +137,8 @@ ComponentListener {
 	private List<Timestamp> dates;
 	
 	private TimeSpan range;
+	
+	private ApptStorageSQLImpl db;
 
 
 	private void commonConstructor(CalGrid cal, LocationStorage _ls) {
@@ -148,6 +150,9 @@ ComponentListener {
 		eventController = new EventController(cal); 
 
 		parent = cal;
+		
+		db = new ApptStorageSQLImpl(parent.getCurrUser());
+		
 		this.setAlwaysOnTop(true);
 
 		setModal(false);
@@ -558,15 +563,20 @@ ComponentListener {
 		HashMap<User, List<Appt>> userMap = new HashMap<User, List<Appt>>();
 		
 		for (User u: invitedUsers){
-//			List<Appt> apptList =  asql.RetrieveApptsList(u, range);
-//			List<Appt> appListGenerated = asql.generateList(apptList);
-//			userMap.put(u, appListGenerated);
+
+			//XXX: THIS IS WHERE TEH PROBLEM IS
+//			parent.setCurrUser(u);
 			
-			parent.setCurrUser(u);
-			Collection<Appt> apps = parent.controller.mApptStorage.mAppts.values();
+//			Collection<Appt> apps = parent.controller.mApptStorage.mAppts.values();
+			List<Appt> userAppts = db.getAllEvents(u.getID());
+			List<Appt> userApptsGenerated = db.generateList(userAppts);
+			
 			List<Appt> apptList = new LinkedList<Appt>();
-			for (Appt a: apps){
+			
+			for (Appt a: userApptsGenerated){
+				
 				apptList.add(a);
+				
 			}
 			userMap.put(u, apptList);
 			
