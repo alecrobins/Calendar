@@ -79,6 +79,7 @@ public class GroupController {
 		int groupID;
 		
 		try {
+			event.setIsGroup(true);
 			groupID = db.createGroupEvent(userIDs, event);
 			event.setID(groupID);
 			db.createPurposedGroupEvent(event, tList, userList);

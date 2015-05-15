@@ -452,9 +452,12 @@ public class AppList extends JPanel implements ActionListener {
 		Appt apptTitle = getSelectedAppTitle();
 		if (apptTitle == null)
 			return;
-
+		
+		if(apptTitle.getIsGroup()){
+			// CHECK IF INITIATOR HERE
+		}
+		
 		parent.controller.mApptStorage.RemoveAppt(apptTitle);
-				
 		db.deleteGroupEvent(apptTitle.getEventID());
 		
 		parent.UpdateCal();
