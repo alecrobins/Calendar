@@ -32,7 +32,7 @@ public class ApptStorageSQLImpl extends ApptStorage {
 	private int interval = 60;
 	private User defaultUser = null;
 	
-	private boolean useOnline = true;
+	private boolean useOnline = false;
 	
 	public ApptStorageSQLImpl( User user )
 	{
