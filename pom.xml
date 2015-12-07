@@ -22,6 +22,17 @@
         </excludes>
       </testResource>
     </testResources>
+   <!--  <pluginRepositories>
+    	<pluginRepository>
+	        <snapshots>
+	            <enabled>false</enabled>
+	        </snapshots>
+	        <id>hindsighttesting.release</id>
+	        <name>Hindsight Software Release Repository</name>
+	        <url>http://repo.hindsightsoftware.com/public-maven/com/hindsightsoftware/behavepro/behave-pro-lic-service/1.1/behave-pro-server-1.1.jar</url>
+    	</pluginRepository>
+	</pluginRepositories> -->
+	
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -31,6 +42,24 @@
           <target>1.7</target>
         </configuration>
       </plugin>
+      <!-- <plugin>
+		    <groupId>com.hindsighttesting.behave</groupId>
+		    <artifactId>behave-maven-plugin</artifactId>
+		    <version>1.0.4</version>
+		    <configuration>
+		        <server>https://atttest.atlassian.net</server>
+		        <projectKey>ATP</projectKey>
+		        <username>amlyYTplNTNhYjgzZi02OGUwLTRiZTctYTZjOS1iYmM1ZDM4NTQ0N2Q==</username>
+		        <password>24db5819e15bd87b906ec2ea78aa35a669c22a0a</password>
+		    </configuration>
+		    <executions>
+		        <execution>
+		            <goals>
+		                <goal>features</goal>
+		            </goals>
+		        </execution>
+		    </executions>
+		</plugin> -->
     </plugins>
   </build>
 </project>
