@@ -62,4 +62,21 @@
 		</plugin> -->
     </plugins>
   </build>
+  <dependencies>
+  	<dependency>
+  		<groupId>junit</groupId>
+  		<artifactId>junit</artifactId>
+  		<scope>test</scope>
+  		<version>4.8.2</version>
+  	</dependency>
+  </dependencies>
+  <dependencyManagement>
+  	<dependencies>
+  		<dependency>
+  			<groupId>junit</groupId>
+  			<artifactId>junit-dep</artifactId>
+  			<version>4.8.2</version>
+  		</dependency>
+  	</dependencies>
+  </dependencyManagement>
 </project>

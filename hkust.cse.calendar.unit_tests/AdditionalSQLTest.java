@@ -1,4 +1,4 @@
-package calendar;
+
 
 import static org.junit.Assert.*;
 import hkust.cse.calendar.apptstorage.ApptStorageSQLImpl;
